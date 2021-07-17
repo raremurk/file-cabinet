@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace FileCabinetApp
 {
@@ -16,6 +17,7 @@ namespace FileCabinetApp
 
         private static Tuple<string, Action<string>>[] commands = new Tuple<string, Action<string>>[]
         {
+            new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("stat", Stat),
             new Tuple<string, Action<string>>("help", PrintHelp),
             new Tuple<string, Action<string>>("exit", Exit),
@@ -23,6 +25,7 @@ namespace FileCabinetApp
 
         private static string[][] helpMessages = new string[][]
         {
+            new string[] { "create", "сreates a record and returns its id", "The 'create' command сreates a record and returns its id." },
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
@@ -66,6 +69,29 @@ namespace FileCabinetApp
         {
             var recordsCount = Program.fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
+        }
+
+        private static void Create(string parameters)
+        {
+            Console.Write("First name: ");
+            string firstName = Console.ReadLine();
+            Console.Write("Last name: ");
+            string lastName = Console.ReadLine();
+            Console.Write("Date of birth (month/day/year): ");
+            string birthday = Console.ReadLine();
+            DateTime dateTimeBirthday;
+            string format = "MM/dd/yyyy";
+
+            while (!DateTime.TryParseExact(birthday, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeBirthday))
+            {
+                Console.WriteLine("Invalid date format. Try again.");
+                Console.Write("Date of birth: ");
+                birthday = Console.ReadLine();
+            }
+
+            int id = Program.fileCabinetService.CreateRecord(firstName, lastName, dateTimeBirthday);
+
+            Console.WriteLine($"Record #{id} is created.");
         }
 
         private static void PrintMissedCommandInfo(string command)
