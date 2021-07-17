@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
 
 namespace FileCabinetApp
 {
@@ -71,9 +72,18 @@ namespace FileCabinetApp
         {
             var records = Program.FileCabinetService.GetRecords();
 
-            for (int i = 0; i < records.Length; i++)
+            foreach (var record in records)
             {
-                Console.WriteLine($"#{i + 1}, {records[i].FirstName}, {records[i].LastName}, {records[i].DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.CreateSpecificCulture("en-US"))}");
+                StringBuilder builder = new ();
+                builder.Append($"{record.Id}, ");
+                builder.Append($"{record.FirstName}, ");
+                builder.Append($"{record.LastName}, ");
+                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
+                builder.Append($"{record.WorkPlaceNumber}, ");
+                builder.Append($"{record.Salary}, ");
+                builder.Append($"{record.Department}");
+
+                Console.WriteLine(builder.ToString());
             }
         }
 
@@ -101,7 +111,40 @@ namespace FileCabinetApp
                 birthday = Console.ReadLine();
             }
 
-            int id = Program.FileCabinetService.CreateRecord(firstName, lastName, dateTimeBirthday);
+            Console.Write("Some short: ");
+            string shortInput = Console.ReadLine();
+            short workPlaceNumber;
+
+            while (!short.TryParse(shortInput, out workPlaceNumber))
+            {
+                Console.WriteLine("This is not a short value. Try again.");
+                Console.Write("Some short: ");
+                shortInput = Console.ReadLine();
+            }
+
+            Console.Write("Some decimal: ");
+            string decimalInput = Console.ReadLine();
+            decimal salary;
+
+            while (!decimal.TryParse(decimalInput, out salary))
+            {
+                Console.WriteLine("This is not a decimal value. Try again.");
+                Console.Write("Some decimal: ");
+                decimalInput = Console.ReadLine();
+            }
+
+            Console.Write("Some char: ");
+            string charInput = Console.ReadLine();
+            char department;
+
+            while (!char.TryParse(charInput, out department))
+            {
+                Console.WriteLine("This is not a char value. Try again.");
+                Console.Write("Some char: ");
+                charInput = Console.ReadLine();
+            }
+
+            int id = Program.FileCabinetService.CreateRecord(firstName, lastName, dateTimeBirthday, workPlaceNumber, salary, department);
 
             Console.WriteLine($"Record #{id} is created.");
         }
