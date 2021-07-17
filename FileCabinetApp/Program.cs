@@ -97,54 +97,52 @@ namespace FileCabinetApp
         {
             Console.Write("First name: ");
             string firstName = Console.ReadLine();
+
             Console.Write("Last name: ");
             string lastName = Console.ReadLine();
-            Console.Write("Date of birth (month/day/year): ");
-            string birthday = Console.ReadLine();
-            DateTime dateTimeBirthday;
-            string format = "MM/dd/yyyy";
 
-            while (!DateTime.TryParseExact(birthday, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeBirthday))
+            Console.Write("Date of birth (month/day/year): ");
+            string dateOfBirthInput = Console.ReadLine();
+            DateTime dateOfBirth;
+            string format = "MM/dd/yyyy";
+            while (!DateTime.TryParseExact(dateOfBirthInput, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth))
             {
                 Console.WriteLine("Invalid date format. Try again.");
                 Console.Write("Date of birth: ");
-                birthday = Console.ReadLine();
+                dateOfBirthInput = Console.ReadLine();
             }
 
-            Console.Write("Some short: ");
-            string shortInput = Console.ReadLine();
+            Console.Write("Workplace number (short): ");
+            string workPlaceNumberInput = Console.ReadLine();
             short workPlaceNumber;
-
-            while (!short.TryParse(shortInput, out workPlaceNumber))
+            while (!short.TryParse(workPlaceNumberInput, out workPlaceNumber))
             {
                 Console.WriteLine("This is not a short value. Try again.");
-                Console.Write("Some short: ");
-                shortInput = Console.ReadLine();
+                Console.Write("Workplace number (short): ");
+                workPlaceNumberInput = Console.ReadLine();
             }
 
-            Console.Write("Some decimal: ");
-            string decimalInput = Console.ReadLine();
+            Console.Write("Salary (decimal): ");
+            string salaryInput = Console.ReadLine();
             decimal salary;
-
-            while (!decimal.TryParse(decimalInput, out salary))
+            while (!decimal.TryParse(salaryInput, out salary))
             {
                 Console.WriteLine("This is not a decimal value. Try again.");
-                Console.Write("Some decimal: ");
-                decimalInput = Console.ReadLine();
+                Console.Write("Salary (decimal): ");
+                salaryInput = Console.ReadLine();
             }
 
-            Console.Write("Some char: ");
-            string charInput = Console.ReadLine();
+            Console.Write("Department (char): ");
+            string departmentInput = Console.ReadLine();
             char department;
-
-            while (!char.TryParse(charInput, out department))
+            while (!char.TryParse(departmentInput, out department))
             {
                 Console.WriteLine("This is not a char value. Try again.");
-                Console.Write("Some char: ");
-                charInput = Console.ReadLine();
+                Console.Write("Department (char): ");
+                departmentInput = Console.ReadLine();
             }
 
-            int id = Program.FileCabinetService.CreateRecord(firstName, lastName, dateTimeBirthday, workPlaceNumber, salary, department);
+            int id = Program.FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, workPlaceNumber, salary, department);
 
             Console.WriteLine($"Record #{id} is created.");
         }
