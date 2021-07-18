@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Text;
 
+[assembly: CLSCompliant(false)]
+
 namespace FileCabinetApp
 {
     public static class Program
@@ -16,6 +18,7 @@ namespace FileCabinetApp
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
+            new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("stat", Stat),
@@ -25,6 +28,7 @@ namespace FileCabinetApp
 
         private static readonly string[][] HelpMessages = new string[][]
         {
+            new string[] { "edit", "edits a record with the specified id", "The 'edit' command edits a record with the specified id." },
             new string[] { "list", "returns a list of all records", "The 'list' command returns a list of all records." },
             new string[] { "create", "сreates a record and returns its id", "The 'create' command сreates a record and returns its id." },
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
@@ -53,7 +57,7 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                var index = Array.FindIndex(Commands, 0, Commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(Commands, 0, Commands.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)
                 {
                     const int parametersIndex = 1;
@@ -95,58 +99,124 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            Console.Write("First name: ");
-            string firstName = Console.ReadLine();
-            Console.Write("Last name: ");
-            string lastName = Console.ReadLine();
-            Console.Write("Date of birth (month/day/year): ");
-            string birthday = Console.ReadLine();
-            DateTime dateTimeBirthday;
-            string format = "MM/dd/yyyy";
+            FileCabinetRecord record = СonsoleInput();
 
-            while (!DateTime.TryParseExact(birthday, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTimeBirthday))
-            {
-                Console.WriteLine("Invalid date format. Try again.");
-                Console.Write("Date of birth: ");
-                birthday = Console.ReadLine();
-            }
-
-            Console.Write("Some short: ");
-            string shortInput = Console.ReadLine();
-            short workPlaceNumber;
-
-            while (!short.TryParse(shortInput, out workPlaceNumber))
-            {
-                Console.WriteLine("This is not a short value. Try again.");
-                Console.Write("Some short: ");
-                shortInput = Console.ReadLine();
-            }
-
-            Console.Write("Some decimal: ");
-            string decimalInput = Console.ReadLine();
-            decimal salary;
-
-            while (!decimal.TryParse(decimalInput, out salary))
-            {
-                Console.WriteLine("This is not a decimal value. Try again.");
-                Console.Write("Some decimal: ");
-                decimalInput = Console.ReadLine();
-            }
-
-            Console.Write("Some char: ");
-            string charInput = Console.ReadLine();
-            char department;
-
-            while (!char.TryParse(charInput, out department))
-            {
-                Console.WriteLine("This is not a char value. Try again.");
-                Console.Write("Some char: ");
-                charInput = Console.ReadLine();
-            }
-
-            int id = Program.FileCabinetService.CreateRecord(firstName, lastName, dateTimeBirthday, workPlaceNumber, salary, department);
+            int id = Program.FileCabinetService.CreateRecord(record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department);
 
             Console.WriteLine($"Record #{id} is created.");
+        }
+
+        private static void Edit(string parameters)
+        {
+            if (!int.TryParse(parameters, out int id))
+            {
+                Console.WriteLine("Invalid id value.");
+                return;
+            }
+
+            var records = FileCabinetService.GetRecords();
+            if (!Array.Exists(records, x => x.Id == id))
+            {
+                Console.WriteLine($"#{id} record is not found.");
+                return;
+            }
+
+            FileCabinetRecord record = СonsoleInput();
+
+            Program.FileCabinetService.EditRecord(id, record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department);
+
+            Console.WriteLine($"Record #{id} is updated.");
+        }
+
+        private static FileCabinetRecord СonsoleInput()
+        {
+            string firstName;
+            string lastName;
+            DateTime dateOfBirth;
+            short workPlaceNumber;
+            decimal salary;
+            char department;
+
+            while (true)
+            {
+                Console.Write("First name: ");
+                firstName = Console.ReadLine();
+                bool incorrect = Guard.StringIsIncorrect(firstName);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid first name. Try again.");
+            }
+
+            while (true)
+            {
+                Console.Write("Last name: ");
+                lastName = Console.ReadLine();
+                bool incorrect = Guard.StringIsIncorrect(lastName);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid last name. Try again.");
+            }
+
+            const string Format = "MM/dd/yyyy";
+            while (true)
+            {
+                Console.Write("Date of birth (month/day/year): ");
+                string dateOfBirthInput = Console.ReadLine();
+                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || Guard.DateTimeRangeIsIncorrect(dateOfBirth);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid date. Try again.");
+            }
+
+            while (true)
+            {
+                Console.Write("Workplace number: ");
+                string workPlaceNumberInput = Console.ReadLine();
+                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || Guard.WorkPlaceNumberIsLessThanMinValue(workPlaceNumber);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid workplace number. Try again.");
+            }
+
+            while (true)
+            {
+                Console.Write("Salary: ");
+                string salaryInput = Console.ReadLine();
+                bool incorrect = !decimal.TryParse(salaryInput, out salary) || Guard.SalaryIsLessThanThanMinValue(salary);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid salary. Try again.");
+            }
+
+            while (true)
+            {
+                Console.Write("Department (uppercase letter): ");
+                string departmentInput = Console.ReadLine();
+                bool incorrect = !char.TryParse(departmentInput, out department) || Guard.DepartmentValueIsIncorrect(department);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid department. Try again.");
+            }
+
+            return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
         }
 
         private static void PrintMissedCommandInfo(string command)
@@ -159,7 +229,7 @@ namespace FileCabinetApp
         {
             if (!string.IsNullOrEmpty(parameters))
             {
-                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)
                 {
                     Console.WriteLine(HelpMessages[index][Program.ExplanationHelpIndex]);
