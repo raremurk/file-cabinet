@@ -53,7 +53,7 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                var index = Array.FindIndex(Commands, 0, Commands.Length, i => i.Item1.Equals(command, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(Commands, 0, Commands.Length, i => i.Item1.Equals(command, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)
                 {
                     const int parametersIndex = 1;
@@ -106,7 +106,7 @@ namespace FileCabinetApp
             {
                 Console.Write("First name: ");
                 firstName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(firstName) || Guard.NameLengthIsIncorrect(firstName);
+                bool incorrect = Guard.StringIsIncorrect(firstName);
                 if (!incorrect)
                 {
                     break;
@@ -119,7 +119,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Last name: ");
                 lastName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(lastName) || Guard.NameLengthIsIncorrect(lastName);
+                bool incorrect = Guard.StringIsIncorrect(lastName);
                 if (!incorrect)
                 {
                     break;
@@ -196,7 +196,7 @@ namespace FileCabinetApp
         {
             if (!string.IsNullOrEmpty(parameters))
             {
-                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.InvariantCultureIgnoreCase));
+                var index = Array.FindIndex(HelpMessages, 0, HelpMessages.Length, i => string.Equals(i[Program.CommandHelpIndex], parameters, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)
                 {
                     Console.WriteLine(HelpMessages[index][Program.ExplanationHelpIndex]);
@@ -223,40 +223,6 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
-        }
-
-        public static class Guard
-        {
-            public const int MinStringLength = 2;
-            public const int MaxStringLength = 60;
-            public const short WorkPlaceNumberMinValue = 1;
-            public const decimal SalaryMinValue = decimal.Zero;
-            public static readonly DateTime MinDate = new (1950, 1, 1);
-
-            public static bool NameLengthIsIncorrect(string argument)
-            {
-                return argument.Length < MinStringLength || argument.Length > MaxStringLength;
-            }
-
-            public static bool DateTimeRangeIsIncorrect(DateTime argument)
-            {
-                return DateTime.Compare(DateTime.Now, argument) < 0 || DateTime.Compare(MinDate, argument) > 0;
-            }
-
-            public static bool WorkPlaceNumberIsLessThanMinValue(short argument)
-            {
-                return argument < WorkPlaceNumberMinValue;
-            }
-
-            public static bool SalaryIsLessThanThanMinValue(decimal argument)
-            {
-                return argument < SalaryMinValue;
-            }
-
-            public static bool DepartmentValueIsIncorrect(char argument)
-            {
-                return !char.IsLetter(argument) || !char.IsUpper(argument);
-            }
         }
     }
 }

@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static FileCabinetApp.Program;
 
 namespace FileCabinetApp
 {
@@ -41,10 +37,7 @@ namespace FileCabinetApp
             return this.list.ToArray();
         }
 
-        public int GetStat()
-        {
-            return this.list.Count;
-        }
+        public int GetStat() => this.list.Count;
 
         private class FileCabinetServiceGuard
         {
@@ -57,7 +50,7 @@ namespace FileCabinetApp
                         throw new ArgumentNullException(nameof(argument), " cannot be null or whitespace only.");
                     }
 
-                    if (Guard.NameLengthIsIncorrect(argument))
+                    if (Guard.StringIsIncorrect(argument))
                     {
                         throw new ArgumentException($"{nameof(argument)} length is less than {Guard.MinStringLength} or more than {Guard.MaxStringLength}.");
                     }
