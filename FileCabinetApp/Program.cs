@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Text;
 
+[assembly: CLSCompliant(false)]
+
 namespace FileCabinetApp
 {
     public static class Program
