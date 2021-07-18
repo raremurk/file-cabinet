@@ -37,7 +37,9 @@ namespace FileCabinetApp
             return this.list.ToArray();
         }
 
+        #pragma warning disable CA1024
         public int GetStat() => this.list.Count;
+        #pragma warning restore CA1024
 
         private class FileCabinetServiceGuard
         {
