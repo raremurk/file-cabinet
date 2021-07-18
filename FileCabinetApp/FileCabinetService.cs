@@ -32,6 +32,22 @@ namespace FileCabinetApp
             return record.Id;
         }
 
+        public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, short workPlaceNumber, decimal salary, char department)
+        {
+            if (!this.list.Exists(x => x.Id == id))
+            {
+                throw new ArgumentException("No record with this id.");
+            }
+
+            FileCabinetRecord record = this.list.Find(x => x.Id == id);
+            record.FirstName = firstName;
+            record.LastName = lastName;
+            record.DateOfBirth = dateOfBirth;
+            record.WorkPlaceNumber = workPlaceNumber;
+            record.Salary = salary;
+            record.Department = department;
+        }
+
         public FileCabinetRecord[] GetRecords()
         {
             return this.list.ToArray();

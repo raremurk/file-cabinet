@@ -18,6 +18,7 @@ namespace FileCabinetApp
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
+            new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("create", Create),
             new Tuple<string, Action<string>>("stat", Stat),
@@ -27,6 +28,7 @@ namespace FileCabinetApp
 
         private static readonly string[][] HelpMessages = new string[][]
         {
+            new string[] { "edit", "edits a record with the specified id", "The 'edit' command edits a record with the specified id." },
             new string[] { "list", "returns a list of all records", "The 'list' command returns a list of all records." },
             new string[] { "create", "сreates a record and returns its id", "The 'create' command сreates a record and returns its id." },
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
@@ -96,6 +98,37 @@ namespace FileCabinetApp
         }
 
         private static void Create(string parameters)
+        {
+            FileCabinetRecord record = СonsoleInput();
+
+            int id = Program.FileCabinetService.CreateRecord(record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department);
+
+            Console.WriteLine($"Record #{id} is created.");
+        }
+
+        private static void Edit(string parameters)
+        {
+            if (!int.TryParse(parameters, out int id))
+            {
+                Console.WriteLine("Invalid id value.");
+                return;
+            }
+
+            var records = FileCabinetService.GetRecords();
+            if (!Array.Exists(records, x => x.Id == id))
+            {
+                Console.WriteLine($"#{id} record is not found.");
+                return;
+            }
+
+            FileCabinetRecord record = СonsoleInput();
+
+            Program.FileCabinetService.EditRecord(id, record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department);
+
+            Console.WriteLine($"Record #{id} is updated.");
+        }
+
+        private static FileCabinetRecord СonsoleInput()
         {
             string firstName;
             string lastName;
@@ -183,9 +216,7 @@ namespace FileCabinetApp
                 Console.WriteLine("Invalid department. Try again.");
             }
 
-            int id = Program.FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, workPlaceNumber, salary, department);
-
-            Console.WriteLine($"Record #{id} is created.");
+            return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
         }
 
         private static void PrintMissedCommandInfo(string command)
