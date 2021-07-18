@@ -95,51 +95,90 @@ namespace FileCabinetApp
 
         private static void Create(string parameters)
         {
-            Console.Write("First name: ");
-            string firstName = Console.ReadLine();
-
-            Console.Write("Last name: ");
-            string lastName = Console.ReadLine();
-
-            Console.Write("Date of birth (month/day/year): ");
-            string dateOfBirthInput = Console.ReadLine();
+            string firstName;
+            string lastName;
             DateTime dateOfBirth;
-            string format = "MM/dd/yyyy";
-            while (!DateTime.TryParseExact(dateOfBirthInput, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth))
-            {
-                Console.WriteLine("Invalid date format. Try again.");
-                Console.Write("Date of birth: ");
-                dateOfBirthInput = Console.ReadLine();
-            }
-
-            Console.Write("Workplace number (short): ");
-            string workPlaceNumberInput = Console.ReadLine();
             short workPlaceNumber;
-            while (!short.TryParse(workPlaceNumberInput, out workPlaceNumber))
-            {
-                Console.WriteLine("This is not a short value. Try again.");
-                Console.Write("Workplace number (short): ");
-                workPlaceNumberInput = Console.ReadLine();
-            }
-
-            Console.Write("Salary (decimal): ");
-            string salaryInput = Console.ReadLine();
             decimal salary;
-            while (!decimal.TryParse(salaryInput, out salary))
+            char department;
+
+            while (true)
             {
-                Console.WriteLine("This is not a decimal value. Try again.");
-                Console.Write("Salary (decimal): ");
-                salaryInput = Console.ReadLine();
+                Console.Write("First name: ");
+                firstName = Console.ReadLine();
+                bool incorrect = string.IsNullOrWhiteSpace(firstName) || Guard.NameLengthIsIncorrect(firstName);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid first name. Try again.");
             }
 
-            Console.Write("Department (char): ");
-            string departmentInput = Console.ReadLine();
-            char department;
-            while (!char.TryParse(departmentInput, out department))
+            while (true)
             {
-                Console.WriteLine("This is not a char value. Try again.");
-                Console.Write("Department (char): ");
-                departmentInput = Console.ReadLine();
+                Console.Write("Last name: ");
+                lastName = Console.ReadLine();
+                bool incorrect = string.IsNullOrWhiteSpace(lastName) || Guard.NameLengthIsIncorrect(lastName);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid last name. Try again.");
+            }
+
+            const string Format = "MM/dd/yyyy";
+            while (true)
+            {
+                Console.Write("Date of birth (month/day/year): ");
+                string dateOfBirthInput = Console.ReadLine();
+                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || Guard.DateTimeRangeIsIncorrect(dateOfBirth);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid date. Try again.");
+            }
+
+            while (true)
+            {
+                Console.Write("Workplace number: ");
+                string workPlaceNumberInput = Console.ReadLine();
+                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || Guard.WorkPlaceNumberIsLessThanMinValue(workPlaceNumber);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid workplace number. Try again.");
+            }
+
+            while (true)
+            {
+                Console.Write("Salary: ");
+                string salaryInput = Console.ReadLine();
+                bool incorrect = !decimal.TryParse(salaryInput, out salary) || Guard.SalaryIsLessThanThanMinValue(salary);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid salary. Try again.");
+            }
+
+            while (true)
+            {
+                Console.Write("Department (uppercase letter): ");
+                string departmentInput = Console.ReadLine();
+                bool incorrect = !char.TryParse(departmentInput, out department) || Guard.DepartmentValueIsIncorrect(department);
+                if (!incorrect)
+                {
+                    break;
+                }
+
+                Console.WriteLine("Invalid department. Try again.");
             }
 
             int id = Program.FileCabinetService.CreateRecord(firstName, lastName, dateOfBirth, workPlaceNumber, salary, department);
@@ -184,6 +223,40 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
+        }
+
+        public static class Guard
+        {
+            public const int MinStringLength = 2;
+            public const int MaxStringLength = 60;
+            public const short WorkPlaceNumberMinValue = 1;
+            public const decimal SalaryMinValue = decimal.Zero;
+            public static readonly DateTime MinDate = new (1950, 1, 1);
+
+            public static bool NameLengthIsIncorrect(string argument)
+            {
+                return argument.Length < MinStringLength || argument.Length > MaxStringLength;
+            }
+
+            public static bool DateTimeRangeIsIncorrect(DateTime argument)
+            {
+                return DateTime.Compare(DateTime.Now, argument) < 0 || DateTime.Compare(MinDate, argument) > 0;
+            }
+
+            public static bool WorkPlaceNumberIsLessThanMinValue(short argument)
+            {
+                return argument < WorkPlaceNumberMinValue;
+            }
+
+            public static bool SalaryIsLessThanThanMinValue(decimal argument)
+            {
+                return argument < SalaryMinValue;
+            }
+
+            public static bool DepartmentValueIsIncorrect(char argument)
+            {
+                return !char.IsLetter(argument) || !char.IsUpper(argument);
+            }
         }
     }
 }

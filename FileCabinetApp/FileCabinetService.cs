@@ -4,24 +4,21 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FileCabinetApp.Program;
 
 namespace FileCabinetApp
 {
     public class FileCabinetService
     {
-        private static readonly DateTime MinDate = new (1950, 1, 1);
         private readonly List<FileCabinetRecord> list = new ();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short workPlaceNumber, decimal salary, char department)
         {
-            Guard.StringNullOrWhiteSpace(firstName, nameof(firstName));
-            Guard.StringLength(firstName, nameof(firstName));
-            Guard.StringNullOrWhiteSpace(lastName, nameof(lastName));
-            Guard.StringLength(lastName, nameof(lastName));
-            Guard.DateTimeRange(dateOfBirth, nameof(dateOfBirth));
-            Guard.WorkPlaceNumberMinValue(workPlaceNumber, nameof(workPlaceNumber));
-            Guard.SalaryMinValue(salary, nameof(salary));
-            Guard.DepartmentRange(department, nameof(department));
+            FileCabinetServiceGuard.CheckStrings(new string[] { firstName, lastName });
+            FileCabinetServiceGuard.CheckDateTimeRange(dateOfBirth);
+            FileCabinetServiceGuard.CheckWorkPlaceNumber(workPlaceNumber);
+            FileCabinetServiceGuard.CheckSalary(salary);
+            FileCabinetServiceGuard.CheckDepartment(department);
 
             var record = new FileCabinetRecord
             {
@@ -49,53 +46,53 @@ namespace FileCabinetApp
             return this.list.Count;
         }
 
-        public static class Guard
+        private class FileCabinetServiceGuard
         {
-            public static void StringNullOrWhiteSpace(string argument, string argumentName)
+            public static void CheckStrings(string[] arguments)
             {
-                if (string.IsNullOrWhiteSpace(argument))
+                foreach (string argument in arguments)
                 {
-                    throw new ArgumentNullException($"{argumentName} cannot be null or whitespace only.");
+                    if (string.IsNullOrWhiteSpace(argument))
+                    {
+                        throw new ArgumentNullException(nameof(argument), " cannot be null or whitespace only.");
+                    }
+
+                    if (Guard.NameLengthIsIncorrect(argument))
+                    {
+                        throw new ArgumentException($"{nameof(argument)} length is less than {Guard.MinStringLength} or more than {Guard.MaxStringLength}.");
+                    }
                 }
             }
 
-            public static void StringLength(string argument, string argumentName)
+            public static void CheckDateTimeRange(DateTime argument)
             {
-                if (argument.Length < 2 || argument.Length > 60)
+                if (Guard.DateTimeRangeIsIncorrect(argument))
                 {
-                    throw new ArgumentException($"{argumentName} length is less than 2 or more than 60.");
+                    throw new ArgumentException($"{nameof(argument)} is less than {Guard.MinDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture)} or more than current date.");
                 }
             }
 
-            public static void DateTimeRange(DateTime argument, string argumentName)
+            public static void CheckWorkPlaceNumber(short argument)
             {
-                if (DateTime.Compare(DateTime.Now, argument) < 0 || DateTime.Compare(MinDate, argument) > 0)
+                if (Guard.WorkPlaceNumberIsLessThanMinValue(argument))
                 {
-                    throw new ArgumentException($"{argumentName} is less than {MinDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture)} or more than current date.");
+                    throw new ArgumentException($"{nameof(argument)} is less than {Guard.WorkPlaceNumberMinValue}.");
                 }
             }
 
-            public static void WorkPlaceNumberMinValue(short argument, string argumentName)
+            public static void CheckSalary(decimal argument)
             {
-                if (argument < 1)
+                if (Guard.SalaryIsLessThanThanMinValue(argument))
                 {
-                    throw new ArgumentException($"{argumentName} is less than 1.");
+                    throw new ArgumentException($"{nameof(argument)} cannot be less than {Guard.SalaryMinValue}.");
                 }
             }
 
-            public static void SalaryMinValue(decimal argument, string argumentName)
+            public static void CheckDepartment(char argument)
             {
-                if (argument < decimal.Zero)
+                if (Guard.DepartmentValueIsIncorrect(argument))
                 {
-                    throw new ArgumentException($"{argumentName} cannot be less than 0.");
-                }
-            }
-
-            public static void DepartmentRange(char argument, string argumentName)
-            {
-                if (!char.IsLetter(argument) || !char.IsUpper(argument))
-                {
-                    throw new ArgumentException($"{argumentName} can only be uppercase letter.");
+                    throw new ArgumentException($"{nameof(argument)} can only be uppercase letter.");
                 }
             }
         }
