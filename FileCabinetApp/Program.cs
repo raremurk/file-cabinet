@@ -120,6 +120,10 @@ namespace FileCabinetApp
             {
                 records = FileCabinetService.FindByFirstName(value);
             }
+            else if (index == 1)
+            {
+                records = FileCabinetService.FindByLastName(value);
+            }
 
             if (records.Length == 0)
             {

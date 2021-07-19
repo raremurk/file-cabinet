@@ -53,6 +53,11 @@ namespace FileCabinetApp
             return this.list.FindAll(x => x.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase)).ToArray();
         }
 
+        public FileCabinetRecord[] FindByLastName(string lastName)
+        {
+            return this.list.FindAll(x => x.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase)).ToArray();
+        }
+
         public FileCabinetRecord[] GetRecords()
         {
             return this.list.ToArray();
