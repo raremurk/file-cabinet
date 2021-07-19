@@ -124,6 +124,17 @@ namespace FileCabinetApp
             {
                 records = FileCabinetService.FindByLastName(value);
             }
+            else if (index == 2)
+            {
+                const string Format = "MM/dd/yyyy";
+                if (!DateTime.TryParseExact(value, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfBirth))
+                {
+                    Console.WriteLine("Incorrect property value.");
+                    return;
+                }
+
+                records = FileCabinetService.FindByDateOfBirth(dateOfBirth);
+            }
 
             if (records.Length == 0)
             {

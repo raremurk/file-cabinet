@@ -58,6 +58,11 @@ namespace FileCabinetApp
             return this.list.FindAll(x => x.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase)).ToArray();
         }
 
+        public FileCabinetRecord[] FindByDateOfBirth(DateTime dateOfBirth)
+        {
+            return this.list.FindAll(x => x.DateOfBirth.CompareTo(dateOfBirth) == 0).ToArray();
+        }
+
         public FileCabinetRecord[] GetRecords()
         {
             return this.list.ToArray();
