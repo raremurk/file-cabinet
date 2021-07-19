@@ -48,6 +48,11 @@ namespace FileCabinetApp
             record.Department = department;
         }
 
+        public FileCabinetRecord[] FindByFirstName(string firstName)
+        {
+            return this.list.FindAll(x => x.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase)).ToArray();
+        }
+
         public FileCabinetRecord[] GetRecords()
         {
             return this.list.ToArray();
