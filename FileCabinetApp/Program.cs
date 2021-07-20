@@ -133,7 +133,7 @@ namespace FileCabinetApp
                     return;
                 }
 
-                records = FileCabinetService.FindByDateOfBirth(dateOfBirth);
+                records = FileCabinetService.FindByDateOfBirth(value);
             }
 
             if (records.Length == 0)
