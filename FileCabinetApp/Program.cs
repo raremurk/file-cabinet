@@ -6,6 +6,7 @@ using System.Text;
 
 namespace FileCabinetApp
 {
+    /// <summary>Main class of the project.</summary>
     public static class Program
     {
         private const string DeveloperName = "Evgeny Fursevich";
@@ -40,6 +41,7 @@ namespace FileCabinetApp
 
         private static bool isRunning = true;
 
+        /// <summary>Defines the entry point of the application.</summary>
         public static void Main()
         {
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");

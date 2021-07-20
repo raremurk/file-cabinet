@@ -4,6 +4,7 @@ using System.Globalization;
 
 namespace FileCabinetApp
 {
+    /// <summary>Class for working with records.</summary>
     public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
@@ -11,6 +12,14 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
 
+        /// <summary>Creates a record and returns its id.</summary>
+        /// <param name="firstName">First name.</param>
+        /// <param name="lastName">Last name.</param>
+        /// <param name="dateOfBirth">Date of birth.</param>
+        /// <param name="workPlaceNumber">Work place number.</param>
+        /// <param name="salary">Salary.</param>
+        /// <param name="department">Department.</param>
+        /// <returns>Id of a new record.</returns>
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short workPlaceNumber, decimal salary, char department)
         {
             FileCabinetServiceGuard.CheckStrings(new string[] { firstName, lastName });
@@ -39,6 +48,14 @@ namespace FileCabinetApp
             return record.Id;
         }
 
+        /// <summary>Edits a record with the specified id.</summary>
+        /// <param name="id">Id.</param>
+        /// <param name="firstName">First name.</param>
+        /// <param name="lastName">Last name.</param>
+        /// <param name="dateOfBirth">Date of birth.</param>
+        /// <param name="workPlaceNumber">Work place number.</param>
+        /// <param name="salary">Salary.</param>
+        /// <param name="department">Department.</param>
         public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, short workPlaceNumber, decimal salary, char department)
         {
             if (!this.list.Exists(x => x.Id == id))
@@ -64,28 +81,41 @@ namespace FileCabinetApp
             FileCabinetService.AddRecordToDictionary(dateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
         }
 
+        /// <summary>Finds records by first name.</summary>
+        /// <param name="firstName">First name to find.</param>
+        /// <returns>Returns array of found records.</returns>
         public FileCabinetRecord[] FindByFirstName(string firstName)
         {
             string firstNameKey = firstName is null ? string.Empty : firstName.ToUpperInvariant();
             return this.firstNameDictionary.ContainsKey(firstNameKey) ? this.firstNameDictionary[firstNameKey].ToArray() : Array.Empty<FileCabinetRecord>();
         }
 
+        /// <summary>Finds records by last name.</summary>
+        /// <param name="lastName">Last name to find.</param>
+        /// <returns>Returns array of found records.</returns>
         public FileCabinetRecord[] FindByLastName(string lastName)
         {
             string lastNameKey = lastName is null ? string.Empty : lastName.ToUpperInvariant();
             return this.lastNameDictionary.ContainsKey(lastNameKey) ? this.lastNameDictionary[lastNameKey].ToArray() : Array.Empty<FileCabinetRecord>();
         }
 
+        /// <summary>Finds records by date of birth.</summary>
+        /// <param name="dateOfBirth">Date of birth to find.</param>
+        /// <returns>Returns array of found records.</returns>
         public FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
         {
             return this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? this.dateOfBirthDictionary[dateOfBirth].ToArray() : Array.Empty<FileCabinetRecord>();
         }
 
+        /// <summary>Returns all records.</summary>
+        /// <returns>Returns array of all records.</returns>
         public FileCabinetRecord[] GetRecords()
         {
             return this.list.ToArray();
         }
 
+        /// <summary>Returns count of records.</summary>
+        /// <returns>Returns count.</returns>
         #pragma warning disable CA1024
         public int GetStat() => this.list.Count;
         #pragma warning restore CA1024
