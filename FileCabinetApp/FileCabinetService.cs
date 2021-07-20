@@ -7,6 +7,9 @@ namespace FileCabinetApp
     public class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
+        private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
+        private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
+        private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
 
         public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short workPlaceNumber, decimal salary, char department)
         {
@@ -29,6 +32,10 @@ namespace FileCabinetApp
 
             this.list.Add(record);
 
+            FileCabinetService.AddRecordToDictionary(firstName, record, this.firstNameDictionary);
+            FileCabinetService.AddRecordToDictionary(lastName, record, this.lastNameDictionary);
+            FileCabinetService.AddRecordToDictionary(dateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+
             return record.Id;
         }
 
@@ -40,12 +47,38 @@ namespace FileCabinetApp
             }
 
             FileCabinetRecord record = this.list.Find(x => x.Id == id);
+
+            FileCabinetService.RemoveRecordFromDictionary(record.FirstName, record, this.firstNameDictionary);
+            FileCabinetService.RemoveRecordFromDictionary(record.LastName, record, this.lastNameDictionary);
+            FileCabinetService.RemoveRecordFromDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+
             record.FirstName = firstName;
             record.LastName = lastName;
             record.DateOfBirth = dateOfBirth;
             record.WorkPlaceNumber = workPlaceNumber;
             record.Salary = salary;
             record.Department = department;
+
+            FileCabinetService.AddRecordToDictionary(firstName, record, this.firstNameDictionary);
+            FileCabinetService.AddRecordToDictionary(lastName, record, this.lastNameDictionary);
+            FileCabinetService.AddRecordToDictionary(dateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+        }
+
+        public FileCabinetRecord[] FindByFirstName(string firstName)
+        {
+            string firstNameKey = firstName is null ? string.Empty : firstName.ToUpperInvariant();
+            return this.firstNameDictionary.ContainsKey(firstNameKey) ? this.firstNameDictionary[firstNameKey].ToArray() : Array.Empty<FileCabinetRecord>();
+        }
+
+        public FileCabinetRecord[] FindByLastName(string lastName)
+        {
+            string lastNameKey = lastName is null ? string.Empty : lastName.ToUpperInvariant();
+            return this.lastNameDictionary.ContainsKey(lastNameKey) ? this.lastNameDictionary[lastNameKey].ToArray() : Array.Empty<FileCabinetRecord>();
+        }
+
+        public FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
+        {
+            return this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? this.dateOfBirthDictionary[dateOfBirth].ToArray() : Array.Empty<FileCabinetRecord>();
         }
 
         public FileCabinetRecord[] GetRecords()
@@ -56,6 +89,27 @@ namespace FileCabinetApp
         #pragma warning disable CA1024
         public int GetStat() => this.list.Count;
         #pragma warning restore CA1024
+
+        private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
+        {
+            string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
+            if (!dictionary.ContainsKey(key))
+            {
+                dictionary.Add(key, new List<FileCabinetRecord>());
+            }
+
+            dictionary[key].Add(record);
+        }
+
+        private static void RemoveRecordFromDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
+        {
+            string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
+            dictionary[key].Remove(record);
+            if (dictionary[key].Count == 0)
+            {
+                dictionary.Remove(key);
+            }
+        }
 
         private class FileCabinetServiceGuard
         {

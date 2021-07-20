@@ -18,6 +18,7 @@ namespace FileCabinetApp
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
+            new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
             new Tuple<string, Action<string>>("create", Create),
@@ -28,6 +29,7 @@ namespace FileCabinetApp
 
         private static readonly string[][] HelpMessages = new string[][]
         {
+            new string[] { "find", "searches records by property name value", "The 'find' command searches records by property name value." },
             new string[] { "edit", "edits a record with the specified id", "The 'edit' command edits a record with the specified id." },
             new string[] { "list", "returns a list of all records", "The 'list' command returns a list of all records." },
             new string[] { "create", "сreates a record and returns its id", "The 'create' command сreates a record and returns its id." },
@@ -75,20 +77,72 @@ namespace FileCabinetApp
         private static void List(string parameters)
         {
             var records = Program.FileCabinetService.GetRecords();
+            PrintRecords(records);
+        }
 
-            foreach (var record in records)
+        private static void Find(string parameters)
+        {
+            if (string.IsNullOrEmpty(parameters))
             {
-                StringBuilder builder = new ();
-                builder.Append($"{record.Id}, ");
-                builder.Append($"{record.FirstName}, ");
-                builder.Append($"{record.LastName}, ");
-                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
-                builder.Append($"{record.WorkPlaceNumber}, ");
-                builder.Append($"{record.Salary}, ");
-                builder.Append($"{record.Department}");
-
-                Console.WriteLine(builder.ToString());
+                Console.WriteLine("Input property name.");
+                return;
             }
+
+            var inputs = parameters.Split(' ', 2);
+
+            string[] properties = new string[] { "firstName", "lastName", "dateOfBirth" };
+            string property = inputs[0];
+            int index = Array.FindIndex(properties, x => x.Equals(property, StringComparison.OrdinalIgnoreCase));
+            if (index == -1)
+            {
+                Console.WriteLine("No such property.");
+                return;
+            }
+
+            if (inputs.Length == 1)
+            {
+                Console.WriteLine("Input property value.");
+                return;
+            }
+
+            string value = inputs[1];
+
+            if (value.Length < 3 || value[0] != '"' || value[^1] != '"')
+            {
+                Console.WriteLine("Incorrect property value.");
+                return;
+            }
+
+            value = value[1..^1];
+            FileCabinetRecord[] records = Array.Empty<FileCabinetRecord>();
+
+            if (index == 0)
+            {
+                records = FileCabinetService.FindByFirstName(value);
+            }
+            else if (index == 1)
+            {
+                records = FileCabinetService.FindByLastName(value);
+            }
+            else if (index == 2)
+            {
+                const string Format = "MM/dd/yyyy";
+                if (!DateTime.TryParseExact(value, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfBirth))
+                {
+                    Console.WriteLine("Incorrect property value.");
+                    return;
+                }
+
+                records = FileCabinetService.FindByDateOfBirth(value);
+            }
+
+            if (records.Length == 0)
+            {
+                Console.WriteLine("No such records.");
+                return;
+            }
+
+            PrintRecords(records);
         }
 
         private static void Stat(string parameters)
@@ -217,6 +271,23 @@ namespace FileCabinetApp
             }
 
             return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
+        }
+
+        private static void PrintRecords(FileCabinetRecord[] records)
+        {
+            foreach (var record in records)
+            {
+                StringBuilder builder = new ();
+                builder.Append($"{record.Id}, ");
+                builder.Append($"{record.FirstName}, ");
+                builder.Append($"{record.LastName}, ");
+                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
+                builder.Append($"{record.WorkPlaceNumber}, ");
+                builder.Append($"{record.Salary}, ");
+                builder.Append($"{record.Department}");
+
+                Console.WriteLine(builder.ToString());
+            }
         }
 
         private static void PrintMissedCommandInfo(string command)
