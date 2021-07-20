@@ -111,20 +111,22 @@ namespace FileCabinetApp
             }
         }
 
-        private class FileCabinetServiceGuard
+        private static class FileCabinetServiceGuard
         {
             public static void CheckStrings(string[] arguments)
             {
                 foreach (string argument in arguments)
                 {
+                    string nameOfArgument = nameof(argument);
+
                     if (string.IsNullOrWhiteSpace(argument))
                     {
-                        throw new ArgumentNullException(nameof(argument), " cannot be null or whitespace only.");
+                        throw new ArgumentNullException(nameOfArgument, " cannot be null or whitespace only.");
                     }
 
                     if (Guard.StringIsIncorrect(argument))
                     {
-                        throw new ArgumentException($"{nameof(argument)} length is less than {Guard.MinStringLength} or more than {Guard.MaxStringLength}.");
+                        throw new ArgumentException($"{nameOfArgument} length is less than {Guard.MinStringLength} or more than {Guard.MaxStringLength}.");
                     }
                 }
             }
