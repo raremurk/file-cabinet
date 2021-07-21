@@ -157,7 +157,7 @@ namespace FileCabinetApp
         {
             FileCabinetRecord record = СonsoleInput();
 
-            int id = Program.FileCabinetService.CreateRecord(record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department);
+            int id = Program.FileCabinetService.CreateRecord(record);
 
             Console.WriteLine($"Record #{id} is created.");
         }
@@ -178,8 +178,9 @@ namespace FileCabinetApp
             }
 
             FileCabinetRecord record = СonsoleInput();
+            record.Id = id;
 
-            Program.FileCabinetService.EditRecord(id, record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department);
+            Program.FileCabinetService.EditRecord(record);
 
             Console.WriteLine($"Record #{id} is updated.");
         }
@@ -280,7 +281,7 @@ namespace FileCabinetApp
             foreach (var record in records)
             {
                 StringBuilder builder = new ();
-                builder.Append($"{record.Id}, ");
+                builder.Append($"#{record.Id}, ");
                 builder.Append($"{record.FirstName}, ");
                 builder.Append($"{record.LastName}, ");
                 builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");

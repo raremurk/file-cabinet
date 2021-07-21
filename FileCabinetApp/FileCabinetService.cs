@@ -13,72 +13,66 @@ namespace FileCabinetApp
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
 
         /// <summary>Creates a record and returns its id.</summary>
-        /// <param name="firstName">First name.</param>
-        /// <param name="lastName">Last name.</param>
-        /// <param name="dateOfBirth">Date of birth.</param>
-        /// <param name="workPlaceNumber">Work place number.</param>
-        /// <param name="salary">Salary.</param>
-        /// <param name="department">Department.</param>
+        /// <param name="record">Object representing a record.</param>
         /// <returns>Id of a new record.</returns>
-        public int CreateRecord(string firstName, string lastName, DateTime dateOfBirth, short workPlaceNumber, decimal salary, char department)
+        /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
+        public int CreateRecord(FileCabinetRecord record)
         {
-            FileCabinetServiceGuard.CheckStrings(new string[] { firstName, lastName });
-            FileCabinetServiceGuard.CheckDateTimeRange(dateOfBirth);
-            FileCabinetServiceGuard.CheckWorkPlaceNumber(workPlaceNumber);
-            FileCabinetServiceGuard.CheckSalary(salary);
-            FileCabinetServiceGuard.CheckDepartment(department);
-
-            var record = new FileCabinetRecord
+            if (record is null)
             {
-                Id = this.list.Count + 1,
-                FirstName = firstName,
-                LastName = lastName,
-                DateOfBirth = dateOfBirth,
-                WorkPlaceNumber = workPlaceNumber,
-                Salary = salary,
-                Department = department,
-            };
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            FileCabinetServiceGuard.CheckStrings(new string[] { record.FirstName, record.LastName });
+            FileCabinetServiceGuard.CheckDateTimeRange(record.DateOfBirth);
+            FileCabinetServiceGuard.CheckWorkPlaceNumber(record.WorkPlaceNumber);
+            FileCabinetServiceGuard.CheckSalary(record.Salary);
+            FileCabinetServiceGuard.CheckDepartment(record.Department);
+
+            record.Id = this.list.Count + 1;
 
             this.list.Add(record);
 
-            FileCabinetService.AddRecordToDictionary(firstName, record, this.firstNameDictionary);
-            FileCabinetService.AddRecordToDictionary(lastName, record, this.lastNameDictionary);
-            FileCabinetService.AddRecordToDictionary(dateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+            FileCabinetService.AddRecordToDictionary(record.FirstName, record, this.firstNameDictionary);
+            FileCabinetService.AddRecordToDictionary(record.LastName, record, this.lastNameDictionary);
+            FileCabinetService.AddRecordToDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
 
             return record.Id;
         }
 
         /// <summary>Edits a record with the specified id.</summary>
-        /// <param name="id">Id.</param>
-        /// <param name="firstName">First name.</param>
-        /// <param name="lastName">Last name.</param>
-        /// <param name="dateOfBirth">Date of birth.</param>
-        /// <param name="workPlaceNumber">Work place number.</param>
-        /// <param name="salary">Salary.</param>
-        /// <param name="department">Department.</param>
-        public void EditRecord(int id, string firstName, string lastName, DateTime dateOfBirth, short workPlaceNumber, decimal salary, char department)
+        /// <param name="record">Object representing a record.</param>
+        /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
+        public void EditRecord(FileCabinetRecord record)
         {
-            if (!this.list.Exists(x => x.Id == id))
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            if (!this.list.Exists(x => x.Id == record.Id))
             {
                 throw new ArgumentException("No record with this id.");
             }
 
-            FileCabinetRecord record = this.list.Find(x => x.Id == id);
+            FileCabinetServiceGuard.CheckStrings(new string[] { record.FirstName, record.LastName });
+            FileCabinetServiceGuard.CheckDateTimeRange(record.DateOfBirth);
+            FileCabinetServiceGuard.CheckWorkPlaceNumber(record.WorkPlaceNumber);
+            FileCabinetServiceGuard.CheckSalary(record.Salary);
+            FileCabinetServiceGuard.CheckDepartment(record.Department);
 
-            FileCabinetService.RemoveRecordFromDictionary(record.FirstName, record, this.firstNameDictionary);
-            FileCabinetService.RemoveRecordFromDictionary(record.LastName, record, this.lastNameDictionary);
-            FileCabinetService.RemoveRecordFromDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+            FileCabinetRecord originalRecord = this.list.Find(x => x.Id == record.Id);
 
-            record.FirstName = firstName;
-            record.LastName = lastName;
-            record.DateOfBirth = dateOfBirth;
-            record.WorkPlaceNumber = workPlaceNumber;
-            record.Salary = salary;
-            record.Department = department;
+            FileCabinetService.RemoveRecordFromDictionary(originalRecord.FirstName, originalRecord, this.firstNameDictionary);
+            FileCabinetService.RemoveRecordFromDictionary(originalRecord.LastName, originalRecord, this.lastNameDictionary);
+            FileCabinetService.RemoveRecordFromDictionary(originalRecord.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), originalRecord, this.dateOfBirthDictionary);
 
-            FileCabinetService.AddRecordToDictionary(firstName, record, this.firstNameDictionary);
-            FileCabinetService.AddRecordToDictionary(lastName, record, this.lastNameDictionary);
-            FileCabinetService.AddRecordToDictionary(dateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+            originalRecord = record;
+
+            FileCabinetService.AddRecordToDictionary(originalRecord.FirstName, originalRecord, this.firstNameDictionary);
+            FileCabinetService.AddRecordToDictionary(originalRecord.LastName, originalRecord, this.lastNameDictionary);
+            FileCabinetService.AddRecordToDictionary(originalRecord.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), originalRecord, this.dateOfBirthDictionary);
         }
 
         /// <summary>Finds records by first name.</summary>
