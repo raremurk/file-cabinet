@@ -41,13 +41,37 @@ namespace FileCabinetApp
         private static bool isRunning = true;
 
         /// <summary>Defines the entry point of the application.</summary>
-        public static void Main()
+        /// <param name="args">Command line arguments.</param>
+        public static void Main(string[] args)
         {
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
+
+            string[] customArgs = { "--validation-rules=custom", "-v custom" };
+            bool customMode = false;
+
+            if (!(args is null) && args.Length == 1)
+            {
+                customMode = Array.FindIndex(customArgs, i => i.Equals(args[0], StringComparison.OrdinalIgnoreCase)) >= 0;
+            }
+            else if (!(args is null) && args.Length == 2)
+            {
+                string shortArg = string.Join(' ', args[0], args[1]);
+                customMode = Array.FindIndex(customArgs, i => i.Equals(shortArg, StringComparison.OrdinalIgnoreCase)) >= 0;
+            }
+
+            if (customMode)
+            {
+                Console.WriteLine("Using custom validation rules.");
+                fileCabinetService = new FileCabinetCustomService();
+            }
+            else
+            {
+                Console.WriteLine("Using default validation rules.");
+                fileCabinetService = new FileCabinetDefaultService();
+            }
+
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
-
-            fileCabinetService = new FileCabinetCustomService();
 
             do
             {
