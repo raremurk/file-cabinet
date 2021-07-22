@@ -15,8 +15,6 @@ namespace FileCabinetApp
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
 
-        private static readonly FileCabinetService FileCabinetService = new ();
-
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
             new Tuple<string, Action<string>>("find", Find),
@@ -39,6 +37,7 @@ namespace FileCabinetApp
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
         };
 
+        private static FileCabinetService fileCabinetService;
         private static bool isRunning = true;
 
         /// <summary>Defines the entry point of the application.</summary>
@@ -47,6 +46,8 @@ namespace FileCabinetApp
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
+
+            fileCabinetService = new FileCabinetCustomService();
 
             do
             {
@@ -78,7 +79,7 @@ namespace FileCabinetApp
 
         private static void List(string parameters)
         {
-            var records = Program.FileCabinetService.GetRecords();
+            var records = fileCabinetService.GetRecords();
             PrintRecords(records);
         }
 
@@ -120,11 +121,11 @@ namespace FileCabinetApp
 
             if (index == 0)
             {
-                records = FileCabinetService.FindByFirstName(value);
+                records = fileCabinetService.FindByFirstName(value);
             }
             else if (index == 1)
             {
-                records = FileCabinetService.FindByLastName(value);
+                records = fileCabinetService.FindByLastName(value);
             }
             else if (index == 2)
             {
@@ -135,7 +136,7 @@ namespace FileCabinetApp
                     return;
                 }
 
-                records = FileCabinetService.FindByDateOfBirth(value);
+                records = fileCabinetService.FindByDateOfBirth(value);
             }
 
             if (records.Length == 0)
@@ -149,7 +150,7 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = Program.FileCabinetService.GetStat();
+            var recordsCount = fileCabinetService.GetStat();
             Console.WriteLine($"{recordsCount} record(s).");
         }
 
@@ -157,7 +158,7 @@ namespace FileCabinetApp
         {
             FileCabinetRecord record = СonsoleInput();
 
-            int id = Program.FileCabinetService.CreateRecord(record);
+            int id = fileCabinetService.CreateRecord(record);
 
             Console.WriteLine($"Record #{id} is created.");
         }
@@ -170,7 +171,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            var records = FileCabinetService.GetRecords();
+            var records = fileCabinetService.GetRecords();
             if (!Array.Exists(records, x => x.Id == id))
             {
                 Console.WriteLine($"#{id} record is not found.");
@@ -180,7 +181,7 @@ namespace FileCabinetApp
             FileCabinetRecord record = СonsoleInput();
             record.Id = id;
 
-            Program.FileCabinetService.EditRecord(record);
+            fileCabinetService.EditRecord(record);
 
             Console.WriteLine($"Record #{id} is updated.");
         }
@@ -198,7 +199,7 @@ namespace FileCabinetApp
             {
                 Console.Write("First name: ");
                 firstName = Console.ReadLine();
-                bool incorrect = Guard.StringIsIncorrect(firstName);
+                bool incorrect = string.IsNullOrWhiteSpace(firstName) || fileCabinetService.CheckString(firstName.Length);
                 if (!incorrect)
                 {
                     break;
@@ -211,7 +212,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Last name: ");
                 lastName = Console.ReadLine();
-                bool incorrect = Guard.StringIsIncorrect(lastName);
+                bool incorrect = string.IsNullOrWhiteSpace(lastName) || fileCabinetService.CheckString(lastName.Length);
                 if (!incorrect)
                 {
                     break;
@@ -225,7 +226,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Date of birth (month/day/year): ");
                 string dateOfBirthInput = Console.ReadLine();
-                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || Guard.DateTimeRangeIsIncorrect(dateOfBirth);
+                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || fileCabinetService.CheckDateTimeRange(dateOfBirth);
                 if (!incorrect)
                 {
                     break;
@@ -238,7 +239,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Workplace number: ");
                 string workPlaceNumberInput = Console.ReadLine();
-                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || Guard.WorkPlaceNumberIsLessThanMinValue(workPlaceNumber);
+                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || fileCabinetService.CheckWorkPlaceNumber(workPlaceNumber);
                 if (!incorrect)
                 {
                     break;
@@ -251,7 +252,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Salary: ");
                 string salaryInput = Console.ReadLine();
-                bool incorrect = !decimal.TryParse(salaryInput, out salary) || Guard.SalaryIsLessThanThanMinValue(salary);
+                bool incorrect = !decimal.TryParse(salaryInput, out salary) || fileCabinetService.CheckSalary(salary);
                 if (!incorrect)
                 {
                     break;
@@ -264,7 +265,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Department (uppercase letter): ");
                 string departmentInput = Console.ReadLine();
-                bool incorrect = !char.TryParse(departmentInput, out department) || Guard.DepartmentValueIsIncorrect(department);
+                bool incorrect = !char.TryParse(departmentInput, out department) || fileCabinetService.CheckDepartment(department);
                 if (!incorrect)
                 {
                     break;

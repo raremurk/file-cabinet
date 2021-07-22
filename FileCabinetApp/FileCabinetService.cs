@@ -5,7 +5,7 @@ using System.Globalization;
 namespace FileCabinetApp
 {
     /// <summary>Class for working with records.</summary>
-    public class FileCabinetService
+    public abstract class FileCabinetService
     {
         private readonly List<FileCabinetRecord> list = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
@@ -23,20 +23,10 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            FileCabinetServiceGuard.CheckStrings(new string[] { record.FirstName, record.LastName });
-            FileCabinetServiceGuard.CheckDateTimeRange(record.DateOfBirth);
-            FileCabinetServiceGuard.CheckWorkPlaceNumber(record.WorkPlaceNumber);
-            FileCabinetServiceGuard.CheckSalary(record.Salary);
-            FileCabinetServiceGuard.CheckDepartment(record.Department);
-
+            this.ValidateParameters(record);
             record.Id = this.list.Count + 1;
-
             this.list.Add(record);
-
-            FileCabinetService.AddRecordToDictionary(record.FirstName, record, this.firstNameDictionary);
-            FileCabinetService.AddRecordToDictionary(record.LastName, record, this.lastNameDictionary);
-            FileCabinetService.AddRecordToDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
-
+            this.AddRecordToDictionaries(record);
             return record.Id;
         }
 
@@ -56,23 +46,18 @@ namespace FileCabinetApp
                 throw new ArgumentException("No record with this id.");
             }
 
-            FileCabinetServiceGuard.CheckStrings(new string[] { record.FirstName, record.LastName });
-            FileCabinetServiceGuard.CheckDateTimeRange(record.DateOfBirth);
-            FileCabinetServiceGuard.CheckWorkPlaceNumber(record.WorkPlaceNumber);
-            FileCabinetServiceGuard.CheckSalary(record.Salary);
-            FileCabinetServiceGuard.CheckDepartment(record.Department);
-
+            this.ValidateParameters(record);
             FileCabinetRecord originalRecord = this.list.Find(x => x.Id == record.Id);
+            this.RemoveRecordFromDictionaries(originalRecord);
 
-            FileCabinetService.RemoveRecordFromDictionary(originalRecord.FirstName, originalRecord, this.firstNameDictionary);
-            FileCabinetService.RemoveRecordFromDictionary(originalRecord.LastName, originalRecord, this.lastNameDictionary);
-            FileCabinetService.RemoveRecordFromDictionary(originalRecord.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), originalRecord, this.dateOfBirthDictionary);
+            originalRecord.FirstName = record.FirstName;
+            originalRecord.LastName = record.LastName;
+            originalRecord.DateOfBirth = record.DateOfBirth;
+            originalRecord.WorkPlaceNumber = record.WorkPlaceNumber;
+            originalRecord.Salary = record.Salary;
+            originalRecord.Department = record.Department;
 
-            originalRecord = record;
-
-            FileCabinetService.AddRecordToDictionary(originalRecord.FirstName, originalRecord, this.firstNameDictionary);
-            FileCabinetService.AddRecordToDictionary(originalRecord.LastName, originalRecord, this.lastNameDictionary);
-            FileCabinetService.AddRecordToDictionary(originalRecord.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), originalRecord, this.dateOfBirthDictionary);
+            this.AddRecordToDictionaries(originalRecord);
         }
 
         /// <summary>Finds records by first name.</summary>
@@ -114,6 +99,35 @@ namespace FileCabinetApp
         public int GetStat() => this.list.Count;
         #pragma warning restore CA1024
 
+        /// <summary>String validation.</summary>
+        /// <param name="stringLength">Length of input string.</param>
+        /// <returns>Returns true if string is incorrect, else false.</returns>
+        public abstract bool CheckString(int stringLength);
+
+        /// <summary>Date of birth validation.</summary>
+        /// <param name="argument">Date of birth.</param>
+        /// <returns>Returns true if date of birth is incorrect, else false.</returns>
+        public abstract bool CheckDateTimeRange(DateTime argument);
+
+        /// <summary>Work place number validation.</summary>
+        /// <param name="argument">Work place number.</param>
+        /// <returns>Returns true if work place number is incorrect, else false.</returns>
+        public abstract bool CheckWorkPlaceNumber(short argument);
+
+        /// <summary>Salary validation.</summary>
+        /// <param name="argument">Salary.</param>
+        /// <returns>Returns true if salary is incorrect, else false.</returns>
+        public abstract bool CheckSalary(decimal argument);
+
+        /// <summary>Department validation.</summary>
+        /// <param name="argument">Department.</param>
+        /// <returns>Returns true if department is incorrect, else false.</returns>
+        public abstract bool CheckDepartment(char argument);
+
+        /// <summary>Record validation.</summary>
+        /// <param name="record">Object representing a record.</param>
+        protected abstract void ValidateParameters(FileCabinetRecord record);
+
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
             string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
@@ -135,57 +149,18 @@ namespace FileCabinetApp
             }
         }
 
-        private static class FileCabinetServiceGuard
+        private void RemoveRecordFromDictionaries(FileCabinetRecord record)
         {
-            public static void CheckStrings(string[] arguments)
-            {
-                foreach (string argument in arguments)
-                {
-                    string nameOfArgument = nameof(argument);
+            RemoveRecordFromDictionary(record.FirstName, record, this.firstNameDictionary);
+            RemoveRecordFromDictionary(record.LastName, record, this.lastNameDictionary);
+            RemoveRecordFromDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+        }
 
-                    if (string.IsNullOrWhiteSpace(argument))
-                    {
-                        throw new ArgumentNullException(nameOfArgument, " cannot be null or whitespace only.");
-                    }
-
-                    if (Guard.StringIsIncorrect(argument))
-                    {
-                        throw new ArgumentException($"{nameOfArgument} length is less than {Guard.MinStringLength} or more than {Guard.MaxStringLength}.");
-                    }
-                }
-            }
-
-            public static void CheckDateTimeRange(DateTime argument)
-            {
-                if (Guard.DateTimeRangeIsIncorrect(argument))
-                {
-                    throw new ArgumentException($"{nameof(argument)} is less than {Guard.MinDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture)} or more than current date.");
-                }
-            }
-
-            public static void CheckWorkPlaceNumber(short argument)
-            {
-                if (Guard.WorkPlaceNumberIsLessThanMinValue(argument))
-                {
-                    throw new ArgumentException($"{nameof(argument)} is less than {Guard.WorkPlaceNumberMinValue}.");
-                }
-            }
-
-            public static void CheckSalary(decimal argument)
-            {
-                if (Guard.SalaryIsLessThanThanMinValue(argument))
-                {
-                    throw new ArgumentException($"{nameof(argument)} cannot be less than {Guard.SalaryMinValue}.");
-                }
-            }
-
-            public static void CheckDepartment(char argument)
-            {
-                if (Guard.DepartmentValueIsIncorrect(argument))
-                {
-                    throw new ArgumentException($"{nameof(argument)} can only be uppercase letter.");
-                }
-            }
+        private void AddRecordToDictionaries(FileCabinetRecord record)
+        {
+            AddRecordToDictionary(record.FirstName, record, this.firstNameDictionary);
+            AddRecordToDictionary(record.LastName, record, this.lastNameDictionary);
+            AddRecordToDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
         }
     }
 }

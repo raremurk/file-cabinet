@@ -4,6 +4,70 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.FileCabinetCustomService">
+            <summary>Data validation by parameters.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.CheckString(System.Int32)">
+            <summary>String validation.</summary>
+            <param name="stringLength">Length of input string.</param>
+            <returns>Returns true if string is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.CheckDateTimeRange(System.DateTime)">
+            <summary>Date of birth validation.</summary>
+            <param name="argument">Date of birth.</param>
+            <returns>Returns true if date of birth is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.CheckWorkPlaceNumber(System.Int16)">
+            <summary>Work place number validation.</summary>
+            <param name="argument">Work place number.</param>
+            <returns>Returns true if work place number is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.CheckSalary(System.Decimal)">
+            <summary>Salary validation.</summary>
+            <param name="argument">Salary.</param>
+            <returns>Returns true if salary is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.CheckDepartment(System.Char)">
+            <summary>Department validation.</summary>
+            <param name="argument">Department.</param>
+            <returns>Returns true if department is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
+            <summary>Record validation.</summary>
+            <param name="record">Object representing a record.</param>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetDefaultService">
+            <summary>Data validation by parameters.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.CheckString(System.Int32)">
+            <summary>String validation.</summary>
+            <param name="stringLength">Length of input string.</param>
+            <returns>Returns true if string is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.CheckDateTimeRange(System.DateTime)">
+            <summary>Date of birth validation.</summary>
+            <param name="argument">Date of birth.</param>
+            <returns>Returns true if date of birth is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.CheckWorkPlaceNumber(System.Int16)">
+            <summary>Work place number validation.</summary>
+            <param name="argument">Work place number.</param>
+            <returns>Returns true if work place number is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.CheckSalary(System.Decimal)">
+            <summary>Salary validation.</summary>
+            <param name="argument">Salary.</param>
+            <returns>Returns true if salary is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.CheckDepartment(System.Char)">
+            <summary>Department validation.</summary>
+            <param name="argument">Department.</param>
+            <returns>Returns true if department is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
+            <summary>Record validation.</summary>
+            <param name="record">Object representing a record.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>Сlass representing a record.</summary>
         </member>
@@ -42,10 +106,13 @@
             <summary>Creates a record and returns its id.</summary>
             <param name="record">Object representing a record.</param>
             <returns>Id of a new record.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)">
             <summary>Edits a record with the specified id.</summary>
             <param name="record">Object representing a record.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
             <summary>Finds records by first name.</summary>
@@ -70,48 +137,34 @@
             <summary>Returns count of records.</summary>
             <returns>Returns count.</returns>
         </member>
-        <member name="T:FileCabinetApp.Guard">
-            <summary>Data validation by parameters.</summary>
-        </member>
-        <member name="F:FileCabinetApp.Guard.MinStringLength">
-            <summary>Min length of string.</summary>
-        </member>
-        <member name="F:FileCabinetApp.Guard.MaxStringLength">
-            <summary>Max length of string.</summary>
-        </member>
-        <member name="F:FileCabinetApp.Guard.WorkPlaceNumberMinValue">
-            <summary>Min value of work place number.</summary>
-        </member>
-        <member name="F:FileCabinetApp.Guard.SalaryMinValue">
-            <summary>Min value of salary.</summary>
-        </member>
-        <member name="F:FileCabinetApp.Guard.MinDate">
-            <summary>Min value of date of birth.</summary>
-        </member>
-        <member name="M:FileCabinetApp.Guard.StringIsIncorrect(System.String)">
+        <member name="M:FileCabinetApp.FileCabinetService.CheckString(System.Int32)">
             <summary>String validation.</summary>
-            <param name="argument">Input string.</param>
+            <param name="stringLength">Length of input string.</param>
             <returns>Returns true if string is incorrect, else false.</returns>
         </member>
-        <member name="M:FileCabinetApp.Guard.DateTimeRangeIsIncorrect(System.DateTime)">
+        <member name="M:FileCabinetApp.FileCabinetService.CheckDateTimeRange(System.DateTime)">
             <summary>Date of birth validation.</summary>
             <param name="argument">Date of birth.</param>
             <returns>Returns true if date of birth is incorrect, else false.</returns>
         </member>
-        <member name="M:FileCabinetApp.Guard.WorkPlaceNumberIsLessThanMinValue(System.Int16)">
+        <member name="M:FileCabinetApp.FileCabinetService.CheckWorkPlaceNumber(System.Int16)">
             <summary>Work place number validation.</summary>
             <param name="argument">Work place number.</param>
             <returns>Returns true if work place number is incorrect, else false.</returns>
         </member>
-        <member name="M:FileCabinetApp.Guard.SalaryIsLessThanThanMinValue(System.Decimal)">
+        <member name="M:FileCabinetApp.FileCabinetService.CheckSalary(System.Decimal)">
             <summary>Salary validation.</summary>
             <param name="argument">Salary.</param>
             <returns>Returns true if salary is incorrect, else false.</returns>
         </member>
-        <member name="M:FileCabinetApp.Guard.DepartmentValueIsIncorrect(System.Char)">
+        <member name="M:FileCabinetApp.FileCabinetService.CheckDepartment(System.Char)">
             <summary>Department validation.</summary>
             <param name="argument">Department.</param>
             <returns>Returns true if department is incorrect, else false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
+            <summary>Record validation.</summary>
+            <param name="record">Object representing a record.</param>
         </member>
         <member name="T:FileCabinetApp.Program">
             <summary>Main class of the project.</summary>
