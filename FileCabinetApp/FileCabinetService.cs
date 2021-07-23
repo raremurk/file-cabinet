@@ -23,7 +23,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            this.ValidateParameters(record);
+            this.CreateValidator().ValidateParameters(record);
             record.Id = this.list.Count + 1;
             this.list.Add(record);
             this.AddRecordToDictionaries(record);
@@ -46,7 +46,7 @@ namespace FileCabinetApp
                 throw new ArgumentException("No record with this id.");
             }
 
-            this.ValidateParameters(record);
+            this.CreateValidator().ValidateParameters(record);
             FileCabinetRecord originalRecord = this.list.Find(x => x.Id == record.Id);
             this.RemoveRecordFromDictionaries(originalRecord);
 
@@ -99,34 +99,9 @@ namespace FileCabinetApp
         public int GetStat() => this.list.Count;
         #pragma warning restore CA1024
 
-        /// <summary>String validation.</summary>
-        /// <param name="stringLength">Length of input string.</param>
-        /// <returns>Returns true if string is incorrect, else false.</returns>
-        public abstract bool CheckString(int stringLength);
-
-        /// <summary>Date of birth validation.</summary>
-        /// <param name="argument">Date of birth.</param>
-        /// <returns>Returns true if date of birth is incorrect, else false.</returns>
-        public abstract bool CheckDateTimeRange(DateTime argument);
-
-        /// <summary>Work place number validation.</summary>
-        /// <param name="argument">Work place number.</param>
-        /// <returns>Returns true if work place number is incorrect, else false.</returns>
-        public abstract bool CheckWorkPlaceNumber(short argument);
-
-        /// <summary>Salary validation.</summary>
-        /// <param name="argument">Salary.</param>
-        /// <returns>Returns true if salary is incorrect, else false.</returns>
-        public abstract bool CheckSalary(decimal argument);
-
-        /// <summary>Department validation.</summary>
-        /// <param name="argument">Department.</param>
-        /// <returns>Returns true if department is incorrect, else false.</returns>
-        public abstract bool CheckDepartment(char argument);
-
         /// <summary>Record validation.</summary>
-        /// <param name="record">Object representing a record.</param>
-        protected abstract void ValidateParameters(FileCabinetRecord record);
+        /// <returns>Validation interface.</returns>
+        public abstract IRecordValidator CreateValidator();
 
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {

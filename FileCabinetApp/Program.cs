@@ -223,7 +223,7 @@ namespace FileCabinetApp
             {
                 Console.Write("First name: ");
                 firstName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(firstName) || fileCabinetService.CheckString(firstName.Length);
+                bool incorrect = string.IsNullOrWhiteSpace(firstName) || fileCabinetService.CreateValidator().CheckString(firstName.Length);
                 if (!incorrect)
                 {
                     break;
@@ -236,7 +236,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Last name: ");
                 lastName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(lastName) || fileCabinetService.CheckString(lastName.Length);
+                bool incorrect = string.IsNullOrWhiteSpace(lastName) || fileCabinetService.CreateValidator().CheckString(lastName.Length);
                 if (!incorrect)
                 {
                     break;
@@ -250,7 +250,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Date of birth (month/day/year): ");
                 string dateOfBirthInput = Console.ReadLine();
-                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || fileCabinetService.CheckDateTimeRange(dateOfBirth);
+                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || fileCabinetService.CreateValidator().CheckDateTimeRange(dateOfBirth);
                 if (!incorrect)
                 {
                     break;
@@ -263,7 +263,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Workplace number: ");
                 string workPlaceNumberInput = Console.ReadLine();
-                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || fileCabinetService.CheckWorkPlaceNumber(workPlaceNumber);
+                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || fileCabinetService.CreateValidator().CheckWorkPlaceNumber(workPlaceNumber);
                 if (!incorrect)
                 {
                     break;
@@ -276,7 +276,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Salary: ");
                 string salaryInput = Console.ReadLine();
-                bool incorrect = !decimal.TryParse(salaryInput, out salary) || fileCabinetService.CheckSalary(salary);
+                bool incorrect = !decimal.TryParse(salaryInput, out salary) || fileCabinetService.CreateValidator().CheckSalary(salary);
                 if (!incorrect)
                 {
                     break;
@@ -289,7 +289,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Department (uppercase letter): ");
                 string departmentInput = Console.ReadLine();
-                bool incorrect = !char.TryParse(departmentInput, out department) || fileCabinetService.CheckDepartment(department);
+                bool incorrect = !char.TryParse(departmentInput, out department) || fileCabinetService.CreateValidator().CheckDepartment(department);
                 if (!incorrect)
                 {
                     break;
