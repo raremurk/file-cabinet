@@ -6,7 +6,7 @@ using System.Globalization;
 namespace FileCabinetApp
 {
     /// <summary>Class for working with records.</summary>
-    public class FileCabinetService
+    public class FileCabinetService : IFileCabinetService
     {
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
@@ -95,15 +95,13 @@ namespace FileCabinetApp
             return this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? new ReadOnlyCollection<FileCabinetRecord>(this.dateOfBirthDictionary[dateOfBirth]) : new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
         }
 
-        #pragma warning disable CA1024
         /// <summary>Returns all records.</summary>
         /// <returns>Returns readonly collection of all records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords() => new (this.list);
 
-        /// <summary>Returns count of records.</summary>
-        /// <returns>Returns count.</returns>
+        /// <summary>Returns number of records.</summary>
+        /// <returns>Returns number.</returns>
         public int GetStat() => this.list.Count;
-        #pragma warning restore CA1024
 
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
