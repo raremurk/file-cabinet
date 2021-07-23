@@ -5,12 +5,20 @@ using System.Globalization;
 namespace FileCabinetApp
 {
     /// <summary>Class for working with records.</summary>
-    public abstract class FileCabinetService
+    public class FileCabinetService
     {
-        private readonly List<FileCabinetRecord> list = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> dateOfBirthDictionary = new ();
+        private readonly List<FileCabinetRecord> list = new ();
+        private readonly IRecordValidator validator;
+
+        /// <summary>Initializes a new instance of the <see cref="FileCabinetService"/> class.</summary>
+        /// <param name="validator">Validator.</param>
+        public FileCabinetService(IRecordValidator validator)
+        {
+            this.validator = validator;
+        }
 
         /// <summary>Creates a record and returns its id.</summary>
         /// <param name="record">Object representing a record.</param>
@@ -23,7 +31,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            this.CreateValidator().ValidateParameters(record);
+            this.validator.ValidateParameters(record);
             record.Id = this.list.Count + 1;
             this.list.Add(record);
             this.AddRecordToDictionaries(record);
@@ -46,7 +54,7 @@ namespace FileCabinetApp
                 throw new ArgumentException("No record with this id.");
             }
 
-            this.CreateValidator().ValidateParameters(record);
+            this.validator.ValidateParameters(record);
             FileCabinetRecord originalRecord = this.list.Find(x => x.Id == record.Id);
             this.RemoveRecordFromDictionaries(originalRecord);
 
@@ -98,10 +106,6 @@ namespace FileCabinetApp
         #pragma warning disable CA1024
         public int GetStat() => this.list.Count;
         #pragma warning restore CA1024
-
-        /// <summary>Record validation.</summary>
-        /// <returns>Validation interface.</returns>
-        public abstract IRecordValidator CreateValidator();
 
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {

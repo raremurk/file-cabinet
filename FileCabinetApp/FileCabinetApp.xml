@@ -71,16 +71,14 @@
         <member name="T:FileCabinetApp.FileCabinetCustomService">
             <summary>Data validation by custom parameters.</summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetCustomService.CreateValidator">
-            <summary>Record validation.</summary>
-            <returns>Validation interface.</returns>
+        <member name="M:FileCabinetApp.FileCabinetCustomService.#ctor">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetCustomService"/> class.</summary>
         </member>
         <member name="T:FileCabinetApp.FileCabinetDefaultService">
             <summary>Data validation by default parameters.</summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetDefaultService.CreateValidator">
-            <summary>Record validation.</summary>
-            <returns>Validation interface.</returns>
+        <member name="M:FileCabinetApp.FileCabinetDefaultService.#ctor">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetDefaultService"/> class.</summary>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>Сlass representing a record.</summary>
@@ -116,6 +114,10 @@
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>Class for working with records.</summary>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.</summary>
+            <param name="validator">Validator.</param>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
             <summary>Creates a record and returns its id.</summary>
             <param name="record">Object representing a record.</param>
@@ -150,10 +152,6 @@
         <member name="M:FileCabinetApp.FileCabinetService.GetStat">
             <summary>Returns count of records.</summary>
             <returns>Returns count.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetService.CreateValidator">
-            <summary>Record validation.</summary>
-            <returns>Validation interface.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>Provides functionality to validate parameters.</summary>

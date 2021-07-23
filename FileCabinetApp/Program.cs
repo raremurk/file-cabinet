@@ -38,6 +38,7 @@ namespace FileCabinetApp
         };
 
         private static FileCabinetService fileCabinetService;
+        private static IRecordValidator validator;
         private static bool isRunning = true;
 
         /// <summary>Defines the entry point of the application.</summary>
@@ -63,11 +64,13 @@ namespace FileCabinetApp
             {
                 Console.WriteLine("Using custom validation rules.");
                 fileCabinetService = new FileCabinetCustomService();
+                validator = new CustomValidator();
             }
             else
             {
                 Console.WriteLine("Using default validation rules.");
                 fileCabinetService = new FileCabinetDefaultService();
+                validator = new DefaultValidator();
             }
 
             Console.WriteLine(Program.HintMessage);
@@ -223,7 +226,7 @@ namespace FileCabinetApp
             {
                 Console.Write("First name: ");
                 firstName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(firstName) || fileCabinetService.CreateValidator().CheckString(firstName.Length);
+                bool incorrect = string.IsNullOrWhiteSpace(firstName) || validator.CheckString(firstName.Length);
                 if (!incorrect)
                 {
                     break;
@@ -236,7 +239,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Last name: ");
                 lastName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(lastName) || fileCabinetService.CreateValidator().CheckString(lastName.Length);
+                bool incorrect = string.IsNullOrWhiteSpace(lastName) || validator.CheckString(lastName.Length);
                 if (!incorrect)
                 {
                     break;
@@ -250,7 +253,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Date of birth (month/day/year): ");
                 string dateOfBirthInput = Console.ReadLine();
-                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || fileCabinetService.CreateValidator().CheckDateTimeRange(dateOfBirth);
+                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || validator.CheckDateTimeRange(dateOfBirth);
                 if (!incorrect)
                 {
                     break;
@@ -263,7 +266,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Workplace number: ");
                 string workPlaceNumberInput = Console.ReadLine();
-                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || fileCabinetService.CreateValidator().CheckWorkPlaceNumber(workPlaceNumber);
+                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || validator.CheckWorkPlaceNumber(workPlaceNumber);
                 if (!incorrect)
                 {
                     break;
@@ -276,7 +279,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Salary: ");
                 string salaryInput = Console.ReadLine();
-                bool incorrect = !decimal.TryParse(salaryInput, out salary) || fileCabinetService.CreateValidator().CheckSalary(salary);
+                bool incorrect = !decimal.TryParse(salaryInput, out salary) || validator.CheckSalary(salary);
                 if (!incorrect)
                 {
                     break;
@@ -289,7 +292,7 @@ namespace FileCabinetApp
             {
                 Console.Write("Department (uppercase letter): ");
                 string departmentInput = Console.ReadLine();
-                bool incorrect = !char.TryParse(departmentInput, out department) || fileCabinetService.CreateValidator().CheckDepartment(department);
+                bool incorrect = !char.TryParse(departmentInput, out department) || validator.CheckDepartment(department);
                 if (!incorrect)
                 {
                     break;

@@ -3,11 +3,10 @@
     /// <summary>Data validation by default parameters.</summary>
     public class FileCabinetDefaultService : FileCabinetService
     {
-        /// <summary>Record validation.</summary>
-        /// <returns>Validation interface.</returns>
-        public override IRecordValidator CreateValidator()
+        /// <summary>Initializes a new instance of the <see cref="FileCabinetDefaultService"/> class.</summary>
+        public FileCabinetDefaultService()
+            : base(new DefaultValidator())
         {
-            return new DefaultValidator();
         }
     }
 }
