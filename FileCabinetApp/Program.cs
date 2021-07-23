@@ -63,13 +63,13 @@ namespace FileCabinetApp
             if (customMode)
             {
                 Console.WriteLine("Using custom validation rules.");
-                fileCabinetService = new FileCabinetCustomService();
+                fileCabinetService = new FileCabinetService(new CustomValidator());
                 validator = new CustomValidator();
             }
             else
             {
                 Console.WriteLine("Using default validation rules.");
-                fileCabinetService = new FileCabinetDefaultService();
+                fileCabinetService = new FileCabinetService(new DefaultValidator());
                 validator = new DefaultValidator();
             }
 
