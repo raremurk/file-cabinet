@@ -121,21 +121,21 @@
         <member name="M:FileCabinetApp.FileCabinetService.FindByFirstName(System.String)">
             <summary>Finds records by first name.</summary>
             <param name="firstName">First name to find.</param>
-            <returns>Returns array of found records.</returns>
+            <returns>Returns readonly collection of found records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByLastName(System.String)">
             <summary>Finds records by last name.</summary>
             <param name="lastName">Last name to find.</param>
-            <returns>Returns array of found records.</returns>
+            <returns>Returns readonly collection of found records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.FindByDateOfBirth(System.String)">
             <summary>Finds records by date of birth.</summary>
             <param name="dateOfBirth">Date of birth to find.</param>
-            <returns>Returns array of found records.</returns>
+            <returns>Returns readonly collection of found records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
             <summary>Returns all records.</summary>
-            <returns>Returns array of all records.</returns>
+            <returns>Returns readonly collection of all records.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetService.GetStat">
             <summary>Returns count of records.</summary>

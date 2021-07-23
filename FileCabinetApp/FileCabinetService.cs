@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace FileCabinetApp
@@ -70,40 +71,37 @@ namespace FileCabinetApp
 
         /// <summary>Finds records by first name.</summary>
         /// <param name="firstName">First name to find.</param>
-        /// <returns>Returns array of found records.</returns>
-        public FileCabinetRecord[] FindByFirstName(string firstName)
+        /// <returns>Returns readonly collection of found records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
         {
             string firstNameKey = firstName is null ? string.Empty : firstName.ToUpperInvariant();
-            return this.firstNameDictionary.ContainsKey(firstNameKey) ? this.firstNameDictionary[firstNameKey].ToArray() : Array.Empty<FileCabinetRecord>();
+            return this.firstNameDictionary.ContainsKey(firstNameKey) ? new ReadOnlyCollection<FileCabinetRecord>(this.firstNameDictionary[firstNameKey]) : new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
         }
 
         /// <summary>Finds records by last name.</summary>
         /// <param name="lastName">Last name to find.</param>
-        /// <returns>Returns array of found records.</returns>
-        public FileCabinetRecord[] FindByLastName(string lastName)
+        /// <returns>Returns readonly collection of found records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
         {
             string lastNameKey = lastName is null ? string.Empty : lastName.ToUpperInvariant();
-            return this.lastNameDictionary.ContainsKey(lastNameKey) ? this.lastNameDictionary[lastNameKey].ToArray() : Array.Empty<FileCabinetRecord>();
+            return this.lastNameDictionary.ContainsKey(lastNameKey) ? new ReadOnlyCollection<FileCabinetRecord>(this.lastNameDictionary[lastNameKey]) : new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
         }
 
         /// <summary>Finds records by date of birth.</summary>
         /// <param name="dateOfBirth">Date of birth to find.</param>
-        /// <returns>Returns array of found records.</returns>
-        public FileCabinetRecord[] FindByDateOfBirth(string dateOfBirth)
+        /// <returns>Returns readonly collection of found records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
-            return this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? this.dateOfBirthDictionary[dateOfBirth].ToArray() : Array.Empty<FileCabinetRecord>();
+            return this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? new ReadOnlyCollection<FileCabinetRecord>(this.dateOfBirthDictionary[dateOfBirth]) : new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
         }
 
+        #pragma warning disable CA1024
         /// <summary>Returns all records.</summary>
-        /// <returns>Returns array of all records.</returns>
-        public FileCabinetRecord[] GetRecords()
-        {
-            return this.list.ToArray();
-        }
+        /// <returns>Returns readonly collection of all records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> GetRecords() => new (this.list);
 
         /// <summary>Returns count of records.</summary>
         /// <returns>Returns count.</returns>
-        #pragma warning disable CA1024
         public int GetStat() => this.list.Count;
         #pragma warning restore CA1024
 

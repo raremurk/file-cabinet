@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 
@@ -144,7 +145,7 @@ namespace FileCabinetApp
             }
 
             value = value[1..^1];
-            FileCabinetRecord[] records = Array.Empty<FileCabinetRecord>();
+            ReadOnlyCollection<FileCabinetRecord> records = new (Array.Empty<FileCabinetRecord>());
 
             if (index == 0)
             {
@@ -166,7 +167,7 @@ namespace FileCabinetApp
                 records = fileCabinetService.FindByDateOfBirth(value);
             }
 
-            if (records.Length == 0)
+            if (records.Count == 0)
             {
                 Console.WriteLine("No such records.");
                 return;
@@ -198,8 +199,8 @@ namespace FileCabinetApp
                 return;
             }
 
-            var records = fileCabinetService.GetRecords();
-            if (!Array.Exists(records, x => x.Id == id))
+            int recordsCount = fileCabinetService.GetStat();
+            if (id < 1 || id > recordsCount)
             {
                 Console.WriteLine($"#{id} record is not found.");
                 return;
@@ -304,7 +305,7 @@ namespace FileCabinetApp
             return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
         }
 
-        private static void PrintRecords(FileCabinetRecord[] records)
+        private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
             foreach (var record in records)
             {
