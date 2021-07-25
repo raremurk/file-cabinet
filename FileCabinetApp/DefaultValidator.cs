@@ -12,44 +12,67 @@ namespace FileCabinetApp
         private const decimal SalaryMinValue = decimal.Zero;
         private static readonly DateTime MinDate = new (1950, 1, 1);
 
-        /// <summary>String validation.</summary>
-        /// <param name="stringLength">Length of input string.</param>
-        /// <returns>Returns true if string is incorrect, else false.</returns>
-        public bool CheckString(int stringLength)
+        /// <summary>Name validation.</summary>
+        /// <param name="name">Input string representing the name.</param>
+        /// <returns>Returns false and exception message if name is incorrect, else returns true.</returns>
+        public Tuple<bool, string> NameIsCorrect(string name)
         {
-            return stringLength < MinStringLength || stringLength > MaxStringLength;
+            string parameterName = nameof(name);
+            string message = string.Empty;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                message = $"{parameterName} cannot be null or whitespace only.";
+                return new (false, message);
+            }
+
+            int stringLength = name.Length;
+            if (stringLength < MinStringLength || stringLength > MaxStringLength)
+            {
+                message = $"Length of {parameterName} is less than {MinStringLength} or more than {MaxStringLength}.";
+                return new (false, message);
+            }
+
+            return new (true, message);
         }
 
         /// <summary>Date of birth validation.</summary>
-        /// <param name="argument">Date of birth.</param>
-        /// <returns>Returns true if date of birth is incorrect, else false.</returns>
-        public bool CheckDateTimeRange(DateTime argument)
+        /// <param name="dateOfBirth">Date of birth.</param>
+        /// <returns>Returns false and exception message if date of birth is incorrect, else returns true.</returns>
+        public Tuple<bool, string> DateOfBirthIsCorrect(DateTime dateOfBirth)
         {
-            return DateTime.Compare(DateTime.Now, argument) < 0 || DateTime.Compare(MinDate, argument) > 0;
+            bool valid = DateTime.Compare(DateTime.Now, dateOfBirth) >= 0 && DateTime.Compare(MinDate, dateOfBirth) <= 0;
+            string message = !valid ? $"{nameof(dateOfBirth)} is less than {MinDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture)} or more than current date." : string.Empty;
+            return new (valid, message);
         }
 
         /// <summary>Work place number validation.</summary>
-        /// <param name="argument">Work place number.</param>
-        /// <returns>Returns true if work place number is incorrect, else false.</returns>
-        public bool CheckWorkPlaceNumber(short argument)
+        /// <param name="workPlaceNumber">Work place number.</param>
+        /// <returns>Returns false and exception message if work place number is incorrect, else returns true.</returns>
+        public Tuple<bool, string> WorkPlaceNumberIsCorrect(short workPlaceNumber)
         {
-            return argument < WorkPlaceNumberMinValue;
+            bool valid = workPlaceNumber >= WorkPlaceNumberMinValue;
+            string message = !valid ? $"{nameof(workPlaceNumber)} is less than {WorkPlaceNumberMinValue}." : string.Empty;
+            return new (valid, message);
         }
 
         /// <summary>Salary validation.</summary>
-        /// <param name="argument">Salary.</param>
-        /// <returns>Returns true if salary is incorrect, else false.</returns>
-        public bool CheckSalary(decimal argument)
+        /// <param name="salary">Salary.</param>
+        /// <returns>Returns false and exception message if salary is incorrect, else returns true.</returns>
+        public Tuple<bool, string> SalaryIsCorrect(decimal salary)
         {
-            return argument < SalaryMinValue;
+            bool valid = salary >= SalaryMinValue;
+            string message = !valid ? $"{nameof(salary)} cannot be less than {SalaryMinValue}." : string.Empty;
+            return new (valid, message);
         }
 
         /// <summary>Department validation.</summary>
-        /// <param name="argument">Department.</param>
-        /// <returns>Returns true if department is incorrect, else false.</returns>
-        public bool CheckDepartment(char argument)
+        /// <param name="department">Department.</param>
+        /// <returns>Returns false and exception message if department is incorrect, else returns true.</returns>
+        public Tuple<bool, string> DepartmentIsCorrect(char department)
         {
-            return !char.IsLetter(argument) || !char.IsUpper(argument);
+            bool valid = char.IsLetter(department) && char.IsUpper(department);
+            string message = !valid ? $"{nameof(department)} can only be uppercase letter." : string.Empty;
+            return new (valid, message);
         }
 
         /// <summary>Record validation.</summary>
@@ -61,44 +84,32 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
+            Tuple<bool, string>[] validationResults =
+            {
+                this.NameIsCorrect(record.FirstName),
+                this.NameIsCorrect(record.LastName),
+                this.DateOfBirthIsCorrect(record.DateOfBirth),
+                this.WorkPlaceNumberIsCorrect(record.WorkPlaceNumber),
+                this.SalaryIsCorrect(record.Salary),
+                this.DepartmentIsCorrect(record.Department),
+            };
+
             if (string.IsNullOrWhiteSpace(record.FirstName))
             {
-                throw new ArgumentNullException(nameof(record.FirstName), "Input string cannot be null or whitespace only.");
-            }
-
-            if (this.CheckString(record.FirstName.Length))
-            {
-                throw new ArgumentException($"Length of {nameof(record.FirstName)} is less than {MinStringLength} or more than {MaxStringLength}.");
+                throw new ArgumentNullException(validationResults[0].Item2);
             }
 
             if (string.IsNullOrWhiteSpace(record.LastName))
             {
-                throw new ArgumentNullException(nameof(record.LastName), "Input string cannot be null or whitespace only.");
+                throw new ArgumentNullException(validationResults[1].Item2);
             }
 
-            if (this.CheckString(record.LastName.Length))
+            foreach (var result in validationResults)
             {
-                throw new ArgumentException($"Length of {nameof(record.LastName)} is less than {MinStringLength} or more than {MaxStringLength}.");
-            }
-
-            if (this.CheckDateTimeRange(record.DateOfBirth))
-            {
-                throw new ArgumentException($"{nameof(record.DateOfBirth)} is less than {MinDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture)} or more than current date.");
-            }
-
-            if (this.CheckWorkPlaceNumber(record.WorkPlaceNumber))
-            {
-                throw new ArgumentException($"{nameof(record.WorkPlaceNumber)} is less than {WorkPlaceNumberMinValue}.");
-            }
-
-            if (this.CheckSalary(record.Salary))
-            {
-                throw new ArgumentException($"{nameof(record.Salary)} cannot be less than {SalaryMinValue}.");
-            }
-
-            if (this.CheckDepartment(record.Department))
-            {
-                throw new ArgumentException($"{nameof(record.Department)} can only be uppercase letter.");
+                if (!result.Item1)
+                {
+                    throw new ArgumentException(result.Item2);
+                }
             }
         }
     }

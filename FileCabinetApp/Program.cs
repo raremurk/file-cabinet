@@ -15,6 +15,7 @@ namespace FileCabinetApp
         private const int CommandHelpIndex = 0;
         private const int DescriptionHelpIndex = 1;
         private const int ExplanationHelpIndex = 2;
+        private const string InputDateFormat = "MM/dd/yyyy";
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
@@ -36,6 +37,29 @@ namespace FileCabinetApp
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },
             new string[] { "help", "prints the help screen", "The 'help' command prints the help screen." },
             new string[] { "exit", "exits the application", "The 'exit' command exits the application." },
+        };
+
+        private static readonly Func<string, Tuple<bool, string, string>> StringConverter = input => new (true, string.Empty, input);
+
+        private static readonly Func<string, Tuple<bool, string, DateTime>> DateConverter = input =>
+        {
+            bool tryParse = DateTime.TryParseExact(input, InputDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfBirth);
+            return tryParse ? new (true, string.Empty, dateOfBirth) : new (false, "Invalid date.", DateTime.MinValue);
+        };
+
+        private static readonly Func<string, Tuple<bool, string, short>> ShortConverter = input =>
+        {
+            return short.TryParse(input, out short workPlaceNumber) ? new (true, string.Empty, workPlaceNumber) : new (false, "Invalid workplace number.", 0);
+        };
+
+        private static readonly Func<string, Tuple<bool, string, decimal>> DecimalConverter = input =>
+        {
+            return decimal.TryParse(input, out decimal salary) ? new (true, string.Empty, salary) : new (false, "Invalid salary.", 0);
+        };
+
+        private static readonly Func<string, Tuple<bool, string, char>> CharConverter = input =>
+        {
+            return char.TryParse(input, out char department) ? new (true, string.Empty, department) : new (false, "Invalid department.", char.MinValue);
         };
 
         private static IFileCabinetService fileCabinetService;
@@ -216,91 +240,23 @@ namespace FileCabinetApp
 
         private static FileCabinetRecord СonsoleInput()
         {
-            string firstName;
-            string lastName;
-            DateTime dateOfBirth;
-            short workPlaceNumber;
-            decimal salary;
-            char department;
+            Console.Write("First name: ");
+            string firstName = ReadInput(StringConverter, validator.NameIsCorrect);
 
-            while (true)
-            {
-                Console.Write("First name: ");
-                firstName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(firstName) || validator.CheckString(firstName.Length);
-                if (!incorrect)
-                {
-                    break;
-                }
+            Console.Write("Last name: ");
+            string lastName = ReadInput(StringConverter, validator.NameIsCorrect);
 
-                Console.WriteLine("Invalid first name. Try again.");
-            }
+            Console.Write("Date of birth (month/day/year): ");
+            DateTime dateOfBirth = ReadInput(DateConverter, validator.DateOfBirthIsCorrect);
 
-            while (true)
-            {
-                Console.Write("Last name: ");
-                lastName = Console.ReadLine();
-                bool incorrect = string.IsNullOrWhiteSpace(lastName) || validator.CheckString(lastName.Length);
-                if (!incorrect)
-                {
-                    break;
-                }
+            Console.Write("Workplace number: ");
+            short workPlaceNumber = ReadInput(ShortConverter, validator.WorkPlaceNumberIsCorrect);
 
-                Console.WriteLine("Invalid last name. Try again.");
-            }
+            Console.Write("Salary: ");
+            decimal salary = ReadInput(DecimalConverter, validator.SalaryIsCorrect);
 
-            const string Format = "MM/dd/yyyy";
-            while (true)
-            {
-                Console.Write("Date of birth (month/day/year): ");
-                string dateOfBirthInput = Console.ReadLine();
-                bool incorrect = !DateTime.TryParseExact(dateOfBirthInput, Format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateOfBirth) || validator.CheckDateTimeRange(dateOfBirth);
-                if (!incorrect)
-                {
-                    break;
-                }
-
-                Console.WriteLine("Invalid date. Try again.");
-            }
-
-            while (true)
-            {
-                Console.Write("Workplace number: ");
-                string workPlaceNumberInput = Console.ReadLine();
-                bool incorrect = !short.TryParse(workPlaceNumberInput, out workPlaceNumber) || validator.CheckWorkPlaceNumber(workPlaceNumber);
-                if (!incorrect)
-                {
-                    break;
-                }
-
-                Console.WriteLine("Invalid workplace number. Try again.");
-            }
-
-            while (true)
-            {
-                Console.Write("Salary: ");
-                string salaryInput = Console.ReadLine();
-                bool incorrect = !decimal.TryParse(salaryInput, out salary) || validator.CheckSalary(salary);
-                if (!incorrect)
-                {
-                    break;
-                }
-
-                Console.WriteLine("Invalid salary. Try again.");
-            }
-
-            while (true)
-            {
-                Console.Write("Department (uppercase letter): ");
-                string departmentInput = Console.ReadLine();
-                bool incorrect = !char.TryParse(departmentInput, out department) || validator.CheckDepartment(department);
-                if (!incorrect)
-                {
-                    break;
-                }
-
-                Console.WriteLine("Invalid department. Try again.");
-            }
+            Console.Write("Department (uppercase letter): ");
+            char department = ReadInput(CharConverter, validator.DepartmentIsCorrect);
 
             return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
         }
@@ -359,6 +315,35 @@ namespace FileCabinetApp
         {
             Console.WriteLine("Exiting an application...");
             isRunning = false;
+        }
+
+        private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
+        {
+            do
+            {
+                T value;
+
+                var input = Console.ReadLine();
+                var conversionResult = converter(input);
+
+                if (!conversionResult.Item1)
+                {
+                    Console.WriteLine($"Conversion failed: {conversionResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                value = conversionResult.Item3;
+
+                var validationResult = validator(value);
+                if (!validationResult.Item1)
+                {
+                    Console.WriteLine($"Validation failed: {validationResult.Item2}. Please, correct your input.");
+                    continue;
+                }
+
+                return value;
+            }
+            while (true);
         }
     }
 }

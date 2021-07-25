@@ -7,30 +7,30 @@
         <member name="T:FileCabinetApp.CustomValidator">
             <summary>Provides functionality to data validation by custom parameters.</summary>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.CheckString(System.Int32)">
-            <summary>String validation.</summary>
-            <param name="stringLength">Length of input string.</param>
-            <returns>Returns true if string is incorrect, else false.</returns>
+        <member name="M:FileCabinetApp.CustomValidator.NameIsCorrect(System.String)">
+            <summary>Name validation.</summary>
+            <param name="name">Input string representing the name.</param>
+            <returns>Returns false and exception message if name is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.CheckDateTimeRange(System.DateTime)">
+        <member name="M:FileCabinetApp.CustomValidator.DateOfBirthIsCorrect(System.DateTime)">
             <summary>Date of birth validation.</summary>
-            <param name="argument">Date of birth.</param>
-            <returns>Returns true if date of birth is incorrect, else false.</returns>
+            <param name="dateOfBirth">Date of birth.</param>
+            <returns>Returns false and exception message if date of birth is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.CheckWorkPlaceNumber(System.Int16)">
+        <member name="M:FileCabinetApp.CustomValidator.WorkPlaceNumberIsCorrect(System.Int16)">
             <summary>Work place number validation.</summary>
-            <param name="argument">Work place number.</param>
-            <returns>Returns true if work place number is incorrect, else false.</returns>
+            <param name="workPlaceNumber">Work place number.</param>
+            <returns>Returns false and exception message if work place number is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.CheckSalary(System.Decimal)">
+        <member name="M:FileCabinetApp.CustomValidator.SalaryIsCorrect(System.Decimal)">
             <summary>Salary validation.</summary>
-            <param name="argument">Salary.</param>
-            <returns>Returns true if salary is incorrect, else false.</returns>
+            <param name="salary">Salary.</param>
+            <returns>Returns false and exception message if salary is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.CheckDepartment(System.Char)">
+        <member name="M:FileCabinetApp.CustomValidator.DepartmentIsCorrect(System.Char)">
             <summary>Department validation.</summary>
-            <param name="argument">Department.</param>
-            <returns>Returns true if department is incorrect, else false.</returns>
+            <param name="department">Department.</param>
+            <returns>Returns false and exception message if department is incorrect, else returns true.</returns>
         </member>
         <member name="M:FileCabinetApp.CustomValidator.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
             <summary>Record validation.</summary>
@@ -39,30 +39,30 @@
         <member name="T:FileCabinetApp.DefaultValidator">
             <summary>Provides functionality to data validation by default parameters.</summary>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.CheckString(System.Int32)">
-            <summary>String validation.</summary>
-            <param name="stringLength">Length of input string.</param>
-            <returns>Returns true if string is incorrect, else false.</returns>
+        <member name="M:FileCabinetApp.DefaultValidator.NameIsCorrect(System.String)">
+            <summary>Name validation.</summary>
+            <param name="name">Input string representing the name.</param>
+            <returns>Returns false and exception message if name is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.CheckDateTimeRange(System.DateTime)">
+        <member name="M:FileCabinetApp.DefaultValidator.DateOfBirthIsCorrect(System.DateTime)">
             <summary>Date of birth validation.</summary>
-            <param name="argument">Date of birth.</param>
-            <returns>Returns true if date of birth is incorrect, else false.</returns>
+            <param name="dateOfBirth">Date of birth.</param>
+            <returns>Returns false and exception message if date of birth is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.CheckWorkPlaceNumber(System.Int16)">
+        <member name="M:FileCabinetApp.DefaultValidator.WorkPlaceNumberIsCorrect(System.Int16)">
             <summary>Work place number validation.</summary>
-            <param name="argument">Work place number.</param>
-            <returns>Returns true if work place number is incorrect, else false.</returns>
+            <param name="workPlaceNumber">Work place number.</param>
+            <returns>Returns false and exception message if work place number is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.CheckSalary(System.Decimal)">
+        <member name="M:FileCabinetApp.DefaultValidator.SalaryIsCorrect(System.Decimal)">
             <summary>Salary validation.</summary>
-            <param name="argument">Salary.</param>
-            <returns>Returns true if salary is incorrect, else false.</returns>
+            <param name="salary">Salary.</param>
+            <returns>Returns false and exception message if salary is incorrect, else returns true.</returns>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.CheckDepartment(System.Char)">
+        <member name="M:FileCabinetApp.DefaultValidator.DepartmentIsCorrect(System.Char)">
             <summary>Department validation.</summary>
-            <param name="argument">Department.</param>
-            <returns>Returns true if department is incorrect, else false.</returns>
+            <param name="department">Department.</param>
+            <returns>Returns false and exception message if department is incorrect, else returns true.</returns>
         </member>
         <member name="M:FileCabinetApp.DefaultValidator.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
             <summary>Record validation.</summary>
@@ -179,30 +179,30 @@
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>Provides functionality to validate parameters.</summary>
         </member>
-        <member name="M:FileCabinetApp.IRecordValidator.CheckString(System.Int32)">
-            <summary>String validation.</summary>
-            <param name="stringLength">Length of input string.</param>
-            <returns>Returns true if string is incorrect, else false.</returns>
+        <member name="M:FileCabinetApp.IRecordValidator.NameIsCorrect(System.String)">
+            <summary>Name validation.</summary>
+            <param name="name">Input string representing the name.</param>
+            <returns>Returns true and exception message if name is incorrect, else returns false.</returns>
         </member>
-        <member name="M:FileCabinetApp.IRecordValidator.CheckDateTimeRange(System.DateTime)">
+        <member name="M:FileCabinetApp.IRecordValidator.DateOfBirthIsCorrect(System.DateTime)">
             <summary>Date of birth validation.</summary>
-            <param name="argument">Date of birth.</param>
-            <returns>Returns true if date of birth is incorrect, else false.</returns>
+            <param name="dateOfBirth">Date of birth.</param>
+            <returns>Returns true and exception message if date of birth is incorrect, else returns false.</returns>
         </member>
-        <member name="M:FileCabinetApp.IRecordValidator.CheckWorkPlaceNumber(System.Int16)">
+        <member name="M:FileCabinetApp.IRecordValidator.WorkPlaceNumberIsCorrect(System.Int16)">
             <summary>Work place number validation.</summary>
-            <param name="argument">Work place number.</param>
-            <returns>Returns true if work place number is incorrect, else false.</returns>
+            <param name="workPlaceNumber">Work place number.</param>
+            <returns>Returns true and exception message if work place number is incorrect, else returns false.</returns>
         </member>
-        <member name="M:FileCabinetApp.IRecordValidator.CheckSalary(System.Decimal)">
+        <member name="M:FileCabinetApp.IRecordValidator.SalaryIsCorrect(System.Decimal)">
             <summary>Salary validation.</summary>
-            <param name="argument">Salary.</param>
-            <returns>Returns true if salary is incorrect, else false.</returns>
+            <param name="salary">Salary.</param>
+            <returns>Returns true and exception message if salary is incorrect, else returns false.</returns>
         </member>
-        <member name="M:FileCabinetApp.IRecordValidator.CheckDepartment(System.Char)">
+        <member name="M:FileCabinetApp.IRecordValidator.DepartmentIsCorrect(System.Char)">
             <summary>Department validation.</summary>
-            <param name="argument">Department.</param>
-            <returns>Returns true if department is incorrect, else false.</returns>
+            <param name="department">Department.</param>
+            <returns>Returns true and exception message if department is incorrect, else returns false.</returns>
         </member>
         <member name="M:FileCabinetApp.IRecordValidator.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
             <summary>Record validation.</summary>
