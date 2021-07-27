@@ -71,9 +71,10 @@
         <member name="T:FileCabinetApp.FileCabinetFilesystemService">
             <summary>Class for working with records.</summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.#ctor(System.IO.FileStream)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.#ctor(System.IO.FileStream,FileCabinetApp.IRecordValidator)">
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetFilesystemService"/> class.</summary>
             <param name="fileStream">FileStream.</param>
+            <param name="validator">Validator.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
             <summary>Creates a record and returns its id.</summary>

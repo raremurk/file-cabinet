@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -8,12 +9,17 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private readonly FileStream fileStream;
+        private readonly IRecordValidator validator;
+        private int numberOfRecords;
 
         /// <summary>Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.</summary>
         /// <param name="fileStream">FileStream.</param>
-        public FileCabinetFilesystemService(FileStream fileStream)
+        /// <param name="validator">Validator.</param>
+        public FileCabinetFilesystemService(FileStream fileStream, IRecordValidator validator)
         {
             this.fileStream = fileStream;
+            this.validator = validator;
+            this.numberOfRecords = 0;
         }
 
         /// <summary>Creates a record and returns its id.</summary>
@@ -21,7 +27,25 @@ namespace FileCabinetApp
         /// <returns>Id of a new record.</returns>
         public int CreateRecord(FileCabinetRecord record)
         {
-            throw new NotImplementedException();
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.validator.ValidateParameters(record);
+            using BinaryWriter writer = new (this.fileStream, System.Text.Encoding.UTF8, true);
+
+            writer.Write(++this.numberOfRecords);
+            writer.Write(record.FirstName.PadRight(60));
+            writer.Write(record.LastName.PadRight(60));
+            writer.Write(record.DateOfBirth.Year);
+            writer.Write(record.DateOfBirth.Month);
+            writer.Write(record.DateOfBirth.Day);
+            writer.Write(record.WorkPlaceNumber);
+            writer.Write(record.Salary);
+            writer.Write(record.Department);
+
+            return this.numberOfRecords;
         }
 
         /// <summary>Edits a record with the specified id.</summary>
