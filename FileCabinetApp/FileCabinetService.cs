@@ -103,6 +103,10 @@ namespace FileCabinetApp
         /// <returns>Returns number.</returns>
         public int GetStat() => this.list.Count;
 
+        /// <summary>Makes snapshot of current object state.</summary>
+        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot() => new (this.GetRecords());
+
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
             string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();

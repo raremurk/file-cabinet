@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace FileCabinetApp
 {
@@ -37,5 +36,9 @@ namespace FileCabinetApp
         /// <summary>Returns number of records.</summary>
         /// <returns>Returns number.</returns>
         public int GetStat();
+
+        /// <summary>Makes snapshot of current object state.</summary>
+        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot();
     }
 }

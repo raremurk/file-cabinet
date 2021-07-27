@@ -99,6 +99,30 @@
             <summary>Gets or sets the department.</summary>
             <value>Department of record.</value>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
+            <summary>Provides functionality for writing record to csv file.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.#ctor(System.IO.StreamWriter)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvWriter"/> class.</summary>
+            <param name="writer">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(FileCabinetApp.FileCabinetRecord)">
+            <summary>Writes the specified record to csv file.</summary>
+            <param name="record">Record.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
+            <summary>Provides functionality for writing record to xml file.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.#ctor(System.Xml.XmlWriter)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlWriter"/> class.</summary>
+            <param name="writer">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.Write(FileCabinetApp.FileCabinetRecord)">
+            <summary>Writes the specified record to xml file.</summary>
+            <param name="record">Record.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetService">
             <summary>Class for working with records.</summary>
         </member>
@@ -141,6 +165,27 @@
             <summary>Returns number of records.</summary>
             <returns>Returns number.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetService.MakeSnapshot">
+            <summary>Makes snapshot of current object state.</summary>
+            <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
+            <summary>Provides functionality for creating snapshot.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.</summary>
+            <param name="records">ReadOnlyCollection of records.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
+            <summary>Writes snapshot to csv file.</summary>
+            <param name="writer">StreamWriter.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when writer is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXml(System.Xml.XmlWriter)">
+            <summary>Writes snapshot to xml file.</summary>
+            <param name="writer">StreamWriter.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when writer is null.</exception>
+        </member>
         <member name="T:FileCabinetApp.IFileCabinetService">
             <summary>Provides functionality for interaction with records in the file cabinet.</summary>
         </member>
@@ -175,6 +220,10 @@
         <member name="M:FileCabinetApp.IFileCabinetService.GetStat">
             <summary>Returns number of records.</summary>
             <returns>Returns number.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.MakeSnapshot">
+            <summary>Makes snapshot of current object state.</summary>
+            <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>Provides functionality to validate parameters.</summary>

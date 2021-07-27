@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Text;
+using System.Xml;
 
 [assembly: CLSCompliant(false)]
 
@@ -19,6 +21,7 @@ namespace FileCabinetApp
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
+            new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("edit", Edit),
             new Tuple<string, Action<string>>("list", List),
@@ -30,6 +33,7 @@ namespace FileCabinetApp
 
         private static readonly string[][] HelpMessages = new string[][]
         {
+            new string[] { "export", "exports records to a file", "The 'export' command exports records to a file." },
             new string[] { "find", "searches records by property name value", "The 'find' command searches records by property name value." },
             new string[] { "edit", "edits a record with the specified id", "The 'edit' command edits a record with the specified id." },
             new string[] { "list", "returns a list of all records", "The 'list' command returns a list of all records." },
@@ -127,6 +131,82 @@ namespace FileCabinetApp
                 }
             }
             while (isRunning);
+        }
+
+        private static void Export(string parameters)
+        {
+            if (string.IsNullOrEmpty(parameters))
+            {
+                Console.WriteLine("Input property name.");
+                return;
+            }
+
+            var inputs = parameters.Split(' ', 2);
+
+            if (inputs.Length != 2)
+            {
+                Console.WriteLine("Wrong number of parameters.");
+                return;
+            }
+
+            string format = inputs[0];
+            string file = inputs[1];
+            string fileExtension = file[^4..];
+            string[] formats = { "csv", "xml" };
+            string[] fileExtensions = { ".csv", ".xml" };
+
+            if (Array.FindIndex(formats, i => i.Equals(format, StringComparison.OrdinalIgnoreCase)) == -1)
+            {
+                Console.WriteLine("Invalid format.");
+                return;
+            }
+
+            if (file.Length < 5 || Array.FindIndex(fileExtensions, i => i.Equals(fileExtension, StringComparison.Ordinal)) == -1)
+            {
+                Console.WriteLine("Invalid file name.");
+                return;
+            }
+
+            var way = file.Split('\\');
+            string directory = way.Length > 1 ? string.Join('\\', way[0..^1]) : Directory.GetCurrentDirectory();
+
+            DirectoryInfo dirInfo = new (directory);
+            if (dirInfo.Exists)
+            {
+                FileInfo fileInfo = new (file);
+                if (fileInfo.Exists)
+                {
+                    Console.Write($"File is exist - rewrite {file}?[Y / N] ");
+                    string answer = Console.ReadLine();
+
+                    if (!string.Equals(answer, "Y", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine("Operation canceled.");
+                        return;
+                    }
+                }
+
+                FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
+
+                if (string.Equals(format, "csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    using StreamWriter writer = new (file, false, System.Text.Encoding.Default);
+                    snapshot.SaveToCsv(writer);
+                }
+                else
+                {
+                    XmlWriterSettings settings = new ();
+                    settings.Indent = true;
+                    using var writer = XmlWriter.Create(file, settings);
+                    snapshot.SaveToXml(writer);
+                }
+
+                Console.WriteLine($"All records are exported to file {file}.");
+            }
+            else
+            {
+                Console.WriteLine($"Export failed: can't open file {file}");
+            }
         }
 
         private static void List(string parameters)
