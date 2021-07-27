@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Xml;
 
 namespace FileCabinetApp
 {
@@ -39,6 +40,32 @@ namespace FileCabinetApp
             {
                 csvWriter.Write(record);
             }
+        }
+
+        /// <summary>Writes snapshot to xml file.</summary>
+        /// <param name="writer">StreamWriter.</param>
+        /// <exception cref="ArgumentNullException">Thrown when writer is null.</exception>
+        public void SaveToXml(XmlWriter writer)
+        {
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
+            XmlWriterSettings settings = new ();
+            settings.Indent = true;
+            using var xmlFile = XmlWriter.Create(writer, settings);
+
+            xmlFile.WriteStartDocument();
+            xmlFile.WriteStartElement("records");
+
+            var xmlWriter = new FileCabinetRecordXmlWriter(xmlFile);
+            foreach (var record in this.records)
+            {
+                xmlWriter.Write(record);
+            }
+
+            xmlFile.WriteEndDocument();
         }
     }
 }

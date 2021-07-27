@@ -100,7 +100,7 @@
             <value>Department of record.</value>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
-            <summary>Provides functionality for writing record to a file.</summary>
+            <summary>Provides functionality for writing record to csv file.</summary>
         </member>
         <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.#ctor(System.IO.StreamWriter)">
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvWriter"/> class.</summary>
@@ -108,6 +108,18 @@
         </member>
         <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(FileCabinetApp.FileCabinetRecord)">
             <summary>Writes the specified record to csv file.</summary>
+            <param name="record">Record.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
+            <summary>Provides functionality for writing record to xml file.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.#ctor(System.Xml.XmlWriter)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlWriter"/> class.</summary>
+            <param name="writer">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.Write(FileCabinetApp.FileCabinetRecord)">
+            <summary>Writes the specified record to xml file.</summary>
             <param name="record">Record.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
         </member>
@@ -166,6 +178,11 @@
         </member>
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
             <summary>Writes snapshot to csv file.</summary>
+            <param name="writer">StreamWriter.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when writer is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXml(System.Xml.XmlWriter)">
+            <summary>Writes snapshot to xml file.</summary>
             <param name="writer">StreamWriter.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when writer is null.</exception>
         </member>

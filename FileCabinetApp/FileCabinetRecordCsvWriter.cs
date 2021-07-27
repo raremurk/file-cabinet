@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FileCabinetApp
 {
-    /// <summary>Provides functionality for writing record to a file.</summary>
+    /// <summary>Provides functionality for writing record to csv file.</summary>
     public class FileCabinetRecordCsvWriter
     {
         private readonly StreamWriter writer;

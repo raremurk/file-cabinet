@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Xml;
 
 [assembly: CLSCompliant(false)]
 
@@ -150,7 +151,9 @@ namespace FileCabinetApp
 
             string format = inputs[0];
             string file = inputs[1];
+            string fileExtension = file[^4..];
             string[] formats = { "csv", "xml" };
+            string[] fileExtensions = { ".csv", ".xml" };
 
             if (Array.FindIndex(formats, i => i.Equals(format, StringComparison.OrdinalIgnoreCase)) == -1)
             {
@@ -158,7 +161,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            if (file.Length < 5 || !string.Equals(file[^4..], ".csv", StringComparison.Ordinal))
+            if (file.Length < 5 || Array.FindIndex(fileExtensions, i => i.Equals(fileExtension, StringComparison.Ordinal)) == -1)
             {
                 Console.WriteLine("Invalid file name.");
                 return;
@@ -184,8 +187,20 @@ namespace FileCabinetApp
                 }
 
                 FileCabinetServiceSnapshot snapshot = fileCabinetService.MakeSnapshot();
-                using StreamWriter writer = new (file, false, System.Text.Encoding.Default);
-                snapshot.SaveToCsv(writer);
+
+                if (string.Equals(format, "csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    using StreamWriter writer = new (file, false, System.Text.Encoding.Default);
+                    snapshot.SaveToCsv(writer);
+                }
+                else
+                {
+                    XmlWriterSettings settings = new ();
+                    settings.Indent = true;
+                    using var writer = XmlWriter.Create(file, settings);
+                    snapshot.SaveToXml(writer);
+                }
+
                 Console.WriteLine($"All records are exported to file {file}.");
             }
             else
