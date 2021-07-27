@@ -111,10 +111,7 @@ namespace FileCabinetApp
 
         /// <summary>Returns number of records.</summary>
         /// <returns>Returns number.</returns>
-        public int GetStat()
-        {
-            throw new NotImplementedException();
-        }
+        public int GetStat() => this.numberOfRecords;
 
         /// <summary>Makes snapshot of current object state.</summary>
         /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
