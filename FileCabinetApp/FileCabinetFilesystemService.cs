@@ -8,6 +8,7 @@ namespace FileCabinetApp
     /// <summary>Class for working with records.</summary>
     public class FileCabinetFilesystemService : IFileCabinetService
     {
+        private const int Offset = 2;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
         private int numberOfRecords;
@@ -35,6 +36,7 @@ namespace FileCabinetApp
             this.validator.ValidateParameters(record);
             using BinaryWriter writer = new (this.fileStream, System.Text.Encoding.UTF8, true);
 
+            writer.Seek(Offset, SeekOrigin.End);
             writer.Write(++this.numberOfRecords);
             writer.Write(record.FirstName.PadRight(60));
             writer.Write(record.LastName.PadRight(60));
@@ -83,7 +85,28 @@ namespace FileCabinetApp
         /// <returns>Returns readonly collection of all records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
-            throw new NotImplementedException();
+            this.fileStream.Seek(Offset, SeekOrigin.Begin);
+            using BinaryReader reader = new (this.fileStream, System.Text.Encoding.UTF8, true);
+            List<FileCabinetRecord> records = new ();
+
+            while (reader.PeekChar() > -1)
+            {
+                var record = new FileCabinetRecord
+                {
+                    Id = reader.ReadInt32(),
+                    FirstName = reader.ReadString().TrimEnd(),
+                    LastName = reader.ReadString().TrimEnd(),
+                    DateOfBirth = new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()),
+                    WorkPlaceNumber = reader.ReadInt16(),
+                    Salary = reader.ReadDecimal(),
+                    Department = reader.ReadChar(),
+                };
+
+                this.fileStream.Seek(Offset, SeekOrigin.Current);
+                records.Add(record);
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         /// <summary>Returns number of records.</summary>
