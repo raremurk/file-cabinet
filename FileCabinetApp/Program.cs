@@ -92,13 +92,13 @@ namespace FileCabinetApp
             if (customMode)
             {
                 Console.WriteLine("Using custom validation rules.");
-                fileCabinetService = new FileCabinetService(new CustomValidator());
+                fileCabinetService = new FileCabinetMemoryService(new CustomValidator());
                 validator = new CustomValidator();
             }
             else
             {
                 Console.WriteLine("Using default validation rules.");
-                fileCabinetService = new FileCabinetService(new DefaultValidator());
+                fileCabinetService = new FileCabinetMemoryService(new DefaultValidator());
                 validator = new DefaultValidator();
             }
 
