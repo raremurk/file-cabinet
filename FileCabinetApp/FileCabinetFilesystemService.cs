@@ -9,6 +9,7 @@ namespace FileCabinetApp
     public class FileCabinetFilesystemService : IFileCabinetService
     {
         private const int Offset = 2;
+        private const int SizeOFRecord = 280;
         private readonly FileStream fileStream;
         private readonly IRecordValidator validator;
         private int numberOfRecords;
@@ -34,7 +35,7 @@ namespace FileCabinetApp
             }
 
             this.validator.ValidateParameters(record);
-            using BinaryWriter writer = new (this.fileStream, System.Text.Encoding.UTF8, true);
+            using BinaryWriter writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
 
             writer.Seek(Offset, SeekOrigin.End);
             writer.Write(++this.numberOfRecords);
@@ -54,7 +55,25 @@ namespace FileCabinetApp
         /// <param name="record">Object representing a record.</param>
         public void EditRecord(FileCabinetRecord record)
         {
-            throw new NotImplementedException();
+            if (record is null)
+            {
+                throw new ArgumentNullException(nameof(record));
+            }
+
+            this.validator.ValidateParameters(record);
+
+            using BinaryWriter writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
+
+            writer.Seek((SizeOFRecord * (record.Id - 1)) + Offset, SeekOrigin.Begin);
+            writer.Write(record.Id);
+            writer.Write(record.FirstName.PadRight(60));
+            writer.Write(record.LastName.PadRight(60));
+            writer.Write(record.DateOfBirth.Year);
+            writer.Write(record.DateOfBirth.Month);
+            writer.Write(record.DateOfBirth.Day);
+            writer.Write(record.WorkPlaceNumber);
+            writer.Write(record.Salary);
+            writer.Write(record.Department);
         }
 
         /// <summary>Finds records by first name.</summary>
@@ -86,7 +105,7 @@ namespace FileCabinetApp
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
             this.fileStream.Seek(Offset, SeekOrigin.Begin);
-            using BinaryReader reader = new (this.fileStream, System.Text.Encoding.UTF8, true);
+            using BinaryReader reader = new (this.fileStream, System.Text.Encoding.Unicode, true);
             List<FileCabinetRecord> records = new ();
 
             while (reader.PeekChar() > -1)
