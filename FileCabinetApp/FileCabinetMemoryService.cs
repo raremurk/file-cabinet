@@ -6,7 +6,7 @@ using System.Globalization;
 namespace FileCabinetApp
 {
     /// <summary>Class for working with records.</summary>
-    public class FileCabinetService : IFileCabinetService
+    public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
         private readonly Dictionary<string, List<FileCabinetRecord>> lastNameDictionary = new ();
@@ -14,9 +14,9 @@ namespace FileCabinetApp
         private readonly List<FileCabinetRecord> list = new ();
         private readonly IRecordValidator validator;
 
-        /// <summary>Initializes a new instance of the <see cref="FileCabinetService"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="FileCabinetMemoryService"/> class.</summary>
         /// <param name="validator">Validator.</param>
-        public FileCabinetService(IRecordValidator validator)
+        public FileCabinetMemoryService(IRecordValidator validator)
         {
             this.validator = validator;
         }

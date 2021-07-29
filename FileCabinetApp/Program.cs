@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -74,34 +75,47 @@ namespace FileCabinetApp
         /// <param name="args">Command line arguments.</param>
         public static void Main(string[] args)
         {
-            Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
+            string[] customValidationArgs = { "--validation-rules=custom", "-v custom" };
+            string[] fileMemoryArgs = { "--storage=file", "-s file" };
+            string[] shortForms = { "-s", "-v" };
+            bool customValidation = false;
+            bool fileMemoryMode = false;
 
-            string[] customArgs = { "--validation-rules=custom", "-v custom" };
-            bool customMode = false;
-
-            if (!(args is null) && args.Length == 1)
+            if (!(args is null))
             {
-                customMode = Array.FindIndex(customArgs, i => i.Equals(args[0], StringComparison.OrdinalIgnoreCase)) >= 0;
+                int argsLength = args.Length;
+                for (int i = 0; i < argsLength; i++)
+                {
+                    string parameter = args[i];
+                    if (Array.FindIndex(shortForms, x => x.Equals(args[i], StringComparison.OrdinalIgnoreCase)) >= 0 && argsLength - i >= 2)
+                    {
+                        parameter = string.Join(' ', args[i], args[++i]);
+                    }
+
+                    customValidation = Array.FindIndex(customValidationArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
+                    fileMemoryMode = Array.FindIndex(fileMemoryArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
+                }
             }
-            else if (!(args is null) && args.Length == 2)
-            {
-                string shortArg = string.Join(' ', args[0], args[1]);
-                customMode = Array.FindIndex(customArgs, i => i.Equals(shortArg, StringComparison.OrdinalIgnoreCase)) >= 0;
-            }
 
-            if (customMode)
+            string validationModeMessage = customValidation ? "Using custom validation rules." : "Using default validation rules.";
+            string fileModeMessage = fileMemoryMode ? "Using file mode." : "Using memory mode.";
+            string programMode = string.Join(' ', validationModeMessage, fileModeMessage);
+
+            validator = customValidation ? new CustomValidator() : new DefaultValidator();
+
+            if (fileMemoryMode)
             {
-                Console.WriteLine("Using custom validation rules.");
-                fileCabinetService = new FileCabinetService(new CustomValidator());
-                validator = new CustomValidator();
+                string nameOfDb = "cabinet-records.db";
+                FileStream fileStream = new (nameOfDb, FileMode.Create);
+                fileCabinetService = new FileCabinetFilesystemService(fileStream, validator);
             }
             else
             {
-                Console.WriteLine("Using default validation rules.");
-                fileCabinetService = new FileCabinetService(new DefaultValidator());
-                validator = new DefaultValidator();
+                fileCabinetService = new FileCabinetMemoryService(validator);
             }
 
+            Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
+            Console.WriteLine(programMode);
             Console.WriteLine(Program.HintMessage);
             Console.WriteLine();
 
