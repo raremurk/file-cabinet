@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text;
+using FileCabinetApp;
 
 [assembly: CLSCompliant(false)]
 
@@ -55,8 +58,7 @@ namespace FileCabinetGenerator
 
                         if (new DirectoryInfo(directory).Exists)
                         {
-                            filename = index == 0 && csvFormat ? fileNameArg : string.Empty;
-                            filename = index == 1 && xmlFormat ? fileNameArg : string.Empty;
+                            filename = (index == 0 && csvFormat) || (index == 1 && xmlFormat) ? fileNameArg : string.Empty;
                         }
                     }
                 }
@@ -82,7 +84,7 @@ namespace FileCabinetGenerator
 
             if (string.IsNullOrEmpty(filename))
             {
-                Console.WriteLine("Invalid file name.");
+                Console.WriteLine("No such directory or invalid file name");
                 return;
             }
 
@@ -115,5 +117,44 @@ namespace FileCabinetGenerator
 
             return string.Empty;
         }
+
+        #pragma warning disable CA5394
+        private static List<FileCabinetRecord> GetRandomRecords(int count, int startId)
+        {
+            List<FileCabinetRecord> randomRecords = new ();
+            Random random = new ();
+            DateTime start = new (1950, 1, 1);
+            int range = (DateTime.Today - start).Days;
+
+            for (int i = 0; i < count; i++)
+            {
+                var record = new FileCabinetRecord
+                {
+                    Id = startId++,
+                    FirstName = GetRandomString(15),
+                    LastName = GetRandomString(15),
+                    DateOfBirth = start.AddDays(random.Next(range)),
+                    WorkPlaceNumber = (short)random.Next(1, 1000),
+                    Salary = (decimal)random.Next(0, 10001) + (decimal)Math.Round(random.NextDouble(), 2),
+                    Department = (char)random.Next(65, 91),
+                };
+
+                randomRecords.Add(record);
+            }
+
+            string GetRandomString(int length)
+            {
+                StringBuilder builder = new ();
+                for (int j = 0; j < length; j++)
+                {
+                    builder.Append((char)random.Next(97, 123));
+                }
+
+                return builder.ToString();
+            }
+
+            return randomRecords;
+        }
+        #pragma warning restore CA5394
     }
 }
