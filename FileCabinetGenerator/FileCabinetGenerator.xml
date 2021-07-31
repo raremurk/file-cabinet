@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FileCabinetGenerator</name>
+    </assembly>
+    <members>
+        <member name="T:FileCabinetGenerator.Program">
+            <summary>Main class of the FileCabinetGenerator project.</summary>
+        </member>
+        <member name="M:FileCabinetGenerator.Program.Main(System.String[])">
+            <summary>Defines the entry point of the FileCabinetGenerator.</summary>
+            <param name="args">Command line arguments.</param>
+        </member>
+    </members>
+</doc>
