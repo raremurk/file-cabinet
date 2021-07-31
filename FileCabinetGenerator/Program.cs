@@ -100,7 +100,32 @@ namespace FileCabinetGenerator
                 return;
             }
 
+            List<FileCabinetRecord> records = GetRandomRecords(amountOfRecords, startIdValue);
+            if (csvFormat)
+            {
+                ExportToCsv(records, filename);
+            }
+
             Console.WriteLine($"{amountOfRecords} records were written to {filename}.");
+        }
+
+        private static void ExportToCsv(List<FileCabinetRecord> records, string file)
+        {
+            using StreamWriter writer = new (file, false, System.Text.Encoding.Unicode);
+            writer.WriteLine("Id,First Name,Last Name,Date of Birth,Workplace Number,Salary,Department");
+
+            foreach (var record in records)
+            {
+                StringBuilder builder = new ();
+                builder.Append($"{record.Id},");
+                builder.Append($"{record.FirstName},");
+                builder.Append($"{record.LastName},");
+                builder.Append($"{record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)},");
+                builder.Append($"{record.WorkPlaceNumber},");
+                builder.Append($"{record.Salary},");
+                builder.Append($"{record.Department}");
+                writer.WriteLine(builder.ToString());
+            }
         }
 
         private static string ParseArgs(string arg1, string arg2, string[] allowedArgs)
