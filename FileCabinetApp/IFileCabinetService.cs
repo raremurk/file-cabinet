@@ -40,5 +40,9 @@ namespace FileCabinetApp
         /// <summary>Makes snapshot of current object state.</summary>
         /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot();
+
+        /// <summary>Restores the specified snapshot.</summary>
+        /// <param name="snapshot">Snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot);
     }
 }

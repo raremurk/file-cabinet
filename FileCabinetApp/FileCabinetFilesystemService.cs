@@ -122,6 +122,13 @@ namespace FileCabinetApp
             throw new NotImplementedException();
         }
 
+        /// <summary>Restores the specified snapshot.</summary>
+        /// <param name="snapshot">Snapshot.</param>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            throw new NotImplementedException();
+        }
+
         private FileCabinetRecord ReadRecordUsingBinaryReader()
         {
             var record = new FileCabinetRecord

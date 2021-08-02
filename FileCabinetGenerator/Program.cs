@@ -118,7 +118,7 @@ namespace FileCabinetGenerator
 
         private static void ExportToCsv(List<FileCabinetRecord> records, string file)
         {
-            using StreamWriter writer = new (file, false, System.Text.Encoding.Unicode);
+            using StreamWriter writer = new (file, false, System.Text.Encoding.UTF8);
             writer.WriteLine("Id,First Name,Last Name,Date of Birth,Workplace Number,Salary,Department");
 
             foreach (var record in records)

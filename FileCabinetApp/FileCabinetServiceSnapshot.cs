@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml;
@@ -21,6 +22,29 @@ namespace FileCabinetApp
 
             this.records = new FileCabinetRecord[records.Count];
             records.CopyTo(this.records, 0);
+        }
+
+        /// <summary>Gets collection of records.</summary>
+        /// <value>ReadOnlyCollection of FileCabinetRecord.</value>
+        public ReadOnlyCollection<FileCabinetRecord> Records
+        {
+            get { return new (this.records); }
+        }
+
+        /// <summary>Loads records from CSV file.</summary>
+        /// <param name="reader">Reader.</param>
+        /// <exception cref="ArgumentNullException">Thrown when reader is null.</exception>
+        /// <returns>FileCabinetServiceSnapshot.</returns>
+        public static FileCabinetServiceSnapshot LoadFromCsv(StreamReader reader)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
+
+            var csvReader = new FileCabinetRecordCsvReader(reader);
+            var snapshot = new FileCabinetServiceSnapshot(new ReadOnlyCollection<FileCabinetRecord>(csvReader.ReadAll()));
+            return snapshot;
         }
 
         /// <summary>Writes snapshot to csv file.</summary>

@@ -206,7 +206,7 @@ namespace FileCabinetApp
 
                 if (string.Equals(format, "csv", StringComparison.OrdinalIgnoreCase))
                 {
-                    using StreamWriter writer = new (file, false, System.Text.Encoding.Default);
+                    using StreamWriter writer = new (file, false, System.Text.Encoding.UTF8);
                     snapshot.SaveToCsv(writer);
                 }
                 else
@@ -277,7 +277,18 @@ namespace FileCabinetApp
                 return;
             }
 
-            Console.WriteLine($"All records are imported from file {filename}.");
+            int numberOfRecords = fileCabinetService.GetStat();
+
+            if (csvFormat)
+            {
+                using StreamReader reader = new (filename, System.Text.Encoding.UTF8);
+                FileCabinetServiceSnapshot snapshot = FileCabinetServiceSnapshot.LoadFromCsv(reader);
+                fileCabinetService.Restore(snapshot);
+            }
+
+            numberOfRecords = fileCabinetService.GetStat() - numberOfRecords;
+
+            Console.WriteLine($"{numberOfRecords} records are imported from file {filename}.");
         }
 
         private static void List(string parameters)
