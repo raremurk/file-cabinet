@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Xml.Serialization;
 using FileCabinetApp;
 
 [assembly: CLSCompliant(false)]
@@ -106,6 +108,11 @@ namespace FileCabinetGenerator
                 ExportToCsv(records, filename);
             }
 
+            if (xmlFormat)
+            {
+                ExportToXml(records, filename);
+            }
+
             Console.WriteLine($"{amountOfRecords} records were written to {filename}.");
         }
 
@@ -126,6 +133,31 @@ namespace FileCabinetGenerator
                 builder.Append($"{record.Department}");
                 writer.WriteLine(builder.ToString());
             }
+        }
+
+        private static void ExportToXml(List<FileCabinetRecord> records, string file)
+        {
+            using StreamWriter writer = new (file, false, System.Text.Encoding.UTF8);
+            List<FileCabinetRecordForXmlSerialization> recordsForXml = new ();
+            foreach (var record in records)
+            {
+                var rec = new FileCabinetRecordForXmlSerialization
+                {
+                    Id = record.Id,
+                    FullName = new FullName { FirstName = record.FirstName, LastName = record.LastName },
+                    DateOfBirth = record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
+                    WorkPlaceNumber = record.WorkPlaceNumber,
+                    Salary = record.Salary.ToString("F2", CultureInfo.InvariantCulture),
+                    Department = char.ToString(record.Department),
+                };
+
+                recordsForXml.Add(rec);
+            }
+
+            ListOfRecordsForXmlSerialization listOfRecordsForXmlSerialization = new (new Collection<FileCabinetRecordForXmlSerialization>(recordsForXml));
+
+            XmlSerializer xmlWriter = new (typeof(ListOfRecordsForXmlSerialization));
+            xmlWriter.Serialize(writer, listOfRecordsForXmlSerialization);
         }
 
         private static string ParseArgs(string arg1, string arg2, string[] allowedArgs)
