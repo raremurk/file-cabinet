@@ -126,7 +126,50 @@ namespace FileCabinetApp
         /// <param name="snapshot">Snapshot.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
-            throw new NotImplementedException();
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
+            List<FileCabinetRecord> records = new (this.GetRecords());
+
+            ReadOnlyCollection<FileCabinetRecord> unverifiedRecords = snapshot.Records;
+            foreach (var record in unverifiedRecords)
+            {
+                Tuple<bool, string>[] validationResults =
+                {
+                this.validator.NameIsCorrect(record.FirstName),
+                this.validator.NameIsCorrect(record.LastName),
+                this.validator.DateOfBirthIsCorrect(record.DateOfBirth),
+                this.validator.WorkPlaceNumberIsCorrect(record.WorkPlaceNumber),
+                this.validator.SalaryIsCorrect(record.Salary),
+                this.validator.DepartmentIsCorrect(record.Department),
+                };
+
+                bool recordIsValid = true;
+
+                foreach (var result in validationResults)
+                {
+                    recordIsValid = result.Item1;
+                    if (!recordIsValid)
+                    {
+                        Console.WriteLine($"Record #{record.Id} is invalid. {result.Item2}");
+                        break;
+                    }
+                }
+
+                if (recordIsValid)
+                {
+                    if (records.FindIndex(x => x.Id == record.Id) == -1)
+                    {
+                        this.CreateRecord(record);
+                    }
+                    else
+                    {
+                        this.EditRecord(record);
+                    }
+                }
+            }
         }
 
         private FileCabinetRecord ReadRecordUsingBinaryReader()
