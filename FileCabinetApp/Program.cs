@@ -22,6 +22,7 @@ namespace FileCabinetApp
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
+            new Tuple<string, Action<string>>("import", Import),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("find", Find),
             new Tuple<string, Action<string>>("edit", Edit),
@@ -34,6 +35,7 @@ namespace FileCabinetApp
 
         private static readonly string[][] HelpMessages = new string[][]
         {
+            new string[] { "import", "imports records from file", "The 'import' command imports records from file." },
             new string[] { "export", "exports records to a file", "The 'export' command exports records to a file." },
             new string[] { "find", "searches records by property name value", "The 'find' command searches records by property name value." },
             new string[] { "edit", "edits a record with the specified id", "The 'edit' command edits a record with the specified id." },
@@ -221,6 +223,61 @@ namespace FileCabinetApp
             {
                 Console.WriteLine($"Export failed: can't open file {file}");
             }
+        }
+
+        private static void Import(string parameters)
+        {
+            if (string.IsNullOrEmpty(parameters))
+            {
+                Console.WriteLine("Input property name.");
+                return;
+            }
+
+            var inputs = parameters.Split(' ', 2);
+
+            if (inputs.Length != 2)
+            {
+                Console.WriteLine("Wrong number of parameters.");
+                return;
+            }
+
+            string[] availableFormats = { "csv", "xml" };
+            string[] fileExtensions = { ".csv", ".xml" };
+            string format = inputs[0];
+            string filename = inputs[1];
+
+            int formatIndex = Array.FindIndex(availableFormats, x => x.Equals(format, StringComparison.OrdinalIgnoreCase));
+            bool csvFormat = formatIndex == 0;
+            bool xmlFormat = formatIndex == 1;
+
+            if (filename.Length < 5)
+            {
+                Console.WriteLine("Invalid file name.");
+                return;
+            }
+
+            string fileExtension = filename[^4..];
+            int fileExtensionIndex = Array.FindIndex(fileExtensions, i => i.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
+
+            var way = filename.Split('\\', StringSplitOptions.RemoveEmptyEntries);
+            string directory = way.Length > 1 ? string.Join('\\', way[0..^1]) : Directory.GetCurrentDirectory();
+
+            bool directoryAndFilenameExists = new DirectoryInfo(directory).Exists && new FileInfo(filename).Exists;
+            filename = directoryAndFilenameExists && ((fileExtensionIndex == 0 && csvFormat) || (fileExtensionIndex == 1 && xmlFormat)) ? filename : string.Empty;
+
+            if (!csvFormat && !xmlFormat)
+            {
+                Console.WriteLine("Invalid format.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(filename))
+            {
+                Console.WriteLine("No such directory or invalid file name");
+                return;
+            }
+
+            Console.WriteLine($"All records are imported from file {filename}.");
         }
 
         private static void List(string parameters)
