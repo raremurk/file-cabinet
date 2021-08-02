@@ -365,7 +365,7 @@ namespace FileCabinetApp
                 builder.Append($"{record.LastName}, ");
                 builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
                 builder.Append($"{record.WorkPlaceNumber}, ");
-                builder.Append($"{record.Salary}, ");
+                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}, ");
                 builder.Append($"{record.Department}");
 
                 Console.WriteLine(builder.ToString());

@@ -122,7 +122,7 @@ namespace FileCabinetGenerator
                 builder.Append($"{record.LastName},");
                 builder.Append($"{record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)},");
                 builder.Append($"{record.WorkPlaceNumber},");
-                builder.Append($"{record.Salary},");
+                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)},");
                 builder.Append($"{record.Department}");
                 writer.WriteLine(builder.ToString());
             }
