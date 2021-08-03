@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace FileCabinetGenerator
+namespace FileCabinetApp
 {
     /// <summary>Сlass representing a record for for XmlSerialization.</summary>
     public class FileCabinetRecordForXmlSerialization

@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace FileCabinetGenerator
+namespace FileCabinetApp
 {
     /// <summary>Сlass representing Fullname for FileCabinetRecordForXmlSerialization.</summary>
     public class FullName

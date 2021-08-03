@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
-namespace FileCabinetGenerator
+namespace FileCabinetApp
 {
     /// <summary>Сlass representing list of FileCabinetRecordsForXmlSerialization.</summary>
     [XmlRoot(ElementName = "records")]
