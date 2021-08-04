@@ -286,6 +286,13 @@ namespace FileCabinetApp
                 fileCabinetService.Restore(snapshot);
             }
 
+            if (xmlFormat)
+            {
+                using var reader = XmlReader.Create(filename);
+                FileCabinetServiceSnapshot snapshot = FileCabinetServiceSnapshot.LoadFromXml(reader);
+                fileCabinetService.Restore(snapshot);
+            }
+
             numberOfRecords = fileCabinetService.GetStat() - numberOfRecords;
 
             Console.WriteLine($"{numberOfRecords} records are imported from file {filename}.");

@@ -4,58 +4,6 @@
         <name>FileCabinetGenerator</name>
     </assembly>
     <members>
-        <member name="T:FileCabinetGenerator.FileCabinetRecordForXmlSerialization">
-            <summary>Сlass representing a record for for XmlSerialization.</summary>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecordForXmlSerialization.Id">
-            <summary>Gets or sets the id.</summary>
-            <value>Id of record.</value>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecordForXmlSerialization.FullName">
-            <summary>Gets or sets the full name.</summary>
-            <value>Full name of record.</value>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecordForXmlSerialization.DateOfBirth">
-            <summary>Gets or sets the date of birth.</summary>
-            <value>Date of birth of record.</value>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecordForXmlSerialization.WorkPlaceNumber">
-            <summary>Gets or sets the work place number.</summary>
-            <value>Work place number of record.</value>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecordForXmlSerialization.Salary">
-            <summary>Gets or sets the salary.</summary>
-            <value>Salary of record.</value>
-        </member>
-        <member name="P:FileCabinetGenerator.FileCabinetRecordForXmlSerialization.Department">
-            <summary>Gets or sets the department.</summary>
-            <value>Department of record.</value>
-        </member>
-        <member name="T:FileCabinetGenerator.FullName">
-            <summary>Сlass representing Fullname for FileCabinetRecordForXmlSerialization.</summary>
-        </member>
-        <member name="P:FileCabinetGenerator.FullName.FirstName">
-            <summary>Gets or sets the first name.</summary>
-            <value>First name of record.</value>
-        </member>
-        <member name="P:FileCabinetGenerator.FullName.LastName">
-            <summary>Gets or sets the last name.</summary>
-            <value>Last name of record.</value>
-        </member>
-        <member name="T:FileCabinetGenerator.ListOfRecordsForXmlSerialization">
-            <summary>Сlass representing list of FileCabinetRecordsForXmlSerialization.</summary>
-        </member>
-        <member name="M:FileCabinetGenerator.ListOfRecordsForXmlSerialization.#ctor(System.Collections.ObjectModel.Collection{FileCabinetGenerator.FileCabinetRecordForXmlSerialization})">
-            <summary>Initializes a new instance of the <see cref="T:FileCabinetGenerator.ListOfRecordsForXmlSerialization"/> class.</summary>
-            <param name="records">Collection of records.</param>
-        </member>
-        <member name="M:FileCabinetGenerator.ListOfRecordsForXmlSerialization.#ctor">
-            <summary>Initializes a new instance of the <see cref="T:FileCabinetGenerator.ListOfRecordsForXmlSerialization"/> class.</summary>
-        </member>
-        <member name="P:FileCabinetGenerator.ListOfRecordsForXmlSerialization.Records">
-            <summary>Gets the list of records.</summary>
-            <value>List of records.</value>
-        </member>
         <member name="T:FileCabinetGenerator.Program">
             <summary>Main class of the FileCabinetGenerator project.</summary>
         </member>

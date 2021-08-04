@@ -47,6 +47,22 @@ namespace FileCabinetApp
             return snapshot;
         }
 
+        /// <summary>Loads records from XML file.</summary>
+        /// <param name="reader">Reader.</param>
+        /// <exception cref="ArgumentNullException">Thrown when reader is null.</exception>
+        /// <returns>FileCabinetServiceSnapshot.</returns>
+        public static FileCabinetServiceSnapshot LoadFromXml(XmlReader reader)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
+
+            var xmlReader = new FileCabinetRecordXmlReader(reader);
+            var snapshot = new FileCabinetServiceSnapshot(new ReadOnlyCollection<FileCabinetRecord>(xmlReader.ReadAll()));
+            return snapshot;
+        }
+
         /// <summary>Writes snapshot to csv file.</summary>
         /// <param name="writer">StreamWriter.</param>
         /// <exception cref="ArgumentNullException">Thrown when writer is null.</exception>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -138,7 +137,7 @@ namespace FileCabinetGenerator
         private static void ExportToXml(List<FileCabinetRecord> records, string file)
         {
             using StreamWriter writer = new (file, false, System.Text.Encoding.UTF8);
-            List<FileCabinetRecordForXmlSerialization> recordsForXml = new ();
+            var collection = new CollectionOfRecordsForXmlSerialization { Records = new () };
             foreach (var record in records)
             {
                 var rec = new FileCabinetRecordForXmlSerialization
@@ -151,13 +150,11 @@ namespace FileCabinetGenerator
                     Department = char.ToString(record.Department),
                 };
 
-                recordsForXml.Add(rec);
+                collection.Records.Add(rec);
             }
 
-            ListOfRecordsForXmlSerialization listOfRecordsForXmlSerialization = new (new Collection<FileCabinetRecordForXmlSerialization>(recordsForXml));
-
-            XmlSerializer xmlWriter = new (typeof(ListOfRecordsForXmlSerialization));
-            xmlWriter.Serialize(writer, listOfRecordsForXmlSerialization);
+            XmlSerializer serializer = new (typeof(CollectionOfRecordsForXmlSerialization));
+            serializer.Serialize(writer, collection);
         }
 
         private static string ParseArgs(string arg1, string arg2, string[] allowedArgs)
