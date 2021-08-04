@@ -36,7 +36,7 @@ namespace FileCabinetApp
 
             this.writer.WriteElementString("dateOfBirth", $"{record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}");
             this.writer.WriteElementString("workPlaceNumber", $"{record.WorkPlaceNumber}");
-            this.writer.WriteElementString("salary", $"{record.Salary}");
+            this.writer.WriteElementString("salary", $"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}");
             this.writer.WriteElementString("department", $"{record.Department}");
 
             this.writer.WriteEndElement();

@@ -112,6 +112,10 @@
             <summary>Makes snapshot of current object state.</summary>
             <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>Restores the specified snapshot.</summary>
+            <param name="snapshot">Snapshot.</param>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>Class for working with records.</summary>
         </member>
@@ -158,6 +162,11 @@
             <summary>Makes snapshot of current object state.</summary>
             <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>Restores the specified snapshot.</summary>
+            <param name="snapshot">Snapshot.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when snapshot is null.</exception>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>Сlass representing a record.</summary>
         </member>
@@ -189,6 +198,17 @@
             <summary>Gets or sets the department.</summary>
             <value>Department of record.</value>
         </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordCsvReader">
+            <summary>Provides method to import <see cref="T:FileCabinetApp.FileCabinetRecord"/> records from csv file.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvReader.#ctor(System.IO.StreamReader)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvReader"/> class.</summary>
+            <param name="reader">StreamReader.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvReader.ReadAll">
+            <summary>Reads all records from csv file.</summary>
+            <returns>Returns List of records.</returns>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
             <summary>Provides functionality for writing record to csv file.</summary>
         </member>
@@ -200,6 +220,17 @@
             <summary>Writes the specified record to csv file.</summary>
             <param name="record">Record.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordXmlReader">
+            <summary>Provides method to import <see cref="T:FileCabinetApp.FileCabinetRecord"/> records from xml file.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlReader.#ctor(System.Xml.XmlReader)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlReader"/> class.</summary>
+            <param name="reader">StreamReader.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlReader.ReadAll">
+            <summary>Reads all records from xml file.</summary>
+            <returns>Returns List of records.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
             <summary>Provides functionality for writing record to xml file.</summary>
@@ -219,6 +250,22 @@
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})">
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.</summary>
             <param name="records">ReadOnlyCollection of records.</param>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetServiceSnapshot.Records">
+            <summary>Gets collection of records.</summary>
+            <value>ReadOnlyCollection of FileCabinetRecord.</value>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromCsv(System.IO.StreamReader)">
+            <summary>Loads records from CSV file.</summary>
+            <param name="reader">Reader.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when reader is null.</exception>
+            <returns>FileCabinetServiceSnapshot.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromXml(System.Xml.XmlReader)">
+            <summary>Loads records from XML file.</summary>
+            <param name="reader">Reader.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when reader is null.</exception>
+            <returns>FileCabinetServiceSnapshot.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
             <summary>Writes snapshot to csv file.</summary>
@@ -269,6 +316,10 @@
             <summary>Makes snapshot of current object state.</summary>
             <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
         </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>Restores the specified snapshot.</summary>
+            <param name="snapshot">Snapshot.</param>
+        </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>Provides functionality to validate parameters.</summary>
         </member>
@@ -300,6 +351,51 @@
         <member name="M:FileCabinetApp.IRecordValidator.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
             <summary>Record validation.</summary>
             <param name="record">Object representing a record.</param>
+        </member>
+        <member name="T:FileCabinetApp.CollectionOfRecordsForXmlSerialization">
+            <summary>Сlass representing list of FileCabinetRecordsForXmlSerialization.</summary>
+        </member>
+        <member name="P:FileCabinetApp.CollectionOfRecordsForXmlSerialization.Records">
+            <summary>Gets or sets the list of records.</summary>
+            <value>List of records.</value>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetRecordForXmlSerialization">
+            <summary>Сlass representing a record for for XmlSerialization.</summary>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecordForXmlSerialization.Id">
+            <summary>Gets or sets the id.</summary>
+            <value>Id of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecordForXmlSerialization.FullName">
+            <summary>Gets or sets the full name.</summary>
+            <value>Full name of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecordForXmlSerialization.DateOfBirth">
+            <summary>Gets or sets the date of birth.</summary>
+            <value>Date of birth of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecordForXmlSerialization.WorkPlaceNumber">
+            <summary>Gets or sets the work place number.</summary>
+            <value>Work place number of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecordForXmlSerialization.Salary">
+            <summary>Gets or sets the salary.</summary>
+            <value>Salary of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.FileCabinetRecordForXmlSerialization.Department">
+            <summary>Gets or sets the department.</summary>
+            <value>Department of record.</value>
+        </member>
+        <member name="T:FileCabinetApp.FullName">
+            <summary>Сlass representing Fullname for FileCabinetRecordForXmlSerialization.</summary>
+        </member>
+        <member name="P:FileCabinetApp.FullName.FirstName">
+            <summary>Gets or sets the first name.</summary>
+            <value>First name of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.FullName.LastName">
+            <summary>Gets or sets the last name.</summary>
+            <value>Last name of record.</value>
         </member>
         <member name="T:FileCabinetApp.Program">
             <summary>Main class of the project.</summary>

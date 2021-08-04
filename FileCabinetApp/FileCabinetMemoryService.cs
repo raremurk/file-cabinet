@@ -107,6 +107,55 @@ namespace FileCabinetApp
         /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
         public FileCabinetServiceSnapshot MakeSnapshot() => new (this.GetRecords());
 
+        /// <summary>Restores the specified snapshot.</summary>
+        /// <param name="snapshot">Snapshot.</param>
+        /// <exception cref="ArgumentNullException">Thrown when snapshot is null.</exception>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            if (snapshot == null)
+            {
+                throw new ArgumentNullException(nameof(snapshot));
+            }
+
+            ReadOnlyCollection<FileCabinetRecord> unverifiedRecords = snapshot.Records;
+            foreach (var record in unverifiedRecords)
+            {
+                Tuple<bool, string>[] validationResults =
+                {
+                this.validator.NameIsCorrect(record.FirstName),
+                this.validator.NameIsCorrect(record.LastName),
+                this.validator.DateOfBirthIsCorrect(record.DateOfBirth),
+                this.validator.WorkPlaceNumberIsCorrect(record.WorkPlaceNumber),
+                this.validator.SalaryIsCorrect(record.Salary),
+                this.validator.DepartmentIsCorrect(record.Department),
+                };
+
+                bool recordIsValid = true;
+
+                foreach (var result in validationResults)
+                {
+                    recordIsValid = result.Item1;
+                    if (!recordIsValid)
+                    {
+                        Console.WriteLine($"Record #{record.Id} is invalid. {result.Item2}");
+                        break;
+                    }
+                }
+
+                if (recordIsValid)
+                {
+                    if (this.list.FindIndex(x => x.Id == record.Id) == -1)
+                    {
+                        this.CreateRecord(record);
+                    }
+                    else
+                    {
+                        this.EditRecord(record);
+                    }
+                }
+            }
+        }
+
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
             string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
