@@ -11,11 +11,11 @@ namespace FileCabinetApp
     {
         private const int SizeOFRecord = 280;
         private const int Offset = 2;
+        private const short NotDeleted = 0;
+        private const short IsDeleted = 8192;
         private const int FirstNameStartPos = 6;
         private const int LastNameStartPos = 127;
-        private const int NameSize = 121;
         private const int DateOfBirthStartPos = 248;
-        private const int DateOfBirthSize = 12;
 
         private readonly FileStream fileStream;
         private readonly BinaryWriter writer;
@@ -23,6 +23,7 @@ namespace FileCabinetApp
         private readonly IRecordValidator validator;
         private readonly Func<BinaryReader, string> readNameProperty = reader => reader.ReadString().TrimEnd();
         private readonly Func<BinaryReader, string> readDateOfBirthProperty = reader => new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
+        private readonly List<int> deletedIds = new ();
 
         private int numberOfRecords;
 
@@ -35,7 +36,6 @@ namespace FileCabinetApp
             this.validator = validator;
             this.writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
             this.reader = new (this.fileStream, System.Text.Encoding.Unicode, true);
-            this.numberOfRecords = 0;
         }
 
         /// <summary>Creates a record and returns its id.</summary>
@@ -49,8 +49,20 @@ namespace FileCabinetApp
             }
 
             this.validator.ValidateParameters(record);
-            this.fileStream.Seek(Offset, SeekOrigin.End);
-            record.Id = ++this.numberOfRecords;
+
+            if (this.deletedIds.Count == 0)
+            {
+                this.fileStream.Seek(Offset, SeekOrigin.End);
+                record.Id = ++this.numberOfRecords;
+            }
+            else
+            {
+                record.Id = this.deletedIds[0];
+                this.deletedIds.RemoveAt(0);
+                this.fileStream.Seek(SizeOFRecord * (record.Id - 1), SeekOrigin.Begin);
+                this.writer.Write(NotDeleted);
+            }
+
             this.WriteRecordUsingBinaryWriter(record);
 
             return this.numberOfRecords;
@@ -70,56 +82,25 @@ namespace FileCabinetApp
             this.WriteRecordUsingBinaryWriter(record);
         }
 
-        /// <summary>Finds records by first name.</summary>
-        /// <param name="firstName">First name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            return this.SearchByProperty(firstName, NameSize, FirstNameStartPos, this.readNameProperty);
-        }
-
-        /// <summary>Finds records by last name.</summary>
-        /// <param name="lastName">Last name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            return this.SearchByProperty(lastName, NameSize, LastNameStartPos, this.readNameProperty);
-        }
-
-        /// <summary>Finds records by date of birth.</summary>
-        /// <param name="dateOfBirth">Date of birth to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
-        {
-            return this.SearchByProperty(dateOfBirth, DateOfBirthSize, DateOfBirthStartPos, this.readDateOfBirthProperty);
-        }
-
         /// <summary>Returns all records.</summary>
         /// <returns>Returns readonly collection of all records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords()
         {
             List<FileCabinetRecord> records = new ();
-            this.fileStream.Seek(Offset, SeekOrigin.Begin);
 
-            while (this.reader.PeekChar() > -1)
+            for (int i = 0; i < this.numberOfRecords; i++)
             {
-                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-                records.Add(record);
-                this.fileStream.Seek(Offset, SeekOrigin.Current);
+                this.fileStream.Seek(SizeOFRecord * i, SeekOrigin.Begin);
+                short offset = this.reader.ReadInt16();
+
+                if (offset != IsDeleted)
+                {
+                    FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
+                    records.Add(record);
+                }
             }
 
             return new ReadOnlyCollection<FileCabinetRecord>(records);
-        }
-
-        /// <summary>Returns number of records.</summary>
-        /// <returns>Returns number.</returns>
-        public int GetStat() => this.numberOfRecords;
-
-        /// <summary>Makes snapshot of current object state.</summary>
-        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
-        public FileCabinetServiceSnapshot MakeSnapshot()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>Restores the specified snapshot.</summary>
@@ -172,6 +153,53 @@ namespace FileCabinetApp
             }
         }
 
+        /// <summary>Removes a record with the specified id.</summary>
+        /// <param name="id">Id of the record to delete.</param>
+        public void RemoveRecord(int id)
+        {
+            this.fileStream.Seek(SizeOFRecord * (id - 1), SeekOrigin.Begin);
+            this.writer.Write(IsDeleted);
+            this.deletedIds.Add(id);
+        }
+
+        /// <summary>Finds records by first name.</summary>
+        /// <param name="firstName">First name to find.</param>
+        /// <returns>Returns readonly collection of found records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        {
+            return this.SearchByProperty(firstName, FirstNameStartPos, this.readNameProperty);
+        }
+
+        /// <summary>Finds records by last name.</summary>
+        /// <param name="lastName">Last name to find.</param>
+        /// <returns>Returns readonly collection of found records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        {
+            return this.SearchByProperty(lastName, LastNameStartPos, this.readNameProperty);
+        }
+
+        /// <summary>Finds records by date of birth.</summary>
+        /// <param name="dateOfBirth">Date of birth to find.</param>
+        /// <returns>Returns readonly collection of found records.</returns>
+        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        {
+            return this.SearchByProperty(dateOfBirth, DateOfBirthStartPos, this.readDateOfBirthProperty);
+        }
+
+        /// <summary>Returns service statistics.</summary>
+        /// <returns>Returns ServiceStat.</returns>
+        public ServiceStat GetStat()
+        {
+            return new ServiceStat { NumberOfRecords = this.numberOfRecords, DeletedRecordsIds = new (this.deletedIds) };
+        }
+
+        /// <summary>Makes snapshot of current object state.</summary>
+        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            throw new NotImplementedException();
+        }
+
         private FileCabinetRecord ReadRecordUsingBinaryReader()
         {
             var record = new FileCabinetRecord
@@ -201,27 +229,25 @@ namespace FileCabinetApp
             this.writer.Write(record.Department);
         }
 
-        private ReadOnlyCollection<FileCabinetRecord> SearchByProperty(string propertyValue, int propertySize, int propertyStartPos, Func<BinaryReader, string> readProperty)
+        private ReadOnlyCollection<FileCabinetRecord> SearchByProperty(string propertyValue, int propertyStartPos, Func<BinaryReader, string> readProperty)
         {
             List<FileCabinetRecord> records = new ();
 
-            this.fileStream.Seek(propertyStartPos, SeekOrigin.Begin);
-
             for (int i = 0; i < this.numberOfRecords; i++)
             {
-                string propertyValueFromDB = readProperty(this.reader);
-                this.fileStream.Seek(-propertySize, SeekOrigin.Current);
+                int start = SizeOFRecord * i;
 
-                if (string.Equals(propertyValue, propertyValueFromDB, StringComparison.OrdinalIgnoreCase))
+                this.fileStream.Seek(start, SeekOrigin.Begin);
+                short offset = this.reader.ReadInt16();
+
+                this.fileStream.Seek(propertyStartPos, SeekOrigin.Current);
+                string propertyValueFromDB = readProperty(this.reader);
+
+                if (offset != IsDeleted && string.Equals(propertyValue, propertyValueFromDB, StringComparison.OrdinalIgnoreCase))
                 {
-                    this.fileStream.Seek(-(propertyStartPos - Offset), SeekOrigin.Current);
+                    this.fileStream.Seek(start + Offset, SeekOrigin.Begin);
                     FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
                     records.Add(record);
-                    this.fileStream.Seek(propertyStartPos, SeekOrigin.Current);
-                }
-                else
-                {
-                    this.fileStream.Seek(SizeOFRecord, SeekOrigin.Current);
                 }
             }
 

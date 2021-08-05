@@ -99,9 +99,12 @@ namespace FileCabinetApp
         /// <returns>Returns readonly collection of all records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords() => new (this.list);
 
-        /// <summary>Returns number of records.</summary>
-        /// <returns>Returns number.</returns>
-        public int GetStat() => this.list.Count;
+        /// <summary>Returns service statistics.</summary>
+        /// <returns>Returns ServiceStat.</returns>
+        public ServiceStat GetStat()
+        {
+            return new ServiceStat { NumberOfRecords = this.list.Count, DeletedRecordsIds = new ReadOnlyCollection<int>(Array.Empty<int>()) };
+        }
 
         /// <summary>Makes snapshot of current object state.</summary>
         /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
@@ -154,6 +157,20 @@ namespace FileCabinetApp
                     }
                 }
             }
+        }
+
+        /// <summary>Removes a record with the specified id.</summary>
+        /// <param name="id">Id of the record to delete.</param>
+        public void RemoveRecord(int id)
+        {
+            if (!this.list.Exists(x => x.Id == id))
+            {
+                throw new ArgumentException("No record with this id.");
+            }
+
+            FileCabinetRecord record = this.list.Find(x => x.Id == id);
+            this.list.Remove(record);
+            this.RemoveRecordFromDictionaries(record);
         }
 
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
