@@ -4,6 +4,59 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
+        <member name="T:FileCabinetApp.CommandHandlers.AppCommandRequest">
+            <summary>Application command request.</summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.AppCommandRequest.#ctor(System.String,System.String)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.AppCommandRequest"/> class.</summary>
+            <param name="command">Command.</param>
+            <param name="parameters">Parameters.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when command or parameters is null.</exception>
+        </member>
+        <member name="P:FileCabinetApp.CommandHandlers.AppCommandRequest.Command">
+            <summary>Gets the command.</summary>
+            <value>The command.</value>
+        </member>
+        <member name="P:FileCabinetApp.CommandHandlers.AppCommandRequest.Parameters">
+            <summary>Gets the parameters.</summary>
+            <value>The parameters.</value>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.CommandHandler">
+            <summary>Create command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.CommandHandlerBase">
+            <summary>Command handler base.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ICommandHandler" />
+        </member>
+        <member name="P:FileCabinetApp.CommandHandlers.CommandHandlerBase.NextHandler">
+            <summary>Gets the next handler.</summary>
+            <value>The next handler.</value>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>Sets the next handler.</summary>
+            <param name="handler">The handler.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when handler is null.</exception>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ICommandHandler">
+            <summary>Command handler interface.</summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>Sets the next handler.</summary>
+            <param name="handler">The handler.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
         <member name="T:FileCabinetApp.CustomValidator">
             <summary>Provides functionality to data validation by custom parameters.</summary>
         </member>
