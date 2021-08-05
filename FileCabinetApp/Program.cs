@@ -22,6 +22,8 @@ namespace FileCabinetApp
 
         private static readonly Tuple<string, Action<string>>[] Commands = new Tuple<string, Action<string>>[]
         {
+            new Tuple<string, Action<string>>("purge", Purge),
+            new Tuple<string, Action<string>>("remove", Remove),
             new Tuple<string, Action<string>>("import", Import),
             new Tuple<string, Action<string>>("export", Export),
             new Tuple<string, Action<string>>("find", Find),
@@ -35,6 +37,8 @@ namespace FileCabinetApp
 
         private static readonly string[][] HelpMessages = new string[][]
         {
+            new string[] { "purge", "defragments the data file", "The 'purge' command defragments the data file." },
+            new string[] { "remove", "removes a record with the specified id", "The 'remove' command removes a record with the specified id." },
             new string[] { "import", "imports records from file", "The 'import' command imports records from file." },
             new string[] { "export", "exports records to a file", "The 'export' command exports records to a file." },
             new string[] { "find", "searches records by property name value", "The 'find' command searches records by property name value." },
@@ -277,7 +281,7 @@ namespace FileCabinetApp
                 return;
             }
 
-            int numberOfRecords = fileCabinetService.GetStat();
+            ServiceStat stat = fileCabinetService.GetStat();
 
             if (csvFormat)
             {
@@ -293,9 +297,16 @@ namespace FileCabinetApp
                 fileCabinetService.Restore(snapshot);
             }
 
-            numberOfRecords = fileCabinetService.GetStat() - numberOfRecords;
+            int numberOfRecords = fileCabinetService.GetStat().NumberOfRecords - stat.NumberOfRecords;
 
             Console.WriteLine($"{numberOfRecords} records are imported from file {filename}.");
+        }
+
+        private static void Purge(string parameters)
+        {
+            ServiceStat stat = fileCabinetService.GetStat();
+            fileCabinetService.Purge();
+            Console.WriteLine($"Data file processing is completed: {stat.DeletedRecordsIds.Count} of {stat.NumberOfRecords} records were purged.");
         }
 
         private static void List(string parameters)
@@ -371,8 +382,8 @@ namespace FileCabinetApp
 
         private static void Stat(string parameters)
         {
-            var recordsCount = fileCabinetService.GetStat();
-            Console.WriteLine($"{recordsCount} record(s).");
+            ServiceStat stat = fileCabinetService.GetStat();
+            Console.WriteLine($"{stat.NumberOfRecords} record(s). {stat.DeletedRecordsIds.Count} deleted record(s).");
         }
 
         private static void Create(string parameters)
@@ -384,6 +395,26 @@ namespace FileCabinetApp
             Console.WriteLine($"Record #{id} is created.");
         }
 
+        private static void Remove(string parameters)
+        {
+            if (!int.TryParse(parameters, out int id))
+            {
+                Console.WriteLine("Invalid id value.");
+                return;
+            }
+
+            ServiceStat stat = fileCabinetService.GetStat();
+            if (id < 1 || id > stat.NumberOfRecords || stat.DeletedRecordsIds.Contains(id))
+            {
+                Console.WriteLine($"Record #{id} doesn't exists or removed.");
+                return;
+            }
+
+            fileCabinetService.RemoveRecord(id);
+
+            Console.WriteLine($"Record #{id} is removed.");
+        }
+
         private static void Edit(string parameters)
         {
             if (!int.TryParse(parameters, out int id))
@@ -392,10 +423,10 @@ namespace FileCabinetApp
                 return;
             }
 
-            int recordsCount = fileCabinetService.GetStat();
-            if (id < 1 || id > recordsCount)
+            ServiceStat stat = fileCabinetService.GetStat();
+            if (id < 1 || id > stat.NumberOfRecords || stat.DeletedRecordsIds.Contains(id))
             {
-                Console.WriteLine($"#{id} record is not found.");
+                Console.WriteLine($"Record #{id} doesn't exists or removed.");
                 return;
             }
 

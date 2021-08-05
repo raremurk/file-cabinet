@@ -33,9 +33,9 @@ namespace FileCabinetApp
         /// <returns>Returns readonly collection of all records.</returns>
         public ReadOnlyCollection<FileCabinetRecord> GetRecords();
 
-        /// <summary>Returns number of records.</summary>
-        /// <returns>Returns number.</returns>
-        public int GetStat();
+        /// <summary>Returns service statistics.</summary>
+        /// <returns>Returns ServiceStat.</returns>
+        public ServiceStat GetStat();
 
         /// <summary>Makes snapshot of current object state.</summary>
         /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
@@ -44,5 +44,12 @@ namespace FileCabinetApp
         /// <summary>Restores the specified snapshot.</summary>
         /// <param name="snapshot">Snapshot.</param>
         public void Restore(FileCabinetServiceSnapshot snapshot);
+
+        /// <summary>Removes a record with the specified id.</summary>
+        /// <param name="id">Id of the record to delete.</param>
+        public void RemoveRecord(int id);
+
+        /// <summary>Defragments the data file.</summary>
+        public void Purge();
     }
 }
