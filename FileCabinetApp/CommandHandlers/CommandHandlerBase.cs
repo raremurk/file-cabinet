@@ -21,5 +21,13 @@ namespace FileCabinetApp.CommandHandlers
         {
             this.NextHandler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
+
+        /// <summary>Print missed command info.</summary>
+        /// <param name="command">The command.</param>
+        protected static void PrintMissedCommandInfo(string command)
+        {
+            Console.WriteLine($"There is no '{command}' command.");
+            Console.WriteLine();
+        }
     }
 }

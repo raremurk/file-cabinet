@@ -79,15 +79,38 @@ namespace FileCabinetApp
                     continue;
                 }
 
-                CommandHandler commandHandler = CreateCommandHandlers();
+                ICommandHandler commandHandler = CreateCommandHandlers();
                 commandHandler.Handle(new AppCommandRequest(command, parameters));
             }
             while (isRunning);
         }
 
-        private static CommandHandler CreateCommandHandlers()
+        private static ICommandHandler CreateCommandHandlers()
         {
-            return new CommandHandler();
+            var helpHandler = new HelpCommandHandler();
+            var createHandler = new CreateCommandHandler();
+            var editHandler = new EditCommandHandler();
+            var exitHandler = new ExitCommandHandler();
+            var exporthandler = new ExportCommandHandler();
+            var findHandler = new FindCommandHandler();
+            var importHandler = new ImportCommandHandler();
+            var listHandler = new ListCommandHandler();
+            var purgeHandler = new PurgeCommandHandler();
+            var removeHandler = new RemoveCommandHandler();
+            var statHandler = new StatCommandHandler();
+
+            helpHandler.SetNext(createHandler);
+            createHandler.SetNext(editHandler);
+            editHandler.SetNext(exitHandler);
+            exitHandler.SetNext(exporthandler);
+            exporthandler.SetNext(findHandler);
+            findHandler.SetNext(importHandler);
+            importHandler.SetNext(listHandler);
+            listHandler.SetNext(purgeHandler);
+            purgeHandler.SetNext(removeHandler);
+            removeHandler.SetNext(statHandler);
+
+            return helpHandler;
         }
     }
 }
