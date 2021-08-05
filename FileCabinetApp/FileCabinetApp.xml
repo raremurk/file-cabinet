@@ -120,6 +120,9 @@
             <summary>Makes snapshot of current object state.</summary>
             <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Purge">
+            <summary>Defragments the data file.</summary>
+        </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>Class for working with records.</summary>
         </member>
@@ -174,6 +177,9 @@
         <member name="M:FileCabinetApp.FileCabinetMemoryService.RemoveRecord(System.Int32)">
             <summary>Removes a record with the specified id.</summary>
             <param name="id">Id of the record to delete.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge">
+            <summary>Defragments the data file.</summary>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecord">
             <summary>Сlass representing a record.</summary>
@@ -331,6 +337,9 @@
         <member name="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)">
             <summary>Removes a record with the specified id.</summary>
             <param name="id">Id of the record to delete.</param>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.Purge">
+            <summary>Defragments the data file.</summary>
         </member>
         <member name="T:FileCabinetApp.IRecordValidator">
             <summary>Provides functionality to validate parameters.</summary>

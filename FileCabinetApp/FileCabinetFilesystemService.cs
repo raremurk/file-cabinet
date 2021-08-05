@@ -17,13 +17,13 @@ namespace FileCabinetApp
         private const int LastNameStartPos = 127;
         private const int DateOfBirthStartPos = 248;
 
-        private readonly FileStream fileStream;
-        private readonly BinaryWriter writer;
-        private readonly BinaryReader reader;
         private readonly IRecordValidator validator;
         private readonly Func<BinaryReader, string> readNameProperty = reader => reader.ReadString().TrimEnd();
         private readonly Func<BinaryReader, string> readDateOfBirthProperty = reader => new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
-        private readonly List<int> deletedIds = new ();
+        private List<int> deletedIds = new ();
+        private FileStream fileStream;
+        private BinaryWriter writer;
+        private BinaryReader reader;
 
         private int numberOfRecords;
 
@@ -198,6 +198,24 @@ namespace FileCabinetApp
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>Defragments the data file.</summary>
+        public void Purge()
+        {
+            ReadOnlyCollection<FileCabinetRecord> records = this.GetRecords();
+            this.deletedIds = new ();
+            this.numberOfRecords = 0;
+            string fileName = this.fileStream.Name;
+            this.fileStream.Dispose();
+            this.fileStream = new (fileName, FileMode.Create);
+            this.writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
+            this.reader = new (this.fileStream, System.Text.Encoding.Unicode, true);
+
+            foreach (var record in records)
+            {
+                this.CreateRecord(record);
+            }
         }
 
         private FileCabinetRecord ReadRecordUsingBinaryReader()

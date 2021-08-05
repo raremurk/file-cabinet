@@ -173,6 +173,11 @@ namespace FileCabinetApp
             this.RemoveRecordFromDictionaries(record);
         }
 
+        /// <summary>Defragments the data file.</summary>
+        public void Purge()
+        {
+        }
+
         private static void AddRecordToDictionary(string propertyValue, FileCabinetRecord record, Dictionary<string, List<FileCabinetRecord>> dictionary)
         {
             string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
