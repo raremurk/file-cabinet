@@ -5,44 +5,21 @@ using System.Xml;
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>Import command handler.</summary>
-    /// <seealso cref="CommandHandlerBase" />
-    public class ImportCommandHandler : CommandHandlerBase
+    /// <seealso cref="ServiceCommandHandlerBase" />
+    public class ImportCommandHandler : ServiceCommandHandlerBase
     {
         private const string ImportCommand = "import";
-        private readonly IFileCabinetService fileCabinetService;
 
         /// <summary>Initializes a new instance of the <see cref="ImportCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
         public ImportCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
-            this.fileCabinetService = fileCabinetService;
         }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
-        public override void Handle(AppCommandRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.Equals(ImportCommand, request.Command, StringComparison.OrdinalIgnoreCase))
-            {
-                this.Import(request.Parameters);
-            }
-            else
-            {
-                if (this.NextHandler != null)
-                {
-                    this.NextHandler.Handle(request);
-                }
-                else
-                {
-                    PrintMissedCommandInfo(request.Command);
-                }
-            }
-        }
+        public override void Handle(AppCommandRequest request) => this.Handle(request, ImportCommand, this.Import);
 
         private void Import(string parameters)
         {

@@ -6,44 +6,21 @@ using System.Text;
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>Find command handler.</summary>
-    /// <seealso cref="CommandHandlerBase" />
-    public class FindCommandHandler : CommandHandlerBase
+    /// <seealso cref="ServiceCommandHandlerBase" />
+    public class FindCommandHandler : ServiceCommandHandlerBase
     {
         private const string FindCommand = "find";
-        private readonly IFileCabinetService fileCabinetService;
 
         /// <summary>Initializes a new instance of the <see cref="FindCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
         public FindCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
-            this.fileCabinetService = fileCabinetService;
         }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
-        public override void Handle(AppCommandRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.Equals(FindCommand, request.Command, StringComparison.OrdinalIgnoreCase))
-            {
-                this.Find(request.Parameters);
-            }
-            else
-            {
-                if (this.NextHandler != null)
-                {
-                    this.NextHandler.Handle(request);
-                }
-                else
-                {
-                    PrintMissedCommandInfo(request.Command);
-                }
-            }
-        }
+        public override void Handle(AppCommandRequest request) => this.Handle(request, FindCommand, this.Find);
 
         private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {

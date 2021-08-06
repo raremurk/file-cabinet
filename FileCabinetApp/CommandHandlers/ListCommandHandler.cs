@@ -6,44 +6,21 @@ using System.Text;
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>List command handler.</summary>
-    /// <seealso cref="CommandHandlerBase" />
-    public class ListCommandHandler : CommandHandlerBase
+    /// <seealso cref="ServiceCommandHandlerBase" />
+    public class ListCommandHandler : ServiceCommandHandlerBase
     {
         private const string ListCommand = "list";
-        private readonly IFileCabinetService fileCabinetService;
 
         /// <summary>Initializes a new instance of the <see cref="ListCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
         public ListCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
-            this.fileCabinetService = fileCabinetService;
         }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
-        public override void Handle(AppCommandRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.Equals(ListCommand, request.Command, StringComparison.OrdinalIgnoreCase))
-            {
-                this.List(request.Parameters);
-            }
-            else
-            {
-                if (this.NextHandler != null)
-                {
-                    this.NextHandler.Handle(request);
-                }
-                else
-                {
-                    PrintMissedCommandInfo(request.Command);
-                }
-            }
-        }
+        public override void Handle(AppCommandRequest request) => this.Handle(request, ListCommand, this.List);
 
         private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {

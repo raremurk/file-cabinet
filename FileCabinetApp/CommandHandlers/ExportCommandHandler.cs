@@ -5,44 +5,21 @@ using System.Xml;
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>Export command handler.</summary>
-    /// <seealso cref="CommandHandlerBase" />
-    public class ExportCommandHandler : CommandHandlerBase
+    /// <seealso cref="ServiceCommandHandlerBase" />
+    public class ExportCommandHandler : ServiceCommandHandlerBase
     {
         private const string ExportCommand = "export";
-        private readonly IFileCabinetService fileCabinetService;
 
         /// <summary>Initializes a new instance of the <see cref="ExportCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
         public ExportCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
-            this.fileCabinetService = fileCabinetService;
         }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
-        public override void Handle(AppCommandRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.Equals(ExportCommand, request.Command, StringComparison.OrdinalIgnoreCase))
-            {
-                this.Export(request.Parameters);
-            }
-            else
-            {
-                if (this.NextHandler != null)
-                {
-                    this.NextHandler.Handle(request);
-                }
-                else
-                {
-                    PrintMissedCommandInfo(request.Command);
-                }
-            }
-        }
+        public override void Handle(AppCommandRequest request) => this.Handle(request, ExportCommand, this.Export);
 
         private void Export(string parameters)
         {

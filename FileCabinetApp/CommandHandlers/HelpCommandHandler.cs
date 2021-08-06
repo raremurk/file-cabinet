@@ -28,29 +28,7 @@ namespace FileCabinetApp.CommandHandlers
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
-        public override void Handle(AppCommandRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.Equals(HelpCommand, request.Command, StringComparison.OrdinalIgnoreCase))
-            {
-                PrintHelp(request.Parameters);
-            }
-            else
-            {
-                if (this.NextHandler != null)
-                {
-                    this.NextHandler.Handle(request);
-                }
-                else
-                {
-                    PrintMissedCommandInfo(request.Command);
-                }
-            }
-        }
+        public override void Handle(AppCommandRequest request) => this.Handle(request, HelpCommand, PrintHelp);
 
         private static void PrintHelp(string parameters)
         {

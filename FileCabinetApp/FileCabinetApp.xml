@@ -33,6 +33,12 @@
             <summary>Handles the specified request.</summary>
             <param name="request">The request.</param>
         </member>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest,System.String,System.Action{System.String})">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+            <param name="commandName">The command name.</param>
+            <param name="command">The command.</param>
+        </member>
         <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
             <summary>Sets the next handler.</summary>
             <param name="handler">The handler.</param>

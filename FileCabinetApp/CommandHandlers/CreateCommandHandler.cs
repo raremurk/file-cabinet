@@ -4,8 +4,8 @@ using System.Globalization;
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>Create command handler.</summary>
-    /// <seealso cref="CommandHandlerBase" />
-    public class CreateCommandHandler : CommandHandlerBase
+    /// <seealso cref="ServiceCommandHandlerBase" />
+    public class CreateCommandHandler : ServiceCommandHandlerBase
     {
         private const string CreateCommand = "create";
         private const string InputDateFormat = "MM/dd/yyyy";
@@ -33,40 +33,16 @@ namespace FileCabinetApp.CommandHandlers
             return char.TryParse(input, out char department) ? new (true, string.Empty, department) : new (false, "Invalid department.", char.MinValue);
         };
 
-        private readonly IFileCabinetService fileCabinetService;
-
         /// <summary>Initializes a new instance of the <see cref="CreateCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
         public CreateCommandHandler(IFileCabinetService fileCabinetService)
+            : base(fileCabinetService)
         {
-            this.fileCabinetService = fileCabinetService;
         }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
-        public override void Handle(AppCommandRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (string.Equals(CreateCommand, request.Command, StringComparison.OrdinalIgnoreCase))
-            {
-                this.Create(request.Parameters);
-            }
-            else
-            {
-                if (this.NextHandler != null)
-                {
-                    this.NextHandler.Handle(request);
-                }
-                else
-                {
-                    PrintMissedCommandInfo(request.Command);
-                }
-            }
-        }
+        public override void Handle(AppCommandRequest request) => this.Handle(request, CreateCommand, this.Create);
 
         private static FileCabinetRecord СonsoleInput()
         {
