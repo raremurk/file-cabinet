@@ -7,15 +7,24 @@ namespace FileCabinetApp.CommandHandlers
     public class ExitCommandHandler : CommandHandlerBase
     {
         private const string ExitCommand = "exit";
+        private readonly Action<bool> setProgramStatus;
+
+        /// <summary>Initializes a new instance of the <see cref="ExitCommandHandler"/> class.</summary>
+        /// <param name="setProgramStatus">Sets program status.</param>
+        /// <exception cref="ArgumentNullException">Thrown when setProgramStatus is null.</exception>
+        public ExitCommandHandler(Action<bool> setProgramStatus)
+        {
+            this.setProgramStatus = setProgramStatus ?? throw new ArgumentNullException(nameof(setProgramStatus));
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
-        public override void Handle(AppCommandRequest request) => this.Handle(request, ExitCommand, Exit);
+        public override void Handle(AppCommandRequest request) => this.Handle(request, ExitCommand, this.Exit);
 
-        private static void Exit(string parameters)
+        private void Exit(string parameters)
         {
             Console.WriteLine("Exiting an application...");
-            Program.isRunning = false;
+            this.setProgramStatus(false);
         }
     }
 }

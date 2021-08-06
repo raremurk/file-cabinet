@@ -7,7 +7,9 @@ namespace FileCabinetApp.CommandHandlers
     public abstract class ServiceCommandHandlerBase : CommandHandlerBase
     {
         /// <summary>File cabinet service.</summary>
-        protected readonly IFileCabinetService fileCabinetService;
+        #pragma warning disable SA1401
+        private protected readonly IFileCabinetService fileCabinetService;
+        #pragma warning restore SA1401
 
         /// <summary>Initializes a new instance of the <see cref="ServiceCommandHandlerBase"/> class.</summary>
         /// <param name="fileCabinetService">The file cabinet service.</param>

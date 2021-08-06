@@ -9,12 +9,13 @@ namespace FileCabinetApp
     /// <summary>Main class of the project.</summary>
     public static class Program
     {
-        private static IFileCabinetService fileCabinetService;
-        public static IRecordValidator validator;
-        public static bool isRunning = true;
-
         private const string DeveloperName = "Evgeny Fursevich";
         private const string HintMessage = "Enter your command, or enter 'help' to get help.";
+        private static readonly Action<bool> SetProgramStatus = status => isRunning = status;
+
+        private static IFileCabinetService fileCabinetService;
+        private static IRecordValidator validator;
+        private static bool isRunning = true;
 
         /// <summary>Defines the entry point of the application.</summary>
         /// <param name="args">Command line arguments.</param>
@@ -88,9 +89,9 @@ namespace FileCabinetApp
         private static ICommandHandler CreateCommandHandlers()
         {
             var helpHandler = new HelpCommandHandler();
-            var createHandler = new CreateCommandHandler(fileCabinetService);
-            var editHandler = new EditCommandHandler(fileCabinetService);
-            var exitHandler = new ExitCommandHandler();
+            var createHandler = new CreateCommandHandler(fileCabinetService, validator);
+            var editHandler = new EditCommandHandler(fileCabinetService, validator);
+            var exitHandler = new ExitCommandHandler(SetProgramStatus);
             var exporthandler = new ExportCommandHandler(fileCabinetService);
             var findHandler = new FindCommandHandler(fileCabinetService);
             var importHandler = new ImportCommandHandler(fileCabinetService);

@@ -33,11 +33,15 @@ namespace FileCabinetApp.CommandHandlers
             return char.TryParse(input, out char department) ? new (true, string.Empty, department) : new (false, "Invalid department.", char.MinValue);
         };
 
+        private static IRecordValidator validator;
+
         /// <summary>Initializes a new instance of the <see cref="CreateCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
-        public CreateCommandHandler(IFileCabinetService fileCabinetService)
+        /// /// <param name="val1dator">IRecordValidator.</param>
+        public CreateCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator val1dator)
             : base(fileCabinetService)
         {
+            validator = val1dator;
         }
 
         /// <summary>Handles the specified request.</summary>
@@ -47,22 +51,22 @@ namespace FileCabinetApp.CommandHandlers
         private static FileCabinetRecord СonsoleInput()
         {
             Console.Write("First name: ");
-            string firstName = ReadInput(StringConverter, Program.validator.NameIsCorrect);
+            string firstName = ReadInput(StringConverter, validator.NameIsCorrect);
 
             Console.Write("Last name: ");
-            string lastName = ReadInput(StringConverter, Program.validator.NameIsCorrect);
+            string lastName = ReadInput(StringConverter, validator.NameIsCorrect);
 
             Console.Write("Date of birth (month/day/year): ");
-            DateTime dateOfBirth = ReadInput(DateConverter, Program.validator.DateOfBirthIsCorrect);
+            DateTime dateOfBirth = ReadInput(DateConverter, validator.DateOfBirthIsCorrect);
 
             Console.Write("Workplace number: ");
-            short workPlaceNumber = ReadInput(ShortConverter, Program.validator.WorkPlaceNumberIsCorrect);
+            short workPlaceNumber = ReadInput(ShortConverter, validator.WorkPlaceNumberIsCorrect);
 
             Console.Write("Salary: ");
-            decimal salary = ReadInput(DecimalConverter, Program.validator.SalaryIsCorrect);
+            decimal salary = ReadInput(DecimalConverter, validator.SalaryIsCorrect);
 
             Console.Write("Department (uppercase letter): ");
-            char department = ReadInput(CharConverter, Program.validator.DepartmentIsCorrect);
+            char department = ReadInput(CharConverter, validator.DepartmentIsCorrect);
 
             return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
         }
