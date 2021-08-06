@@ -10,34 +10,20 @@ namespace FileCabinetApp.CommandHandlers
     public class FindCommandHandler : ServiceCommandHandlerBase
     {
         private const string FindCommand = "find";
+        private readonly IRecordPrinter printer;
 
         /// <summary>Initializes a new instance of the <see cref="FindCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
-        public FindCommandHandler(IFileCabinetService fileCabinetService)
+        /// <param name="printer">IRecordPrinter.</param>
+        public FindCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter printer)
             : base(fileCabinetService)
         {
+            this.printer = printer;
         }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request) => this.Handle(request, FindCommand, this.Find);
-
-        private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
-        {
-            foreach (var record in records)
-            {
-                StringBuilder builder = new ();
-                builder.Append($"#{record.Id}, ");
-                builder.Append($"{record.FirstName}, ");
-                builder.Append($"{record.LastName}, ");
-                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
-                builder.Append($"{record.WorkPlaceNumber}, ");
-                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}, ");
-                builder.Append($"{record.Department}");
-
-                Console.WriteLine(builder.ToString());
-            }
-        }
 
         private void Find(string parameters)
         {
@@ -101,7 +87,7 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            PrintRecords(records);
+            this.printer.Print(records);
         }
     }
 }

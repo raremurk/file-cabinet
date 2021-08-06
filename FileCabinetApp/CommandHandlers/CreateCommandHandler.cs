@@ -33,43 +33,20 @@ namespace FileCabinetApp.CommandHandlers
             return char.TryParse(input, out char department) ? new (true, string.Empty, department) : new (false, "Invalid department.", char.MinValue);
         };
 
-        private static IRecordValidator validator;
+        private readonly IRecordValidator validator;
 
         /// <summary>Initializes a new instance of the <see cref="CreateCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
-        /// /// <param name="val1dator">IRecordValidator.</param>
-        public CreateCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator val1dator)
+        /// /// <param name="validator">IRecordValidator.</param>
+        public CreateCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validator)
             : base(fileCabinetService)
         {
-            validator = val1dator;
+            this.validator = validator;
         }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request) => this.Handle(request, CreateCommand, this.Create);
-
-        private static FileCabinetRecord СonsoleInput()
-        {
-            Console.Write("First name: ");
-            string firstName = ReadInput(StringConverter, validator.NameIsCorrect);
-
-            Console.Write("Last name: ");
-            string lastName = ReadInput(StringConverter, validator.NameIsCorrect);
-
-            Console.Write("Date of birth (month/day/year): ");
-            DateTime dateOfBirth = ReadInput(DateConverter, validator.DateOfBirthIsCorrect);
-
-            Console.Write("Workplace number: ");
-            short workPlaceNumber = ReadInput(ShortConverter, validator.WorkPlaceNumberIsCorrect);
-
-            Console.Write("Salary: ");
-            decimal salary = ReadInput(DecimalConverter, validator.SalaryIsCorrect);
-
-            Console.Write("Department (uppercase letter): ");
-            char department = ReadInput(CharConverter, validator.DepartmentIsCorrect);
-
-            return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
-        }
 
         private static T ReadInput<T>(Func<string, Tuple<bool, string, T>> converter, Func<T, Tuple<bool, string>> validator)
         {
@@ -102,9 +79,32 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Create(string parameters)
         {
-            FileCabinetRecord record = СonsoleInput();
+            FileCabinetRecord record = this.СonsoleInput();
             int id = this.fileCabinetService.CreateRecord(record);
             Console.WriteLine($"Record #{id} is created.");
+        }
+
+        private FileCabinetRecord СonsoleInput()
+        {
+            Console.Write("First name: ");
+            string firstName = ReadInput(StringConverter, this.validator.NameIsCorrect);
+
+            Console.Write("Last name: ");
+            string lastName = ReadInput(StringConverter, this.validator.NameIsCorrect);
+
+            Console.Write("Date of birth (month/day/year): ");
+            DateTime dateOfBirth = ReadInput(DateConverter, this.validator.DateOfBirthIsCorrect);
+
+            Console.Write("Workplace number: ");
+            short workPlaceNumber = ReadInput(ShortConverter, this.validator.WorkPlaceNumberIsCorrect);
+
+            Console.Write("Salary: ");
+            decimal salary = ReadInput(DecimalConverter, this.validator.SalaryIsCorrect);
+
+            Console.Write("Department (uppercase letter): ");
+            char department = ReadInput(CharConverter, this.validator.DepartmentIsCorrect);
+
+            return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
         }
     }
 }
