@@ -7,6 +7,14 @@ namespace FileCabinetApp.CommandHandlers
     public class RemoveCommandHandler : CommandHandlerBase
     {
         private const string RemoveCommand = "remove";
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="RemoveCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public RemoveCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
@@ -19,7 +27,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(RemoveCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Remove(request.Parameters);
+                this.Remove(request.Parameters);
             }
             else
             {
@@ -34,7 +42,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Remove(string parameters)
+        private void Remove(string parameters)
         {
             if (!int.TryParse(parameters, out int id))
             {
@@ -42,14 +50,14 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            ServiceStat stat = Program.fileCabinetService.GetStat();
+            ServiceStat stat = this.fileCabinetService.GetStat();
             if (id < 1 || id > stat.NumberOfRecords || stat.DeletedRecordsIds.Contains(id))
             {
                 Console.WriteLine($"Record #{id} doesn't exists or removed.");
                 return;
             }
 
-            Program.fileCabinetService.RemoveRecord(id);
+            this.fileCabinetService.RemoveRecord(id);
             Console.WriteLine($"Record #{id} is removed.");
         }
     }

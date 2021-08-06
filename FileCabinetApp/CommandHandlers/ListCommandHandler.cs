@@ -10,6 +10,14 @@ namespace FileCabinetApp.CommandHandlers
     public class ListCommandHandler : CommandHandlerBase
     {
         private const string ListCommand = "list";
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="ListCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public ListCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
@@ -22,7 +30,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(ListCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                List(request.Parameters);
+                this.List(request.Parameters);
             }
             else
             {
@@ -35,12 +43,6 @@ namespace FileCabinetApp.CommandHandlers
                     PrintMissedCommandInfo(request.Command);
                 }
             }
-        }
-
-        private static void List(string parameters)
-        {
-            var records = Program.fileCabinetService.GetRecords();
-            PrintRecords(records);
         }
 
         private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
@@ -58,6 +60,12 @@ namespace FileCabinetApp.CommandHandlers
 
                 Console.WriteLine(builder.ToString());
             }
+        }
+
+        private void List(string parameters)
+        {
+            var records = this.fileCabinetService.GetRecords();
+            PrintRecords(records);
         }
     }
 }

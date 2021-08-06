@@ -33,6 +33,15 @@ namespace FileCabinetApp.CommandHandlers
             return char.TryParse(input, out char department) ? new (true, string.Empty, department) : new (false, "Invalid department.", char.MinValue);
         };
 
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="EditCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public EditCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
+
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
@@ -44,7 +53,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(EditCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Edit(request.Parameters);
+                this.Edit(request.Parameters);
             }
             else
             {
@@ -57,27 +66,6 @@ namespace FileCabinetApp.CommandHandlers
                     PrintMissedCommandInfo(request.Command);
                 }
             }
-        }
-
-        private static void Edit(string parameters)
-        {
-            if (!int.TryParse(parameters, out int id))
-            {
-                Console.WriteLine("Invalid id value.");
-                return;
-            }
-
-            ServiceStat stat = Program.fileCabinetService.GetStat();
-            if (id < 1 || id > stat.NumberOfRecords || stat.DeletedRecordsIds.Contains(id))
-            {
-                Console.WriteLine($"Record #{id} doesn't exists or removed.");
-                return;
-            }
-
-            FileCabinetRecord record = СonsoleInput();
-            record.Id = id;
-            Program.fileCabinetService.EditRecord(record);
-            Console.WriteLine($"Record #{id} is updated.");
         }
 
         private static FileCabinetRecord СonsoleInput()
@@ -130,6 +118,27 @@ namespace FileCabinetApp.CommandHandlers
                 return value;
             }
             while (true);
+        }
+
+        private void Edit(string parameters)
+        {
+            if (!int.TryParse(parameters, out int id))
+            {
+                Console.WriteLine("Invalid id value.");
+                return;
+            }
+
+            ServiceStat stat = this.fileCabinetService.GetStat();
+            if (id < 1 || id > stat.NumberOfRecords || stat.DeletedRecordsIds.Contains(id))
+            {
+                Console.WriteLine($"Record #{id} doesn't exists or removed.");
+                return;
+            }
+
+            FileCabinetRecord record = СonsoleInput();
+            record.Id = id;
+            this.fileCabinetService.EditRecord(record);
+            Console.WriteLine($"Record #{id} is updated.");
         }
     }
 }

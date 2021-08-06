@@ -33,6 +33,15 @@ namespace FileCabinetApp.CommandHandlers
             return char.TryParse(input, out char department) ? new (true, string.Empty, department) : new (false, "Invalid department.", char.MinValue);
         };
 
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="CreateCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public CreateCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
+
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
         public override void Handle(AppCommandRequest request)
@@ -44,7 +53,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(CreateCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Create(request.Parameters);
+                this.Create(request.Parameters);
             }
             else
             {
@@ -57,13 +66,6 @@ namespace FileCabinetApp.CommandHandlers
                     PrintMissedCommandInfo(request.Command);
                 }
             }
-        }
-
-        private static void Create(string parameters)
-        {
-            FileCabinetRecord record = СonsoleInput();
-            int id = Program.fileCabinetService.CreateRecord(record);
-            Console.WriteLine($"Record #{id} is created.");
         }
 
         private static FileCabinetRecord СonsoleInput()
@@ -116,6 +118,13 @@ namespace FileCabinetApp.CommandHandlers
                 return value;
             }
             while (true);
+        }
+
+        private void Create(string parameters)
+        {
+            FileCabinetRecord record = СonsoleInput();
+            int id = this.fileCabinetService.CreateRecord(record);
+            Console.WriteLine($"Record #{id} is created.");
         }
     }
 }

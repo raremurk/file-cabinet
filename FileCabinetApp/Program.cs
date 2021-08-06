@@ -9,7 +9,7 @@ namespace FileCabinetApp
     /// <summary>Main class of the project.</summary>
     public static class Program
     {
-        public static IFileCabinetService fileCabinetService;
+        private static IFileCabinetService fileCabinetService;
         public static IRecordValidator validator;
         public static bool isRunning = true;
 
@@ -88,16 +88,16 @@ namespace FileCabinetApp
         private static ICommandHandler CreateCommandHandlers()
         {
             var helpHandler = new HelpCommandHandler();
-            var createHandler = new CreateCommandHandler();
-            var editHandler = new EditCommandHandler();
+            var createHandler = new CreateCommandHandler(fileCabinetService);
+            var editHandler = new EditCommandHandler(fileCabinetService);
             var exitHandler = new ExitCommandHandler();
-            var exporthandler = new ExportCommandHandler();
-            var findHandler = new FindCommandHandler();
-            var importHandler = new ImportCommandHandler();
-            var listHandler = new ListCommandHandler();
-            var purgeHandler = new PurgeCommandHandler();
-            var removeHandler = new RemoveCommandHandler();
-            var statHandler = new StatCommandHandler();
+            var exporthandler = new ExportCommandHandler(fileCabinetService);
+            var findHandler = new FindCommandHandler(fileCabinetService);
+            var importHandler = new ImportCommandHandler(fileCabinetService);
+            var listHandler = new ListCommandHandler(fileCabinetService);
+            var purgeHandler = new PurgeCommandHandler(fileCabinetService);
+            var removeHandler = new RemoveCommandHandler(fileCabinetService);
+            var statHandler = new StatCommandHandler(fileCabinetService);
 
             helpHandler.SetNext(createHandler);
             createHandler.SetNext(editHandler);

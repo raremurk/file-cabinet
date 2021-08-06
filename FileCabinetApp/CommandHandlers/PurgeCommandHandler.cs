@@ -7,6 +7,14 @@ namespace FileCabinetApp.CommandHandlers
     public class PurgeCommandHandler : CommandHandlerBase
     {
         private const string PurgeCommand = "purge";
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="PurgeCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public PurgeCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
@@ -19,7 +27,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(PurgeCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Purge(request.Parameters);
+                this.Purge(request.Parameters);
             }
             else
             {
@@ -34,10 +42,10 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Purge(string parameters)
+        private void Purge(string arameters)
         {
-            ServiceStat stat = Program.fileCabinetService.GetStat();
-            Program.fileCabinetService.Purge();
+            ServiceStat stat = this.fileCabinetService.GetStat();
+            this.fileCabinetService.Purge();
             Console.WriteLine($"Data file processing is completed: {stat.DeletedRecordsIds.Count} of {stat.NumberOfRecords} records were purged.");
         }
     }

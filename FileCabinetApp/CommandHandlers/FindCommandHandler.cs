@@ -10,6 +10,14 @@ namespace FileCabinetApp.CommandHandlers
     public class FindCommandHandler : CommandHandlerBase
     {
         private const string FindCommand = "find";
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="FindCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public FindCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
@@ -22,7 +30,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(FindCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Find(request.Parameters);
+                this.Find(request.Parameters);
             }
             else
             {
@@ -37,7 +45,24 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Find(string parameters)
+        private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
+        {
+            foreach (var record in records)
+            {
+                StringBuilder builder = new ();
+                builder.Append($"#{record.Id}, ");
+                builder.Append($"{record.FirstName}, ");
+                builder.Append($"{record.LastName}, ");
+                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
+                builder.Append($"{record.WorkPlaceNumber}, ");
+                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}, ");
+                builder.Append($"{record.Department}");
+
+                Console.WriteLine(builder.ToString());
+            }
+        }
+
+        private void Find(string parameters)
         {
             if (string.IsNullOrEmpty(parameters))
             {
@@ -75,11 +100,11 @@ namespace FileCabinetApp.CommandHandlers
 
             if (index == 0)
             {
-                records = Program.fileCabinetService.FindByFirstName(value);
+                records = this.fileCabinetService.FindByFirstName(value);
             }
             else if (index == 1)
             {
-                records = Program.fileCabinetService.FindByLastName(value);
+                records = this.fileCabinetService.FindByLastName(value);
             }
             else if (index == 2)
             {
@@ -90,7 +115,7 @@ namespace FileCabinetApp.CommandHandlers
                     return;
                 }
 
-                records = Program.fileCabinetService.FindByDateOfBirth(value);
+                records = this.fileCabinetService.FindByDateOfBirth(value);
             }
 
             if (records.Count == 0)
@@ -100,23 +125,6 @@ namespace FileCabinetApp.CommandHandlers
             }
 
             PrintRecords(records);
-        }
-
-        private static void PrintRecords(ReadOnlyCollection<FileCabinetRecord> records)
-        {
-            foreach (var record in records)
-            {
-                StringBuilder builder = new ();
-                builder.Append($"#{record.Id}, ");
-                builder.Append($"{record.FirstName}, ");
-                builder.Append($"{record.LastName}, ");
-                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
-                builder.Append($"{record.WorkPlaceNumber}, ");
-                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}, ");
-                builder.Append($"{record.Department}");
-
-                Console.WriteLine(builder.ToString());
-            }
         }
     }
 }

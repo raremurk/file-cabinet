@@ -9,6 +9,14 @@ namespace FileCabinetApp.CommandHandlers
     public class ExportCommandHandler : CommandHandlerBase
     {
         private const string ExportCommand = "export";
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="ExportCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public ExportCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
@@ -21,7 +29,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(ExportCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Export(request.Parameters);
+                this.Export(request.Parameters);
             }
             else
             {
@@ -36,7 +44,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Export(string parameters)
+        private void Export(string parameters)
         {
             if (string.IsNullOrEmpty(parameters))
             {
@@ -100,7 +108,7 @@ namespace FileCabinetApp.CommandHandlers
                 }
             }
 
-            FileCabinetServiceSnapshot snapshot = Program.fileCabinetService.MakeSnapshot();
+            FileCabinetServiceSnapshot snapshot = this.fileCabinetService.MakeSnapshot();
 
             if (csvFormat)
             {

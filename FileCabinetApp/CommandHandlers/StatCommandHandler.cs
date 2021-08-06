@@ -7,6 +7,14 @@ namespace FileCabinetApp.CommandHandlers
     public class StatCommandHandler : CommandHandlerBase
     {
         private const string StatCommand = "stat";
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="StatCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public StatCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
@@ -19,7 +27,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(StatCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Stat(request.Parameters);
+                this.Stat(request.Parameters);
             }
             else
             {
@@ -34,9 +42,9 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Stat(string parameters)
+        private void Stat(string parameters)
         {
-            ServiceStat stat = Program.fileCabinetService.GetStat();
+            ServiceStat stat = this.fileCabinetService.GetStat();
             Console.WriteLine($"{stat.NumberOfRecords} record(s). {stat.DeletedRecordsIds.Count} deleted record(s).");
         }
     }

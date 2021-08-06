@@ -9,6 +9,14 @@ namespace FileCabinetApp.CommandHandlers
     public class ImportCommandHandler : CommandHandlerBase
     {
         private const string ImportCommand = "import";
+        private readonly IFileCabinetService fileCabinetService;
+
+        /// <summary>Initializes a new instance of the <see cref="ImportCommandHandler"/> class.</summary>
+        /// <param name="fileCabinetService">IFileCabinetService.</param>
+        public ImportCommandHandler(IFileCabinetService fileCabinetService)
+        {
+            this.fileCabinetService = fileCabinetService;
+        }
 
         /// <summary>Handles the specified request.</summary>
         /// <param name="request">The request.</param>
@@ -21,7 +29,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (string.Equals(ImportCommand, request.Command, StringComparison.OrdinalIgnoreCase))
             {
-                Import(request.Parameters);
+                this.Import(request.Parameters);
             }
             else
             {
@@ -36,7 +44,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        private static void Import(string parameters)
+        private void Import(string parameters)
         {
             if (string.IsNullOrEmpty(parameters))
             {
@@ -88,23 +96,23 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            ServiceStat stat = Program.fileCabinetService.GetStat();
+            ServiceStat stat = this.fileCabinetService.GetStat();
 
             if (csvFormat)
             {
                 using StreamReader reader = new (filename, System.Text.Encoding.UTF8);
                 FileCabinetServiceSnapshot snapshot = FileCabinetServiceSnapshot.LoadFromCsv(reader);
-                Program.fileCabinetService.Restore(snapshot);
+                this.fileCabinetService.Restore(snapshot);
             }
 
             if (xmlFormat)
             {
                 using var reader = XmlReader.Create(filename);
                 FileCabinetServiceSnapshot snapshot = FileCabinetServiceSnapshot.LoadFromXml(reader);
-                Program.fileCabinetService.Restore(snapshot);
+                this.fileCabinetService.Restore(snapshot);
             }
 
-            int numberOfRecords = Program.fileCabinetService.GetStat().NumberOfRecords - stat.NumberOfRecords;
+            int numberOfRecords = this.fileCabinetService.GetStat().NumberOfRecords - stat.NumberOfRecords;
 
             Console.WriteLine($"{numberOfRecords} records are imported from file {filename}.");
         }
