@@ -61,14 +61,6 @@
             <summary>Handles the specified request.</summary>
             <param name="request">The request.</param>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.DefaultRecordPrinter">
-            <summary>Print records to the console.</summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.IRecordPrinter"/>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.DefaultRecordPrinter.Print(System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord})">
-            <summary>Print records to the console.</summary>
-            <param name="records">Records to print.</param>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
             <summary>Edit command handler.</summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
@@ -111,7 +103,7 @@
             <summary>Find command handler.</summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,FileCabinetApp.CommandHandlers.IRecordPrinter)">
+        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.FindCommandHandler"/> class.</summary>
             <param name="fileCabinetService">IFileCabinetService.</param>
             <param name="printer">IRecordPrinter.</param>
@@ -151,18 +143,11 @@
             <summary>Handles the specified request.</summary>
             <param name="request">The request.</param>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.IRecordPrinter">
-            <summary>Record printer interface.</summary>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.IRecordPrinter.Print(System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord})">
-            <summary>Print records.</summary>
-            <param name="records">FileCabinetRecords.</param>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
             <summary>List command handler.</summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,FileCabinetApp.CommandHandlers.IRecordPrinter)">
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.</summary>
             <param name="fileCabinetService">IFileCabinetService.</param>
             <param name="printer">IRecordPrinter.</param>

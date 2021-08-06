@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using FileCabinetApp.CommandHandlers;
 
 [assembly: CLSCompliant(false)]
@@ -86,17 +89,38 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
+        private static void Print(IEnumerable<FileCabinetRecord> records)
+        {
+            if (records is null)
+            {
+                throw new ArgumentNullException(nameof(records));
+            }
+
+            foreach (var record in records)
+            {
+                StringBuilder builder = new ();
+                builder.Append($"#{record.Id}, ");
+                builder.Append($"{record.FirstName}, ");
+                builder.Append($"{record.LastName}, ");
+                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
+                builder.Append($"{record.WorkPlaceNumber}, ");
+                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}, ");
+                builder.Append($"{record.Department}");
+
+                Console.WriteLine(builder.ToString());
+            }
+        }
+
         private static ICommandHandler CreateCommandHandlers()
         {
-            var printer = new DefaultRecordPrinter();
             var helpHandler = new HelpCommandHandler();
             var createHandler = new CreateCommandHandler(fileCabinetService, validator);
             var editHandler = new EditCommandHandler(fileCabinetService, validator);
             var exitHandler = new ExitCommandHandler(SetProgramStatus);
             var exporthandler = new ExportCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService, printer);
+            var findHandler = new FindCommandHandler(fileCabinetService, Print);
             var importHandler = new ImportCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService, printer);
+            var listHandler = new ListCommandHandler(fileCabinetService, Print);
             var purgeHandler = new PurgeCommandHandler(fileCabinetService);
             var removeHandler = new RemoveCommandHandler(fileCabinetService);
             var statHandler = new StatCommandHandler(fileCabinetService);

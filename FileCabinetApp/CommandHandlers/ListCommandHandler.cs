@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
@@ -10,12 +11,12 @@ namespace FileCabinetApp.CommandHandlers
     public class ListCommandHandler : ServiceCommandHandlerBase
     {
         private const string ListCommand = "list";
-        private readonly IRecordPrinter printer;
+        private readonly Action<IEnumerable<FileCabinetRecord>> printer;
 
         /// <summary>Initializes a new instance of the <see cref="ListCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
         /// <param name="printer">IRecordPrinter.</param>
-        public ListCommandHandler(IFileCabinetService fileCabinetService, IRecordPrinter printer)
+        public ListCommandHandler(IFileCabinetService fileCabinetService, Action<IEnumerable<FileCabinetRecord>> printer)
             : base(fileCabinetService)
         {
             this.printer = printer;
@@ -28,7 +29,7 @@ namespace FileCabinetApp.CommandHandlers
         private void List(string parameters)
         {
             var records = this.fileCabinetService.GetRecords();
-            this.printer.Print(records);
+            this.printer(records);
         }
     }
 }
