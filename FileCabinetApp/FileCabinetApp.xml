@@ -4,69 +4,216 @@
         <name>FileCabinetApp</name>
     </assembly>
     <members>
-        <member name="T:FileCabinetApp.CustomValidator">
-            <summary>Provides functionality to data validation by custom parameters.</summary>
+        <member name="T:FileCabinetApp.CommandHandlers.AppCommandRequest">
+            <summary>Application command request.</summary>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.NameIsCorrect(System.String)">
-            <summary>Name validation.</summary>
-            <param name="name">Input string representing the name.</param>
-            <returns>Returns false and exception message if name is incorrect, else returns true.</returns>
+        <member name="M:FileCabinetApp.CommandHandlers.AppCommandRequest.#ctor(System.String,System.String)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.AppCommandRequest"/> class.</summary>
+            <param name="command">Command.</param>
+            <param name="parameters">Parameters.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when command or parameters is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.DateOfBirthIsCorrect(System.DateTime)">
-            <summary>Date of birth validation.</summary>
-            <param name="dateOfBirth">Date of birth.</param>
-            <returns>Returns false and exception message if date of birth is incorrect, else returns true.</returns>
+        <member name="P:FileCabinetApp.CommandHandlers.AppCommandRequest.Command">
+            <summary>Gets the command.</summary>
+            <value>The command.</value>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.WorkPlaceNumberIsCorrect(System.Int16)">
-            <summary>Work place number validation.</summary>
-            <param name="workPlaceNumber">Work place number.</param>
-            <returns>Returns false and exception message if work place number is incorrect, else returns true.</returns>
+        <member name="P:FileCabinetApp.CommandHandlers.AppCommandRequest.Parameters">
+            <summary>Gets the parameters.</summary>
+            <value>The parameters.</value>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.SalaryIsCorrect(System.Decimal)">
-            <summary>Salary validation.</summary>
-            <param name="salary">Salary.</param>
-            <returns>Returns false and exception message if salary is incorrect, else returns true.</returns>
+        <member name="T:FileCabinetApp.CommandHandlers.CommandHandlerBase">
+            <summary>Command handler base.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ICommandHandler" />
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.DepartmentIsCorrect(System.Char)">
-            <summary>Department validation.</summary>
-            <param name="department">Department.</param>
-            <returns>Returns false and exception message if department is incorrect, else returns true.</returns>
+        <member name="P:FileCabinetApp.CommandHandlers.CommandHandlerBase.NextHandler">
+            <summary>Gets the next handler.</summary>
+            <value>The next handler.</value>
         </member>
-        <member name="M:FileCabinetApp.CustomValidator.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
-            <summary>Record validation.</summary>
-            <param name="record">Object representing a record.</param>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
         </member>
-        <member name="T:FileCabinetApp.DefaultValidator">
-            <summary>Provides functionality to data validation by default parameters.</summary>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest,System.String,System.Action{System.String})">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+            <param name="commandName">The command name.</param>
+            <param name="command">The command.</param>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.NameIsCorrect(System.String)">
-            <summary>Name validation.</summary>
-            <param name="name">Input string representing the name.</param>
-            <returns>Returns false and exception message if name is incorrect, else returns true.</returns>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>Sets the next handler.</summary>
+            <param name="handler">The handler.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when handler is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.DateOfBirthIsCorrect(System.DateTime)">
-            <summary>Date of birth validation.</summary>
-            <param name="dateOfBirth">Date of birth.</param>
-            <returns>Returns false and exception message if date of birth is incorrect, else returns true.</returns>
+        <member name="M:FileCabinetApp.CommandHandlers.CommandHandlerBase.PrintMissedCommandInfo(System.String)">
+            <summary>Print missed command info.</summary>
+            <param name="command">The command.</param>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.WorkPlaceNumberIsCorrect(System.Int16)">
-            <summary>Work place number validation.</summary>
-            <param name="workPlaceNumber">Work place number.</param>
-            <returns>Returns false and exception message if work place number is incorrect, else returns true.</returns>
+        <member name="T:FileCabinetApp.CommandHandlers.CreateCommandHandler">
+            <summary>Create command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.SalaryIsCorrect(System.Decimal)">
-            <summary>Salary validation.</summary>
-            <param name="salary">Salary.</param>
-            <returns>Returns false and exception message if salary is incorrect, else returns true.</returns>
+        <member name="M:FileCabinetApp.CommandHandlers.CreateCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,FileCabinetApp.IRecordValidator)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.CreateCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+            <param name="validator">IRecordValidator.</param>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.DepartmentIsCorrect(System.Char)">
-            <summary>Department validation.</summary>
-            <param name="department">Department.</param>
-            <returns>Returns false and exception message if department is incorrect, else returns true.</returns>
+        <member name="M:FileCabinetApp.CommandHandlers.CreateCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
         </member>
-        <member name="M:FileCabinetApp.DefaultValidator.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
-            <summary>Record validation.</summary>
-            <param name="record">Object representing a record.</param>
+        <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
+            <summary>Edit command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,FileCabinetApp.IRecordValidator)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.EditCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+            <param name="validator">IRecordValidator.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ExitCommandHandler">
+            <summary>Exit command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ExitCommandHandler.#ctor(System.Action{System.Boolean})">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ExitCommandHandler"/> class.</summary>
+            <param name="setProgramStatus">Sets program status.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when setProgramStatus is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ExitCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ExportCommandHandler">
+            <summary>Export command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ExportCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ExportCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ExportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.FindCommandHandler">
+            <summary>Find command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.FindCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+            <param name="printer">IRecordPrinter.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.FindCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.GetRecordFromConsole">
+            <summary>Get record from console.</summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.GetRecordFromConsole.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.GetRecordFromConsole"/> class.</summary>
+            <param name="validator">IRecordValidator.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.GetRecordFromConsole.СonsoleInput">
+            <summary>Get record from console.</summary>
+            <returns>returns object representing a record.</returns>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.HelpCommandHandler">
+            <summary>Help command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.HelpCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ICommandHandler">
+            <summary>Command handler interface.</summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.SetNext(FileCabinetApp.CommandHandlers.ICommandHandler)">
+            <summary>Sets the next handler.</summary>
+            <param name="handler">The handler.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ICommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ImportCommandHandler">
+            <summary>Import command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ImportCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ImportCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ListCommandHandler">
+            <summary>List command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,System.Action{System.Collections.Generic.IEnumerable{FileCabinetApp.FileCabinetRecord}})">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ListCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+            <param name="printer">IRecordPrinter.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ListCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.PurgeCommandHandler">
+            <summary>Purge command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.PurgeCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler">
+            <summary>Remove command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase">
+            <summary>Service command handler base.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
+        </member>
+        <member name="F:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.fileCabinetService">
+            <summary>File cabinet service.</summary>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase"/> class.</summary>
+            <param name="fileCabinetService">The file cabinet service.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when fileCabinetService is null.</exception>
+        </member>
+        <member name="T:FileCabinetApp.CommandHandlers.StatCommandHandler">
+            <summary>Stat command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.StatCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.StatCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.StatCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
         </member>
         <member name="T:FileCabinetApp.FileCabinetFilesystemService">
             <summary>Class for working with records.</summary>
@@ -341,38 +488,6 @@
         <member name="M:FileCabinetApp.IFileCabinetService.Purge">
             <summary>Defragments the data file.</summary>
         </member>
-        <member name="T:FileCabinetApp.IRecordValidator">
-            <summary>Provides functionality to validate parameters.</summary>
-        </member>
-        <member name="M:FileCabinetApp.IRecordValidator.NameIsCorrect(System.String)">
-            <summary>Name validation.</summary>
-            <param name="name">Input string representing the name.</param>
-            <returns>Returns true and exception message if name is incorrect, else returns false.</returns>
-        </member>
-        <member name="M:FileCabinetApp.IRecordValidator.DateOfBirthIsCorrect(System.DateTime)">
-            <summary>Date of birth validation.</summary>
-            <param name="dateOfBirth">Date of birth.</param>
-            <returns>Returns true and exception message if date of birth is incorrect, else returns false.</returns>
-        </member>
-        <member name="M:FileCabinetApp.IRecordValidator.WorkPlaceNumberIsCorrect(System.Int16)">
-            <summary>Work place number validation.</summary>
-            <param name="workPlaceNumber">Work place number.</param>
-            <returns>Returns true and exception message if work place number is incorrect, else returns false.</returns>
-        </member>
-        <member name="M:FileCabinetApp.IRecordValidator.SalaryIsCorrect(System.Decimal)">
-            <summary>Salary validation.</summary>
-            <param name="salary">Salary.</param>
-            <returns>Returns true and exception message if salary is incorrect, else returns false.</returns>
-        </member>
-        <member name="M:FileCabinetApp.IRecordValidator.DepartmentIsCorrect(System.Char)">
-            <summary>Department validation.</summary>
-            <param name="department">Department.</param>
-            <returns>Returns true and exception message if department is incorrect, else returns false.</returns>
-        </member>
-        <member name="M:FileCabinetApp.IRecordValidator.ValidateParameters(FileCabinetApp.FileCabinetRecord)">
-            <summary>Record validation.</summary>
-            <param name="record">Object representing a record.</param>
-        </member>
         <member name="T:FileCabinetApp.CollectionOfRecordsForXmlSerialization">
             <summary>Сlass representing list of FileCabinetRecordsForXmlSerialization.</summary>
         </member>
@@ -435,6 +550,238 @@
         <member name="P:FileCabinetApp.ServiceStat.DeletedRecordsIds">
             <summary>Gets or sets list of ids of deleted records.</summary>
             <value>List of ids of deleted records.</value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.AllValidators">
+            <summary>Сlass representing all validators.</summary>
+        </member>
+        <member name="P:FileCabinetApp.Validators.AllValidators.FirstNameValidator">
+            <summary>Gets or sets FirstNameValidator.</summary>
+            <value>FirstNameValidator.</value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.AllValidators.LastNameValidator">
+            <summary>Gets or sets LastNameValidator.</summary>
+            <value>LastNameValidator.</value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.AllValidators.DateOfBirthValidator">
+            <summary>Gets or sets DateOfBirthValidator.</summary>
+            <value>DateOfBirthValidator.</value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.AllValidators.WorkPlaceNumberValidator">
+            <summary>Gets or sets WorkPlaceNumberValidator.</summary>
+            <value>WorkPlaceNumberValidator.</value>
+        </member>
+        <member name="P:FileCabinetApp.Validators.AllValidators.SalaryValidator">
+            <summary>Gets or sets SalaryValidator.</summary>
+            <value>SalaryValidator.</value>
+        </member>
+        <member name="T:FileCabinetApp.Validators.DateOfBirthValidator">
+            <summary>Date of birth validator.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.DateOfBirthValidator.#ctor(System.DateTime)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.DateOfBirthValidator"/> class.</summary>
+            <param name="minDate">Min value of date of birth.</param>
+        </member>
+        <member name="M:FileCabinetApp.Validators.DateOfBirthValidator.ValidateParameter(System.DateTime)">
+            <summary>Date of birth validation.</summary>
+            <param name="dateOfBirth">Date of birth.</param>
+            <returns>Returns false and exception message if date of birth is incorrect, else returns true.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.DepartmentValidator">
+            <summary>Department validator.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.DepartmentValidator.ValidateParameter(System.Char)">
+            <summary>Department validation.</summary>
+            <param name="department">Department.</param>
+            <returns>Returns false and exception message if department is incorrect, else returns true.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.FirstNameValidator">
+            <summary>First name validator.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.FirstNameValidator.#ctor(System.Int32,System.Int32)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.FirstNameValidator"/> class.</summary>
+            <param name="minLength">Min length of first name.</param>
+            <param name="maxLength">Max length of first name.</param>
+        </member>
+        <member name="M:FileCabinetApp.Validators.FirstNameValidator.ValidateParameter(System.String)">
+            <summary>First name validation.</summary>
+            <param name="firstName">First name.</param>
+            <returns>Returns true and exception message if first name is incorrect, else returns false.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.LastNameValidator">
+            <summary>Last name validator.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.LastNameValidator.#ctor(System.Int32,System.Int32)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.LastNameValidator"/> class.</summary>
+            <param name="minLength">Min length of last name.</param>
+            <param name="maxLength">Max length of last name.</param>
+        </member>
+        <member name="M:FileCabinetApp.Validators.LastNameValidator.ValidateParameter(System.String)">
+            <summary>Last name validation.</summary>
+            <param name="lastName">Last name.</param>
+            <returns>Returns true and exception message if last name is incorrect, else returns false.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.SalaryValidator">
+            <summary>Salary validator.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.SalaryValidator.#ctor(System.Decimal)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.SalaryValidator"/> class.</summary>
+            <param name="salaryMinValue">Min value of salary.</param>
+        </member>
+        <member name="M:FileCabinetApp.Validators.SalaryValidator.ValidateParameter(System.Decimal)">
+            <summary>Salary validation.</summary>
+            <param name="salary">Salary.</param>
+            <returns>Returns false and exception message if salary is incorrect, else returns true.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.Validator">
+            <summary>Validator.</summary>
+            <seealso cref="T:FileCabinetApp.IRecordValidator" />
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.#ctor(FileCabinetApp.Validators.AllValidators)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.Validator"/> class.</summary>
+            <param name="allValidators">AllValidators.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when allValidators is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateFirstName(System.String)">
+            <summary>First name validation.</summary>
+            <param name="firstName">First name.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateLastName(System.String)">
+            <summary>Last name validation.</summary>
+            <param name="lastName">Last name.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateDateOfBirth(System.DateTime)">
+            <summary>Date of birth validation.</summary>
+            <param name="dateOfBirth">Date of birth.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateWorkPlaceNumber(System.Int16)">
+            <summary>Workplace number validation.</summary>
+            <param name="workPlaceNumber">Workplace number.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateSalary(System.Decimal)">
+            <summary>Salary validation.</summary>
+            <param name="salary">Salary.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateDepartment(System.Char)">
+            <summary>Department validation.</summary>
+            <param name="department">Department.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>Record validation.</summary>
+            <param name="record">Object representing a record.</param>
+            <returns>Returns true and exception message if record is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.Validator.ValidateRecordWithExceptions(FileCabinetApp.FileCabinetRecord)">
+            <summary>Record validation.</summary>
+            <param name="record">Object representing a record.</param>
+        </member>
+        <member name="T:FileCabinetApp.Validators.ValidatorBuilder">
+            <summary>Validator builder.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilder.FirstNameValidator(System.Int32,System.Int32)">
+            <summary>Initializes firstNameValidator.</summary>
+            <param name="minNameLength">minNameLength.</param>
+            <param name="maxNameLength">maxNameLength.</param>
+            <returns>Returns ValidatorBuilder.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilder.LastNameValidator(System.Int32,System.Int32)">
+            <summary>Initializes lastNameValidator.</summary>
+            <param name="minNameLength">minNameLength.</param>
+            <param name="maxNameLength">maxNameLength.</param>
+            <returns>Returns ValidatorBuilder.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilder.DateOfBirthValidator(System.DateTime)">
+            <summary>Initializes dateOfBirthValidator.</summary>
+            <param name="minDate">minDate.</param>
+            <returns>Returns ValidatorBuilder.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilder.WorkPlaceNumberValidator(System.Int16)">
+            <summary>Initializes workPlaceNumberValidator.</summary>
+            <param name="workPlaceNumberMinValue">workPlaceNumberMinValue.</param>
+            <returns>Returns ValidatorBuilder.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilder.SalaryValidator(System.Decimal)">
+            <summary>Initializes salaryMinValue.</summary>
+            <param name="salaryMinValue">salaryMinValue.</param>
+            <returns>Returns ValidatorBuilder.</returns>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilder.Create">
+            <summary>Creates Validator.</summary>
+            <returns>Returns Validator.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Validators.ValidatorBuilderExtension">
+            <summary>Validator builder.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilderExtension.CreateDefault(FileCabinetApp.Validators.ValidatorBuilder)">
+            <summary>Creates default validator.</summary>
+            <param name="builder">Builder.</param>
+            <returns>Returns <see cref="T:FileCabinetApp.IRecordValidator"/> object.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when builder is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.Validators.ValidatorBuilderExtension.CreateCustom(FileCabinetApp.Validators.ValidatorBuilder)">
+            <summary>Creates custom validator.</summary>
+            <param name="builder">Builder.</param>
+            <returns>Returns <see cref="T:FileCabinetApp.IRecordValidator"/> object.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when builder is null.</exception>
+        </member>
+        <member name="T:FileCabinetApp.Validators.WorkPlaceNumberValidator">
+            <summary>Workplace number validator.</summary>
+        </member>
+        <member name="M:FileCabinetApp.Validators.WorkPlaceNumberValidator.#ctor(System.Int16)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Validators.WorkPlaceNumberValidator"/> class.</summary>
+            <param name="minvalue">Min value of Workplace number.</param>
+        </member>
+        <member name="M:FileCabinetApp.Validators.WorkPlaceNumberValidator.ValidateParameter(System.Int16)">
+            <summary>Work place number validation.</summary>
+            <param name="workPlaceNumber">Work place number.</param>
+            <returns>Returns false and exception message if work place number is incorrect, else returns true.</returns>
+        </member>
+        <member name="T:FileCabinetApp.IRecordValidator">
+            <summary>Provides functionality to validate parameters.</summary>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateFirstName(System.String)">
+            <summary>First name validation.</summary>
+            <param name="firstName">First name.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateLastName(System.String)">
+            <summary>Last name validation.</summary>
+            <param name="lastName">Last name.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateDateOfBirth(System.DateTime)">
+            <summary>Date of birth validation.</summary>
+            <param name="dateOfBirth">Date of birth.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateWorkPlaceNumber(System.Int16)">
+            <summary>Workplace number validation.</summary>
+            <param name="workPlaceNumber">Workplace number.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateSalary(System.Decimal)">
+            <summary>Salary validation.</summary>
+            <param name="salary">Salary.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateDepartment(System.Char)">
+            <summary>Department validation.</summary>
+            <param name="department">Department.</param>
+            <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>Record validation.</summary>
+            <param name="record">Object representing a record.</param>
+            <returns>Returns true and exception message if record is incorrect, else returns false.</returns>
+        </member>
+        <member name="M:FileCabinetApp.IRecordValidator.ValidateRecordWithExceptions(FileCabinetApp.FileCabinetRecord)">
+            <summary>Record validation with throwing exceptions.</summary>
+            <param name="record">Object representing a record.</param>
         </member>
     </members>
 </doc>

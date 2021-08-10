@@ -48,7 +48,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            this.validator.ValidateParameters(record);
+            this.validator.ValidateRecordWithExceptions(record);
 
             if (this.deletedIds.Count == 0)
             {
@@ -77,7 +77,7 @@ namespace FileCabinetApp
                 throw new ArgumentNullException(nameof(record));
             }
 
-            this.validator.ValidateParameters(record);
+            this.validator.ValidateRecordWithExceptions(record);
             this.fileStream.Seek((SizeOFRecord * (record.Id - 1)) + Offset, SeekOrigin.Begin);
             this.WriteRecordUsingBinaryWriter(record);
         }
@@ -117,27 +117,9 @@ namespace FileCabinetApp
             ReadOnlyCollection<FileCabinetRecord> unverifiedRecords = snapshot.Records;
             foreach (var record in unverifiedRecords)
             {
-                Tuple<bool, string>[] validationResults =
-                {
-                this.validator.NameIsCorrect(record.FirstName),
-                this.validator.NameIsCorrect(record.LastName),
-                this.validator.DateOfBirthIsCorrect(record.DateOfBirth),
-                this.validator.WorkPlaceNumberIsCorrect(record.WorkPlaceNumber),
-                this.validator.SalaryIsCorrect(record.Salary),
-                this.validator.DepartmentIsCorrect(record.Department),
-                };
-
-                bool recordIsValid = true;
-
-                foreach (var result in validationResults)
-                {
-                    recordIsValid = result.Item1;
-                    if (!recordIsValid)
-                    {
-                        Console.WriteLine($"Record #{record.Id} is invalid. {result.Item2}");
-                        break;
-                    }
-                }
+                Tuple<bool, string> validationResult = this.validator.ValidateRecord(record);
+                bool recordIsValid = validationResult.Item1;
+                string message = validationResult.Item2;
 
                 if (recordIsValid)
                 {
@@ -149,6 +131,10 @@ namespace FileCabinetApp
                     {
                         this.EditRecord(record);
                     }
+                }
+                else
+                {
+                    Console.WriteLine(message);
                 }
             }
         }
