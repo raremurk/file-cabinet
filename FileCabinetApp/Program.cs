@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using FileCabinetApp.CommandHandlers;
+using FileCabinetApp.Validators;
 
 [assembly: CLSCompliant(false)]
 
@@ -50,7 +51,7 @@ namespace FileCabinetApp
             string fileModeMessage = fileMemoryMode ? "Using file mode." : "Using memory mode.";
             string programMode = string.Join(' ', validationModeMessage, fileModeMessage);
 
-            validator = customValidation ? new CustomValidator() : new DefaultValidator();
+            validator = customValidation ? new ValidatorBuilder().CreateCustom() : new ValidatorBuilder().CreateDefault();
 
             if (fileMemoryMode)
             {

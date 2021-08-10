@@ -1,41 +1,46 @@
 ﻿using System;
-using FileCabinetApp.Validators;
+using System.Collections.Generic;
 
-namespace FileCabinetApp
+namespace FileCabinetApp.Validators
 {
-    /// <summary>Provides functionality to data validation by default parameters.</summary>
-    public class DefaultValidator : IRecordValidator
+    /// <summary>Validator.</summary>
+    /// <seealso cref="IRecordValidator" />
+    public class Validator : IRecordValidator
     {
-        private const int MinNameLength = 2;
-        private const int MaxNameLength = 60;
-        private const short WorkPlaceNumberMinValue = 1;
-        private const decimal SalaryMinValue = decimal.Zero;
-        private static readonly DateTime MinDate = new (1950, 1, 1);
+        private readonly AllValidators allValidators;
+
+        /// <summary>Initializes a new instance of the <see cref="Validator"/> class.</summary>
+        /// <param name="allValidators">AllValidators.</param>
+        /// <exception cref="ArgumentNullException">Thrown when allValidators is null.</exception>
+        public Validator(AllValidators allValidators)
+        {
+            this.allValidators = allValidators ?? throw new ArgumentNullException(nameof(allValidators));
+        }
 
         /// <summary>First name validation.</summary>
         /// <param name="firstName">First name.</param>
         /// <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
-        public Tuple<bool, string> ValidateFirstName(string firstName) => new FirstNameValidator(MinNameLength, MaxNameLength).ValidateParameter(firstName);
+        public Tuple<bool, string> ValidateFirstName(string firstName) => this.allValidators.FirstNameValidator.ValidateParameter(firstName);
 
         /// <summary>Last name validation.</summary>
         /// <param name="lastName">Last name.</param>
         /// <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
-        public Tuple<bool, string> ValidateLastName(string lastName) => new LastNameValidator(MinNameLength, MaxNameLength).ValidateParameter(lastName);
+        public Tuple<bool, string> ValidateLastName(string lastName) => this.allValidators.LastNameValidator.ValidateParameter(lastName);
 
         /// <summary>Date of birth validation.</summary>
         /// <param name="dateOfBirth">Date of birth.</param>
         /// <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
-        public Tuple<bool, string> ValidateDateOfBirth(DateTime dateOfBirth) => new DateOfBirthValidator(MinDate).ValidateParameter(dateOfBirth);
+        public Tuple<bool, string> ValidateDateOfBirth(DateTime dateOfBirth) => this.allValidators.DateOfBirthValidator.ValidateParameter(dateOfBirth);
 
         /// <summary>Workplace number validation.</summary>
         /// <param name="workPlaceNumber">Workplace number.</param>
         /// <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
-        public Tuple<bool, string> ValidateWorkPlaceNumber(short workPlaceNumber) => new WorkPlaceNumberValidator(WorkPlaceNumberMinValue).ValidateParameter(workPlaceNumber);
+        public Tuple<bool, string> ValidateWorkPlaceNumber(short workPlaceNumber) => this.allValidators.WorkPlaceNumberValidator.ValidateParameter(workPlaceNumber);
 
         /// <summary>Salary validation.</summary>
         /// <param name="salary">Salary.</param>
         /// <returns>Returns true and exception message if parameter is incorrect, else returns false.</returns>
-        public Tuple<bool, string> ValidateSalary(decimal salary) => new SalaryValidator(SalaryMinValue).ValidateParameter(salary);
+        public Tuple<bool, string> ValidateSalary(decimal salary) => this.allValidators.SalaryValidator.ValidateParameter(salary);
 
         /// <summary>Department validation.</summary>
         /// <param name="department">Department.</param>
