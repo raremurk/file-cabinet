@@ -488,6 +488,72 @@
         <member name="M:FileCabinetApp.IFileCabinetService.Purge">
             <summary>Defragments the data file.</summary>
         </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.DateOfBirthValidationRules">
+            <summary>Date of birth validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.DateOfBirthValidationRules.From">
+            <summary>Gets or sets date of birth min value.</summary>
+            <value>Date of birth min value.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.FirstNameValidationRules">
+            <summary>First name validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.FirstNameValidationRules.Min">
+            <summary>Gets or sets first name min length.</summary>
+            <value>First name min length.</value>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.FirstNameValidationRules.Max">
+            <summary>Gets or sets first name max length.</summary>
+            <value>First name max length.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.LastNameValidationRules">
+            <summary>Last name validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.LastNameValidationRules.Min">
+            <summary>Gets or sets last name min length.</summary>
+            <value>Last name min length.</value>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.LastNameValidationRules.Max">
+            <summary>Gets or sets last name max length.</summary>
+            <value>Last name max length.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.SalaryValidationRules">
+            <summary>Salary validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.SalaryValidationRules.Min">
+            <summary>Gets or sets salary min value.</summary>
+            <value>Salary min value.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.WorkPlaceNumberValidationRules">
+            <summary>Workplace number validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.WorkPlaceNumberValidationRules.Min">
+            <summary>Gets or sets workplace number min value.</summary>
+            <value>Workplace number min value.</value>
+        </member>
+        <member name="T:FileCabinetApp.ValidationRules">
+            <summary>Validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.FirstName">
+            <summary>Gets or sets FirstNameValidationRules.</summary>
+            <value>FirstNameValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.LastName">
+            <summary>Gets or sets LastNameValidationRules.</summary>
+            <value>LastNameValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.DateOfBirth">
+            <summary>Gets or sets DateOfBirthValidationRules.</summary>
+            <value>DateOfBirthValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.WorkPlaceNumber">
+            <summary>Gets or sets WorkPlaceNumberValidationRules.</summary>
+            <value>WorkPlaceNumberValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.Salary">
+            <summary>Gets or sets SalaryValidationRules.</summary>
+            <value>SalaryValidationRules.</value>
+        </member>
         <member name="T:FileCabinetApp.CollectionOfRecordsForXmlSerialization">
             <summary>Сlass representing list of FileCabinetRecordsForXmlSerialization.</summary>
         </member>
