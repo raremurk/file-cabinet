@@ -1,0 +1,40 @@
+﻿{
+  "default": {
+    "FirstName": {
+      "Min": 2,
+      "Max": 60
+    },
+    "LastName": {
+      "Min": 2,
+      "Max": 60
+    },
+    "DateOfBirth": {
+      "From": "1/1/1950"
+    },
+    "WorkPlaceNumber": {
+      "Min": 1
+    },
+    "Salary": {
+      "Min": 0
+    }
+  },
+  "custom": {
+    "FirstName": {
+      "Min": 5,
+      "Max": 30
+    },
+    "LastName": {
+      "Min": 5,
+      "Max": 30
+    },
+    "DateOfBirth": {
+      "From": "1/1/1980"
+    },
+    "WorkPlaceNumber": {
+      "Min": 10
+    },
+    "Salary": {
+      "Min": 200
+    }
+  }
+}

@@ -488,6 +488,72 @@
         <member name="M:FileCabinetApp.IFileCabinetService.Purge">
             <summary>Defragments the data file.</summary>
         </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.DateOfBirthValidationRules">
+            <summary>Date of birth validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.DateOfBirthValidationRules.From">
+            <summary>Gets or sets date of birth min value.</summary>
+            <value>Date of birth min value.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.FirstNameValidationRules">
+            <summary>First name validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.FirstNameValidationRules.Min">
+            <summary>Gets or sets first name min length.</summary>
+            <value>First name min length.</value>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.FirstNameValidationRules.Max">
+            <summary>Gets or sets first name max length.</summary>
+            <value>First name max length.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.LastNameValidationRules">
+            <summary>Last name validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.LastNameValidationRules.Min">
+            <summary>Gets or sets last name min length.</summary>
+            <value>Last name min length.</value>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.LastNameValidationRules.Max">
+            <summary>Gets or sets last name max length.</summary>
+            <value>Last name max length.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.SalaryValidationRules">
+            <summary>Salary validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.SalaryValidationRules.Min">
+            <summary>Gets or sets salary min value.</summary>
+            <value>Salary min value.</value>
+        </member>
+        <member name="T:FileCabinetApp.JsonConfiguration.WorkPlaceNumberValidationRules">
+            <summary>Workplace number validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.JsonConfiguration.WorkPlaceNumberValidationRules.Min">
+            <summary>Gets or sets workplace number min value.</summary>
+            <value>Workplace number min value.</value>
+        </member>
+        <member name="T:FileCabinetApp.ValidationRules">
+            <summary>Validation rules.</summary>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.FirstName">
+            <summary>Gets or sets FirstNameValidationRules.</summary>
+            <value>FirstNameValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.LastName">
+            <summary>Gets or sets LastNameValidationRules.</summary>
+            <value>LastNameValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.DateOfBirth">
+            <summary>Gets or sets DateOfBirthValidationRules.</summary>
+            <value>DateOfBirthValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.WorkPlaceNumber">
+            <summary>Gets or sets WorkPlaceNumberValidationRules.</summary>
+            <value>WorkPlaceNumberValidationRules.</value>
+        </member>
+        <member name="P:FileCabinetApp.ValidationRules.Salary">
+            <summary>Gets or sets SalaryValidationRules.</summary>
+            <value>SalaryValidationRules.</value>
+        </member>
         <member name="T:FileCabinetApp.CollectionOfRecordsForXmlSerialization">
             <summary>Сlass representing list of FileCabinetRecordsForXmlSerialization.</summary>
         </member>
@@ -539,6 +605,118 @@
         <member name="M:FileCabinetApp.Program.Main(System.String[])">
             <summary>Defines the entry point of the application.</summary>
             <param name="args">Command line arguments.</param>
+        </member>
+        <member name="T:FileCabinetApp.ServiceLogger">
+            <summary>Service logger.</summary>
+            <seealso cref="T:FileCabinetApp.IFileCabinetService" />
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.ServiceLogger"/> class.</summary>
+            <param name="service">IFileCabinetService.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when service is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.CreateRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>Creates a record and returns its id.</summary>
+            <param name="record">Object representing a record.</param>
+            <returns>Id of a new record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.EditRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>Edits a record with the specified id.</summary>
+            <param name="record">Object representing a record.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.FindByFirstName(System.String)">
+            <summary>Finds records by first name.</summary>
+            <param name="firstName">First name to find.</param>
+            <returns>Returns readonly collection of found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.FindByLastName(System.String)">
+            <summary>Finds records by last name.</summary>
+            <param name="lastName">Last name to find.</param>
+            <returns>Returns readonly collection of found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.FindByDateOfBirth(System.String)">
+            <summary>Finds records by date of birth.</summary>
+            <param name="dateOfBirth">Date of birth to find.</param>
+            <returns>Returns readonly collection of found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.GetRecords">
+            <summary>Returns all records.</summary>
+            <returns>Returns readonly collection of all records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.GetStat">
+            <summary>Returns service statistics.</summary>
+            <returns>Returns ServiceStat.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.MakeSnapshot">
+            <summary>Makes snapshot of current object state.</summary>
+            <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>Restores the specified snapshot.</summary>
+            <param name="snapshot">Snapshot.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.RemoveRecord(System.Int32)">
+            <summary>Removes a record with the specified id.</summary>
+            <param name="id">Id of the record to delete.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.Purge">
+            <summary>Defragments the data file.</summary>
+        </member>
+        <member name="T:FileCabinetApp.ServiceMeter">
+            <summary>Service meter.</summary>
+            <seealso cref="T:FileCabinetApp.IFileCabinetService" />
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.ServiceMeter"/> class.</summary>
+            <param name="service">IFileCabinetService.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when service is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.CreateRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>Creates a record and returns its id.</summary>
+            <param name="record">Object representing a record.</param>
+            <returns>Id of a new record.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.EditRecord(FileCabinetApp.FileCabinetRecord)">
+            <summary>Edits a record with the specified id.</summary>
+            <param name="record">Object representing a record.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.FindByFirstName(System.String)">
+            <summary>Finds records by first name.</summary>
+            <param name="firstName">First name to find.</param>
+            <returns>Returns readonly collection of found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.FindByLastName(System.String)">
+            <summary>Finds records by last name.</summary>
+            <param name="lastName">Last name to find.</param>
+            <returns>Returns readonly collection of found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.FindByDateOfBirth(System.String)">
+            <summary>Finds records by date of birth.</summary>
+            <param name="dateOfBirth">Date of birth to find.</param>
+            <returns>Returns readonly collection of found records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.GetRecords">
+            <summary>Returns all records.</summary>
+            <returns>Returns readonly collection of all records.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.GetStat">
+            <summary>Returns service statistics.</summary>
+            <returns>Returns ServiceStat.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.MakeSnapshot">
+            <summary>Makes snapshot of current object state.</summary>
+            <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>Restores the specified snapshot.</summary>
+            <param name="snapshot">Snapshot.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.RemoveRecord(System.Int32)">
+            <summary>Removes a record with the specified id.</summary>
+            <param name="id">Id of the record to delete.</param>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.Purge">
+            <summary>Defragments the data file.</summary>
         </member>
         <member name="T:FileCabinetApp.ServiceStat">
             <summary>Сlass representing service statistics.</summary>
