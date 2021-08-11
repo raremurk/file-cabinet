@@ -28,8 +28,10 @@ namespace FileCabinetApp
             string[] customValidationArgs = { "--validation-rules=custom", "-v custom" };
             string[] fileMemoryArgs = { "--storage=file", "-s file" };
             string[] shortForms = { "-s", "-v" };
+            string serviceMeterArg = "-use-stopwatch";
             bool customValidation = false;
             bool fileMemoryMode = false;
+            bool serviceMeter = false;
 
             if (!(args is null))
             {
@@ -42,8 +44,9 @@ namespace FileCabinetApp
                         parameter = string.Join(' ', args[i], args[++i]);
                     }
 
-                    customValidation = Array.FindIndex(customValidationArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
-                    fileMemoryMode = Array.FindIndex(fileMemoryArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
+                    customValidation = customValidation || Array.FindIndex(customValidationArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
+                    fileMemoryMode = fileMemoryMode || Array.FindIndex(fileMemoryArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
+                    serviceMeter = serviceMeter || string.Equals(serviceMeterArg, parameter, StringComparison.OrdinalIgnoreCase);
                 }
             }
 
@@ -62,6 +65,11 @@ namespace FileCabinetApp
             else
             {
                 fileCabinetService = new FileCabinetMemoryService(validator);
+            }
+
+            if (serviceMeter)
+            {
+                fileCabinetService = new ServiceMeter(fileCabinetService);
             }
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
