@@ -13,17 +13,15 @@ namespace FileCabinetApp
         private const int Offset = 2;
         private const short NotDeleted = 0;
         private const short IsDeleted = 8192;
-        private const int FirstNameStartPos = 6;
-        private const int LastNameStartPos = 127;
-        private const int DateOfBirthStartPos = 248;
 
+        private readonly Dictionary<string, List<int>> firstNameDictionary = new ();
+        private readonly Dictionary<string, List<int>> lastNameDictionary = new ();
+        private readonly Dictionary<string, List<int>> dateOfBirthDictionary = new ();
         private readonly IRecordValidator validator;
-        private readonly Func<BinaryReader, string> readNameProperty = reader => reader.ReadString().TrimEnd();
-        private readonly Func<BinaryReader, string> readDateOfBirthProperty = reader => new DateTime(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()).ToString("MM/dd/yyyy", CultureInfo.InvariantCulture);
-        private List<int> deletedIds = new ();
         private FileStream fileStream;
         private BinaryWriter writer;
         private BinaryReader reader;
+        private List<int> deletedIds = new ();
 
         private int numberOfRecords;
 
@@ -64,7 +62,7 @@ namespace FileCabinetApp
             }
 
             this.WriteRecordUsingBinaryWriter(record);
-
+            this.AddRecordToDictionaries(record);
             return this.numberOfRecords;
         }
 
@@ -79,7 +77,10 @@ namespace FileCabinetApp
 
             this.validator.ValidateRecordWithExceptions(record);
             this.fileStream.Seek((SizeOFRecord * (record.Id - 1)) + Offset, SeekOrigin.Begin);
+            FileCabinetRecord originalRecord = this.ReadRecordUsingBinaryReader();
+            this.RemoveRecordFromDictionaries(originalRecord);
             this.WriteRecordUsingBinaryWriter(record);
+            this.AddRecordToDictionaries(record);
         }
 
         /// <summary>Returns all records.</summary>
@@ -144,6 +145,8 @@ namespace FileCabinetApp
         public void RemoveRecord(int id)
         {
             this.fileStream.Seek(SizeOFRecord * (id - 1), SeekOrigin.Begin);
+            FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
+            this.RemoveRecordFromDictionaries(record);
             this.writer.Write(IsDeleted);
             this.deletedIds.Add(id);
         }
@@ -151,26 +154,17 @@ namespace FileCabinetApp
         /// <summary>Finds records by first name.</summary>
         /// <param name="firstName">First name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            return this.SearchByProperty(firstName, FirstNameStartPos, this.readNameProperty);
-        }
+        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName) => this.SearchByProperty(firstName, this.firstNameDictionary);
 
         /// <summary>Finds records by last name.</summary>
         /// <param name="lastName">Last name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            return this.SearchByProperty(lastName, LastNameStartPos, this.readNameProperty);
-        }
+        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName) => this.SearchByProperty(lastName, this.lastNameDictionary);
 
         /// <summary>Finds records by date of birth.</summary>
         /// <param name="dateOfBirth">Date of birth to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
-        {
-            return this.SearchByProperty(dateOfBirth, DateOfBirthStartPos, this.readDateOfBirthProperty);
-        }
+        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth) => this.SearchByProperty(dateOfBirth, this.dateOfBirthDictionary);
 
         /// <summary>Returns service statistics.</summary>
         /// <returns>Returns ServiceStat.</returns>
@@ -204,6 +198,56 @@ namespace FileCabinetApp
             }
         }
 
+        private static void AddRecordToDictionary(string propertyValue, int recordPosition, Dictionary<string, List<int>> dictionary)
+        {
+            string key = propertyValue.ToUpperInvariant();
+            if (!dictionary.ContainsKey(key))
+            {
+                dictionary.Add(key, new List<int>());
+            }
+
+            dictionary[key].Add(recordPosition);
+        }
+
+        private static void RemoveRecordFromDictionary(string propertyValue, int recordPosition, Dictionary<string, List<int>> dictionary)
+        {
+            string key = propertyValue.ToUpperInvariant();
+            dictionary[key].Remove(recordPosition);
+            if (dictionary[key].Count == 0)
+            {
+                dictionary.Remove(key);
+            }
+        }
+
+        private void RemoveRecordFromDictionaries(FileCabinetRecord record)
+        {
+            RemoveRecordFromDictionary(record.FirstName, record.Id, this.firstNameDictionary);
+            RemoveRecordFromDictionary(record.LastName, record.Id, this.lastNameDictionary);
+            RemoveRecordFromDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record.Id, this.dateOfBirthDictionary);
+        }
+
+        private void AddRecordToDictionaries(FileCabinetRecord record)
+        {
+            AddRecordToDictionary(record.FirstName, record.Id, this.firstNameDictionary);
+            AddRecordToDictionary(record.LastName, record.Id, this.lastNameDictionary);
+            AddRecordToDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record.Id, this.dateOfBirthDictionary);
+        }
+
+        private ReadOnlyCollection<FileCabinetRecord> SearchByProperty(string propertyValue, Dictionary<string, List<int>> dictionary)
+        {
+            List<FileCabinetRecord> records = new ();
+            string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
+            var recordsPositions = dictionary.ContainsKey(key) ? dictionary[key] : new List<int>();
+            foreach (int pos in recordsPositions)
+            {
+                this.fileStream.Seek((SizeOFRecord * (pos - 1)) + Offset, SeekOrigin.Begin);
+                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
+                records.Add(record);
+            }
+
+            return new ReadOnlyCollection<FileCabinetRecord>(records);
+        }
+
         private FileCabinetRecord ReadRecordUsingBinaryReader()
         {
             var record = new FileCabinetRecord
@@ -231,31 +275,6 @@ namespace FileCabinetApp
             this.writer.Write(record.WorkPlaceNumber);
             this.writer.Write(record.Salary);
             this.writer.Write(record.Department);
-        }
-
-        private ReadOnlyCollection<FileCabinetRecord> SearchByProperty(string propertyValue, int propertyStartPos, Func<BinaryReader, string> readProperty)
-        {
-            List<FileCabinetRecord> records = new ();
-
-            for (int i = 0; i < this.numberOfRecords; i++)
-            {
-                int start = SizeOFRecord * i;
-
-                this.fileStream.Seek(start, SeekOrigin.Begin);
-                short offset = this.reader.ReadInt16();
-
-                this.fileStream.Seek(propertyStartPos, SeekOrigin.Current);
-                string propertyValueFromDB = readProperty(this.reader);
-
-                if (offset != IsDeleted && string.Equals(propertyValue, propertyValueFromDB, StringComparison.OrdinalIgnoreCase))
-                {
-                    this.fileStream.Seek(start + Offset, SeekOrigin.Begin);
-                    FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-                    records.Add(record);
-                }
-            }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
     }
 }
