@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -43,7 +44,7 @@ namespace FileCabinetApp
         /// <summary>Finds records by first name.</summary>
         /// <param name="firstName">First name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             var sw = Stopwatch.StartNew();
             var result = this.service.FindByFirstName(firstName);
@@ -55,7 +56,7 @@ namespace FileCabinetApp
         /// <summary>Finds records by last name.</summary>
         /// <param name="lastName">Last name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             var sw = Stopwatch.StartNew();
             var result = this.service.FindByLastName(lastName);
@@ -67,7 +68,7 @@ namespace FileCabinetApp
         /// <summary>Finds records by date of birth.</summary>
         /// <param name="dateOfBirth">Date of birth to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             var sw = Stopwatch.StartNew();
             var result = this.service.FindByDateOfBirth(dateOfBirth);
@@ -78,7 +79,7 @@ namespace FileCabinetApp
 
         /// <summary>Returns all records.</summary>
         /// <returns>Returns readonly collection of all records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             var sw = Stopwatch.StartNew();
             var result = this.service.GetRecords();

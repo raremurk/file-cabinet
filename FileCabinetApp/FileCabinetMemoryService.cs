@@ -72,32 +72,50 @@ namespace FileCabinetApp
         /// <summary>Finds records by first name.</summary>
         /// <param name="firstName">First name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             string firstNameKey = firstName is null ? string.Empty : firstName.ToUpperInvariant();
-            return this.firstNameDictionary.ContainsKey(firstNameKey) ? new ReadOnlyCollection<FileCabinetRecord>(this.firstNameDictionary[firstNameKey]) : new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
+            var records = this.firstNameDictionary.ContainsKey(firstNameKey) ? this.firstNameDictionary[firstNameKey] : new ();
+            foreach (var record in records)
+            {
+                yield return record;
+            }
         }
 
         /// <summary>Finds records by last name.</summary>
         /// <param name="lastName">Last name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             string lastNameKey = lastName is null ? string.Empty : lastName.ToUpperInvariant();
-            return this.lastNameDictionary.ContainsKey(lastNameKey) ? new ReadOnlyCollection<FileCabinetRecord>(this.lastNameDictionary[lastNameKey]) : new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
+            var records = this.lastNameDictionary.ContainsKey(lastNameKey) ? this.lastNameDictionary[lastNameKey] : new ();
+            foreach (var record in records)
+            {
+                yield return record;
+            }
         }
 
         /// <summary>Finds records by date of birth.</summary>
         /// <param name="dateOfBirth">Date of birth to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
-            return this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? new ReadOnlyCollection<FileCabinetRecord>(this.dateOfBirthDictionary[dateOfBirth]) : new ReadOnlyCollection<FileCabinetRecord>(Array.Empty<FileCabinetRecord>());
+            var records = this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? this.dateOfBirthDictionary[dateOfBirth] : new ();
+            foreach (var record in records)
+            {
+                yield return record;
+            }
         }
 
         /// <summary>Returns all records.</summary>
         /// <returns>Returns readonly collection of all records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords() => new (this.list);
+        public IEnumerable<FileCabinetRecord> GetRecords()
+        {
+            foreach (var record in this.list)
+            {
+                yield return record;
+            }
+        }
 
         /// <summary>Returns service statistics.</summary>
         /// <returns>Returns ServiceStat.</returns>
@@ -108,7 +126,7 @@ namespace FileCabinetApp
 
         /// <summary>Makes snapshot of current object state.</summary>
         /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
-        public FileCabinetServiceSnapshot MakeSnapshot() => new (this.GetRecords());
+        public FileCabinetServiceSnapshot MakeSnapshot() => new (new ReadOnlyCollection<FileCabinetRecord>(this.list));
 
         /// <summary>Restores the specified snapshot.</summary>
         /// <param name="snapshot">Snapshot.</param>
