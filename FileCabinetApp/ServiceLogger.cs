@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -72,47 +73,47 @@ namespace FileCabinetApp
         /// <summary>Finds records by first name.</summary>
         /// <param name="firstName">First name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName)
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, $"Calling FindByFirstName() with firstName = '{firstName}'");
             var result = this.service.FindByFirstName(firstName);
-            WriteOperationLog(writer, $"FindByFirstName() returned {result.Count} record(s)");
+            WriteOperationLog(writer, $"FindByFirstName() returned result");
             return result;
         }
 
         /// <summary>Finds records by last name.</summary>
         /// <param name="lastName">Last name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName)
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, $"Calling FindByLastName() with lastName = '{lastName}'");
             var result = this.service.FindByLastName(lastName);
-            WriteOperationLog(writer, $"FindByLastName() returned {result.Count} record(s)");
+            WriteOperationLog(writer, $"FindByLastName() returned result");
             return result;
         }
 
         /// <summary>Finds records by date of birth.</summary>
         /// <param name="dateOfBirth">Date of birth to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, $"Calling FindByDateOfBirth() with dateOfBirth = '{dateOfBirth}'");
             var result = this.service.FindByDateOfBirth(dateOfBirth);
-            WriteOperationLog(writer, $"FindByDateOfBirth() returned {result.Count} record(s)");
+            WriteOperationLog(writer, $"FindByDateOfBirth() returned result");
             return result;
         }
 
         /// <summary>Returns all records.</summary>
         /// <returns>Returns readonly collection of all records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, "Calling GetRecords()");
             var result = this.service.GetRecords();
-            WriteOperationLog(writer, $"GetRecords() returned {result.Count} record(s)");
+            WriteOperationLog(writer, $"GetRecords() returned result");
             return result;
         }
 

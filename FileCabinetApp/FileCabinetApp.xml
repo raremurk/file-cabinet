@@ -232,18 +232,6 @@
             <summary>Edits a record with the specified id.</summary>
             <param name="record">Object representing a record.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecords">
-            <summary>Returns all records.</summary>
-            <returns>Returns readonly collection of all records.</returns>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
-            <summary>Restores the specified snapshot.</summary>
-            <param name="snapshot">Snapshot.</param>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.RemoveRecord(System.Int32)">
-            <summary>Removes a record with the specified id.</summary>
-            <param name="id">Id of the record to delete.</param>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByFirstName(System.String)">
             <summary>Finds records by first name.</summary>
             <param name="firstName">First name to find.</param>
@@ -259,6 +247,10 @@
             <param name="dateOfBirth">Date of birth to find.</param>
             <returns>Returns readonly collection of found records.</returns>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecords">
+            <summary>Returns all records.</summary>
+            <returns>Returns readonly collection of all records.</returns>
+        </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetStat">
             <summary>Returns service statistics.</summary>
             <returns>Returns ServiceStat.</returns>
@@ -266,6 +258,14 @@
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.MakeSnapshot">
             <summary>Makes snapshot of current object state.</summary>
             <returns>Returns new <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/>.</returns>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <summary>Restores the specified snapshot.</summary>
+            <param name="snapshot">Snapshot.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.RemoveRecord(System.Int32)">
+            <summary>Removes a record with the specified id.</summary>
+            <param name="id">Id of the record to delete.</param>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.Purge">
             <summary>Defragments the data file.</summary>

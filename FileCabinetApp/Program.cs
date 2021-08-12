@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using FileCabinetApp.CommandHandlers;
 using FileCabinetApp.Validators;
@@ -118,6 +119,12 @@ namespace FileCabinetApp
             if (records is null)
             {
                 throw new ArgumentNullException(nameof(records));
+            }
+
+            if (!records.Any())
+            {
+                Console.WriteLine("No records found.");
+                return;
             }
 
             foreach (var record in records)

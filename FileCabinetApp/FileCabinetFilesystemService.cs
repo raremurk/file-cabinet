@@ -83,12 +83,25 @@ namespace FileCabinetApp
             this.AddRecordToDictionaries(record);
         }
 
+        /// <summary>Finds records by first name.</summary>
+        /// <param name="firstName">First name to find.</param>
+        /// <returns>Returns readonly collection of found records.</returns>
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName) => this.SearchByProperty(firstName, this.firstNameDictionary);
+
+        /// <summary>Finds records by last name.</summary>
+        /// <param name="lastName">Last name to find.</param>
+        /// <returns>Returns readonly collection of found records.</returns>
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName) => this.SearchByProperty(lastName, this.lastNameDictionary);
+
+        /// <summary>Finds records by date of birth.</summary>
+        /// <param name="dateOfBirth">Date of birth to find.</param>
+        /// <returns>Returns readonly collection of found records.</returns>
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth) => this.SearchByProperty(dateOfBirth, this.dateOfBirthDictionary);
+
         /// <summary>Returns all records.</summary>
         /// <returns>Returns readonly collection of all records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords()
+        public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            List<FileCabinetRecord> records = new ();
-
             for (int i = 0; i < this.numberOfRecords; i++)
             {
                 this.fileStream.Seek(SizeOFRecord * i, SeekOrigin.Begin);
@@ -96,12 +109,23 @@ namespace FileCabinetApp
 
                 if (offset != IsDeleted)
                 {
-                    FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-                    records.Add(record);
+                    yield return this.ReadRecordUsingBinaryReader();
                 }
             }
+        }
 
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
+        /// <summary>Returns service statistics.</summary>
+        /// <returns>Returns ServiceStat.</returns>
+        public ServiceStat GetStat()
+        {
+            return new ServiceStat { NumberOfRecords = this.numberOfRecords, DeletedRecordsIds = new (this.deletedIds) };
+        }
+
+        /// <summary>Makes snapshot of current object state.</summary>
+        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>Restores the specified snapshot.</summary>
@@ -151,39 +175,10 @@ namespace FileCabinetApp
             this.deletedIds.Add(id);
         }
 
-        /// <summary>Finds records by first name.</summary>
-        /// <param name="firstName">First name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName) => this.SearchByProperty(firstName, this.firstNameDictionary);
-
-        /// <summary>Finds records by last name.</summary>
-        /// <param name="lastName">Last name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName) => this.SearchByProperty(lastName, this.lastNameDictionary);
-
-        /// <summary>Finds records by date of birth.</summary>
-        /// <param name="dateOfBirth">Date of birth to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth) => this.SearchByProperty(dateOfBirth, this.dateOfBirthDictionary);
-
-        /// <summary>Returns service statistics.</summary>
-        /// <returns>Returns ServiceStat.</returns>
-        public ServiceStat GetStat()
-        {
-            return new ServiceStat { NumberOfRecords = this.numberOfRecords, DeletedRecordsIds = new (this.deletedIds) };
-        }
-
-        /// <summary>Makes snapshot of current object state.</summary>
-        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
-        public FileCabinetServiceSnapshot MakeSnapshot()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>Defragments the data file.</summary>
         public void Purge()
         {
-            ReadOnlyCollection<FileCabinetRecord> records = this.GetRecords();
+            IEnumerable<FileCabinetRecord> records = this.GetRecords();
             this.deletedIds = new ();
             this.numberOfRecords = 0;
             string fileName = this.fileStream.Name;
@@ -233,19 +228,15 @@ namespace FileCabinetApp
             AddRecordToDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record.Id, this.dateOfBirthDictionary);
         }
 
-        private ReadOnlyCollection<FileCabinetRecord> SearchByProperty(string propertyValue, Dictionary<string, List<int>> dictionary)
+        private IEnumerable<FileCabinetRecord> SearchByProperty(string propertyValue, Dictionary<string, List<int>> dictionary)
         {
-            List<FileCabinetRecord> records = new ();
             string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
             var recordsPositions = dictionary.ContainsKey(key) ? dictionary[key] : new List<int>();
             foreach (int pos in recordsPositions)
             {
                 this.fileStream.Seek((SizeOFRecord * (pos - 1)) + Offset, SeekOrigin.Begin);
-                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-                records.Add(record);
+                yield return this.ReadRecordUsingBinaryReader();
             }
-
-            return new ReadOnlyCollection<FileCabinetRecord>(records);
         }
 
         private FileCabinetRecord ReadRecordUsingBinaryReader()

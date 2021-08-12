@@ -60,13 +60,9 @@ namespace FileCabinetApp.CommandHandlers
             }
 
             value = value[1..^1];
-            ReadOnlyCollection<FileCabinetRecord> records = new (Array.Empty<FileCabinetRecord>());
+            IEnumerable<FileCabinetRecord> records = this.fileCabinetService.FindByFirstName(value);
 
-            if (index == 0)
-            {
-                records = this.fileCabinetService.FindByFirstName(value);
-            }
-            else if (index == 1)
+            if (index == 1)
             {
                 records = this.fileCabinetService.FindByLastName(value);
             }
@@ -80,12 +76,6 @@ namespace FileCabinetApp.CommandHandlers
                 }
 
                 records = this.fileCabinetService.FindByDateOfBirth(value);
-            }
-
-            if (records.Count == 0)
-            {
-                Console.WriteLine("No such records.");
-                return;
             }
 
             this.printer(records);

@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 
 namespace FileCabinetApp
 {
@@ -17,21 +17,21 @@ namespace FileCabinetApp
         /// <summary>Finds records by first name.</summary>
         /// <param name="firstName">First name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByFirstName(string firstName);
+        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName);
 
         /// <summary>Finds records by last name.</summary>
         /// <param name="lastName">Last name to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByLastName(string lastName);
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName);
 
         /// <summary>Finds records by date of birth.</summary>
         /// <param name="dateOfBirth">Date of birth to find.</param>
         /// <returns>Returns readonly collection of found records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth);
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth);
 
         /// <summary>Returns all records.</summary>
         /// <returns>Returns readonly collection of all records.</returns>
-        public ReadOnlyCollection<FileCabinetRecord> GetRecords();
+        public IEnumerable<FileCabinetRecord> GetRecords();
 
         /// <summary>Returns service statistics.</summary>
         /// <returns>Returns ServiceStat.</returns>
