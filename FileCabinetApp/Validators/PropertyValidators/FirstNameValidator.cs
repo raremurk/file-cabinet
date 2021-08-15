@@ -22,7 +22,7 @@ namespace FileCabinetApp.Validators
         /// <returns>Returns true and exception message if first name is incorrect, else returns false.</returns>
         public Tuple<bool, string> ValidateParameter(string firstName)
         {
-            string parameterName = nameof(firstName);
+            string parameterName = nameof(firstName).Capitalize();
             string message = string.Empty;
             if (string.IsNullOrWhiteSpace(firstName))
             {
@@ -33,7 +33,7 @@ namespace FileCabinetApp.Validators
             int stringLength = firstName.Length;
             if (stringLength < this.minLength || stringLength > this.maxLength)
             {
-                message = $"Length of {parameterName} is less than {this.minLength} or more than {this.maxLength}.";
+                message = $"{parameterName} length is less than {this.minLength} or more than {this.maxLength}.";
                 return new (false, message);
             }
 

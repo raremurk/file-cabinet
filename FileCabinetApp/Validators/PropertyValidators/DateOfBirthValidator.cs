@@ -20,8 +20,9 @@ namespace FileCabinetApp.Validators
         /// <returns>Returns false and exception message if date of birth is incorrect, else returns true.</returns>
         public Tuple<bool, string> ValidateParameter(DateTime dateOfBirth)
         {
+            string parameterName = nameof(dateOfBirth).Capitalize();
             bool valid = DateTime.Compare(DateTime.Now, dateOfBirth) >= 0 && DateTime.Compare(this.minDate, dateOfBirth) <= 0;
-            string message = !valid ? $"{nameof(dateOfBirth)} is less than {this.minDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture)} or more than current date." : string.Empty;
+            string message = !valid ? $"{parameterName} is less than {this.minDate.ToString("dd-MMM-yyyy", CultureInfo.InvariantCulture)} or more than current date." : string.Empty;
             return new (valid, message);
         }
     }

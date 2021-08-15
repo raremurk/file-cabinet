@@ -19,8 +19,9 @@ namespace FileCabinetApp.Validators
         /// <returns>Returns false and exception message if salary is incorrect, else returns true.</returns>
         public Tuple<bool, string> ValidateParameter(decimal salary)
         {
+            string parameterName = nameof(salary).Capitalize();
             bool valid = salary >= this.salaryMinValue;
-            string message = !valid ? $"{nameof(salary)} cannot be less than {this.salaryMinValue}." : string.Empty;
+            string message = !valid ? $"{parameterName} cannot be less than {this.salaryMinValue}." : string.Empty;
             return new (valid, message);
         }
     }

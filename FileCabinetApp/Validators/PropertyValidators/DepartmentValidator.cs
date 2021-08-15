@@ -10,8 +10,9 @@ namespace FileCabinetApp.Validators
         /// <returns>Returns false and exception message if department is incorrect, else returns true.</returns>
         public static Tuple<bool, string> ValidateParameter(char department)
         {
+            string parameterName = nameof(department).Capitalize();
             bool valid = char.IsLetter(department) && char.IsUpper(department);
-            string message = !valid ? $"{nameof(department)} can only be uppercase letter." : string.Empty;
+            string message = !valid ? $"{parameterName} can only be uppercase letter." : string.Empty;
             return new (valid, message);
         }
     }
