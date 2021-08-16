@@ -22,7 +22,7 @@ namespace FileCabinetApp.CommandHandlers
         private void Stat(string parameters)
         {
             ServiceStat stat = this.fileCabinetService.GetStat();
-            Console.WriteLine($"{stat.NumberOfRecords} record(s). {stat.DeletedRecordsIds.Count} deleted record(s).");
+            Console.WriteLine($"{stat.ExistingRecordsIds.Count} record(s). {stat.DeletedRecordsIds.Count} deleted record(s).");
         }
     }
 }

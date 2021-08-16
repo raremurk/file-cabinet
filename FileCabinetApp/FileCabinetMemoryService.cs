@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace FileCabinetApp
 {
-    /// <summary>Class for working with records.</summary>
+    /// <summary>Class for working with records in memory.</summary>
     public class FileCabinetMemoryService : IFileCabinetService
     {
         private readonly Dictionary<string, List<FileCabinetRecord>> firstNameDictionary = new ();
@@ -21,10 +21,7 @@ namespace FileCabinetApp
             this.validator = validator;
         }
 
-        /// <summary>Creates a record and returns its id.</summary>
-        /// <param name="record">Object representing a record.</param>
-        /// <returns>Id of a new record.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
+        /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
         public int CreateRecord(FileCabinetRecord record)
         {
             if (record is null)
@@ -33,15 +30,13 @@ namespace FileCabinetApp
             }
 
             this.validator.ValidateRecordWithExceptions(record);
-            record.Id = this.list.Count + 1;
+            record.Id = record.Id == 0 ? this.NextAvailableId() : record.Id;
             this.list.Add(record);
             this.AddRecordToDictionaries(record);
             return record.Id;
         }
 
-        /// <summary>Edits a record with the specified id.</summary>
-        /// <param name="record">Object representing a record.</param>
-        /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
+        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
         /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
         public void EditRecord(FileCabinetRecord record)
         {
@@ -69,9 +64,7 @@ namespace FileCabinetApp
             this.AddRecordToDictionaries(originalRecord);
         }
 
-        /// <summary>Finds records by first name.</summary>
-        /// <param name="firstName">First name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             string firstNameKey = firstName is null ? string.Empty : firstName.ToUpperInvariant();
@@ -82,9 +75,7 @@ namespace FileCabinetApp
             }
         }
 
-        /// <summary>Finds records by last name.</summary>
-        /// <param name="lastName">Last name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.FindByLastName(string)"/>
         public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             string lastNameKey = lastName is null ? string.Empty : lastName.ToUpperInvariant();
@@ -95,9 +86,7 @@ namespace FileCabinetApp
             }
         }
 
-        /// <summary>Finds records by date of birth.</summary>
-        /// <param name="dateOfBirth">Date of birth to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.FindByDateOfBirth(string)"/>
         public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             var records = this.dateOfBirthDictionary.ContainsKey(dateOfBirth) ? this.dateOfBirthDictionary[dateOfBirth] : new ();
@@ -107,8 +96,7 @@ namespace FileCabinetApp
             }
         }
 
-        /// <summary>Returns all records.</summary>
-        /// <returns>Returns readonly collection of all records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
             foreach (var record in this.list)
@@ -117,20 +105,28 @@ namespace FileCabinetApp
             }
         }
 
-        /// <summary>Returns service statistics.</summary>
-        /// <returns>Returns ServiceStat.</returns>
-        public ServiceStat GetStat()
+        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
+        public bool IdExists(int id)
         {
-            return new ServiceStat { NumberOfRecords = this.list.Count, DeletedRecordsIds = new ReadOnlyCollection<int>(Array.Empty<int>()) };
+            return this.list.Exists(x => x.Id == id);
         }
 
-        /// <summary>Makes snapshot of current object state.</summary>
-        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
+        /// <inheritdoc cref="IFileCabinetService.GetStat"/>
+        public ServiceStat GetStat()
+        {
+            List<int> existingRecordsIds = new ();
+            foreach (var record in this.list)
+            {
+                existingRecordsIds.Add(record.Id);
+            }
+
+            return new ServiceStat { ExistingRecordsIds = new (existingRecordsIds), DeletedRecordsIds = new ReadOnlyCollection<int>(Array.Empty<int>()) };
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
         public FileCabinetServiceSnapshot MakeSnapshot() => new (new ReadOnlyCollection<FileCabinetRecord>(this.list));
 
-        /// <summary>Restores the specified snapshot.</summary>
-        /// <param name="snapshot">Snapshot.</param>
-        /// <exception cref="ArgumentNullException">Thrown when snapshot is null.</exception>
+        /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             if (snapshot == null)
@@ -163,8 +159,8 @@ namespace FileCabinetApp
             }
         }
 
-        /// <summary>Removes a record with the specified id.</summary>
-        /// <param name="id">Id of the record to delete.</param>
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
+        /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
         public void RemoveRecord(int id)
         {
             if (!this.list.Exists(x => x.Id == id))
@@ -177,7 +173,7 @@ namespace FileCabinetApp
             this.RemoveRecordFromDictionaries(record);
         }
 
-        /// <summary>Defragments the data file.</summary>
+        /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
         }
@@ -215,6 +211,18 @@ namespace FileCabinetApp
             AddRecordToDictionary(record.FirstName, record, this.firstNameDictionary);
             AddRecordToDictionary(record.LastName, record, this.lastNameDictionary);
             AddRecordToDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record, this.dateOfBirthDictionary);
+        }
+
+        private int NextAvailableId()
+        {
+            int id = 1;
+            while (true)
+            {
+                if (!this.list.Exists(x => x.Id == ++id))
+                {
+                    return id;
+                }
+            }
         }
     }
 }

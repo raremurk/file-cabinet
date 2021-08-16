@@ -146,6 +146,7 @@ namespace FileCabinetApp
         {
             var helpHandler = new HelpCommandHandler();
             var createHandler = new CreateCommandHandler(fileCabinetService, validator);
+            var insertHandler = new InsertCommandHandler(fileCabinetService, validator);
             var editHandler = new EditCommandHandler(fileCabinetService, validator);
             var exitHandler = new ExitCommandHandler(SetProgramStatus);
             var exporthandler = new ExportCommandHandler(fileCabinetService);
@@ -157,7 +158,8 @@ namespace FileCabinetApp
             var statHandler = new StatCommandHandler(fileCabinetService);
 
             helpHandler.SetNext(createHandler);
-            createHandler.SetNext(editHandler);
+            createHandler.SetNext(insertHandler);
+            insertHandler.SetNext(editHandler);
             editHandler.SetNext(exitHandler);
             exitHandler.SetNext(exporthandler);
             exporthandler.SetNext(findHandler);

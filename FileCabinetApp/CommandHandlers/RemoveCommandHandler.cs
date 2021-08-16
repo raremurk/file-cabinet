@@ -28,7 +28,7 @@ namespace FileCabinetApp.CommandHandlers
             }
 
             ServiceStat stat = this.fileCabinetService.GetStat();
-            if (id < 1 || id > stat.NumberOfRecords || stat.DeletedRecordsIds.Contains(id))
+            if (id < 1 || !stat.ExistingRecordsIds.Contains(id))
             {
                 Console.WriteLine($"Record #{id} doesn't exists or removed.");
                 return;

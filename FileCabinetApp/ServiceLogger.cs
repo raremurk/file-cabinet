@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -22,168 +21,216 @@ namespace FileCabinetApp
             this.service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        /// <summary>Creates a record and returns its id.</summary>
-        /// <param name="record">Object representing a record.</param>
-        /// <returns>Id of a new record.</returns>
+        /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
         public int CreateRecord(FileCabinetRecord record)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-
+            WriteOperationLog(writer, $"Calling CreateRecord() with {RecordToString(record, false)}");
             try
             {
-                WriteOperationLog(writer, $"Calling CreateRecord() with {RecordToString(record, false)}");
                 int id = this.service.CreateRecord(record);
                 WriteOperationLog(writer, $"CreateRecord() returned '{id}'");
                 return id;
             }
             catch (Exception ex)
             {
-                if (ex is ArgumentNullException || ex is ArgumentException)
-                {
-                    WriteOperationLog(writer, $"CreateRecord() threw an exception: {ex.Message}");
-                }
-
+                WriteOperationLog(writer, $"CreateRecord() threw an exception: {ex.Message}");
                 throw;
             }
         }
 
-        /// <summary>Edits a record with the specified id.</summary>
-        /// <param name="record">Object representing a record.</param>
+        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
         public void EditRecord(FileCabinetRecord record)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-
+            WriteOperationLog(writer, $"Calling EditRecord() with {RecordToString(record, true)}");
             try
             {
-                WriteOperationLog(writer, $"Calling EditRecord() with {RecordToString(record, true)}");
                 this.service.EditRecord(record);
                 WriteOperationLog(writer, "EditRecord() executed successfully");
             }
             catch (Exception ex)
             {
-                if (ex is ArgumentNullException || ex is ArgumentException)
-                {
-                    WriteOperationLog(writer, $"EditRecord() threw an exception: {ex.Message}");
-                }
-
+                WriteOperationLog(writer, $"EditRecord() threw an exception: {ex.Message}");
                 throw;
             }
         }
 
-        /// <summary>Finds records by first name.</summary>
-        /// <param name="firstName">First name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, $"Calling FindByFirstName() with firstName = '{firstName}'");
-            var result = this.service.FindByFirstName(firstName);
-            WriteOperationLog(writer, $"FindByFirstName() returned result");
-            return result;
-        }
-
-        /// <summary>Finds records by last name.</summary>
-        /// <param name="lastName">Last name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling FindByLastName() with lastName = '{lastName}'");
-            var result = this.service.FindByLastName(lastName);
-            WriteOperationLog(writer, $"FindByLastName() returned result");
-            return result;
-        }
-
-        /// <summary>Finds records by date of birth.</summary>
-        /// <param name="dateOfBirth">Date of birth to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling FindByDateOfBirth() with dateOfBirth = '{dateOfBirth}'");
-            var result = this.service.FindByDateOfBirth(dateOfBirth);
-            WriteOperationLog(writer, $"FindByDateOfBirth() returned result");
-            return result;
-        }
-
-        /// <summary>Returns all records.</summary>
-        /// <returns>Returns readonly collection of all records.</returns>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling GetRecords()");
-            var result = this.service.GetRecords();
-            WriteOperationLog(writer, $"GetRecords() returned result");
-            return result;
-        }
-
-        /// <summary>Returns service statistics.</summary>
-        /// <returns>Returns ServiceStat.</returns>
-        public ServiceStat GetStat()
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling GetStat()");
-            var result = this.service.GetStat();
-            WriteOperationLog(writer, $"GetStat() returned '{result.NumberOfRecords}' record(s). '{result.DeletedRecordsIds.Count}' deleted record(s)");
-            return result;
-        }
-
-        /// <summary>Makes snapshot of current object state.</summary>
-        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
-        public FileCabinetServiceSnapshot MakeSnapshot()
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling MakeSnapshot()");
-            var result = this.service.MakeSnapshot();
-            WriteOperationLog(writer, "MakeSnapshot() returned new Snapshot object");
-            return result;
-        }
-
-        /// <summary>Restores the specified snapshot.</summary>
-        /// <param name="snapshot">Snapshot.</param>
-        public void Restore(FileCabinetServiceSnapshot snapshot)
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-
             try
             {
-                WriteOperationLog(writer, "Calling Restore() snapshot");
-                this.service.Restore(snapshot);
-                WriteOperationLog(writer, "Restore() executed successfully");
+                var result = this.service.FindByFirstName(firstName);
+                WriteOperationLog(writer, $"FindByFirstName() returned result");
+                return result;
             }
-            catch (ArgumentNullException ex)
+            catch (Exception ex)
             {
-                WriteOperationLog(writer, $" Restore() threw an exception: {ex.Message}");
+                WriteOperationLog(writer, $"FindByFirstName() threw an exception: {ex.Message}");
                 throw;
             }
         }
 
-        /// <summary>Removes a record with the specified id.</summary>
-        /// <param name="id">Id of the record to delete.</param>
+        /// <inheritdoc cref="IFileCabinetService.FindByLastName(string)"/>
+        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, $"Calling FindByLastName() with lastName = '{lastName}'");
+            try
+            {
+                var result = this.service.FindByLastName(lastName);
+                WriteOperationLog(writer, $"FindByLastName() returned result");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"FindByLastName() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.FindByDateOfBirth(string)"/>
+        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, $"Calling FindByDateOfBirth() with dateOfBirth = '{dateOfBirth}'");
+            try
+            {
+                var result = this.service.FindByDateOfBirth(dateOfBirth);
+                WriteOperationLog(writer, $"FindByDateOfBirth() returned result");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"FindByDateOfBirth() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
+        public IEnumerable<FileCabinetRecord> GetRecords()
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, "Calling GetRecords()");
+            try
+            {
+                var result = this.service.GetRecords();
+                WriteOperationLog(writer, $"GetRecords() returned result");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"GetRecords() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
+        public bool IdExists(int id)
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, $"Calling IdExists() with ID = '{id}'");
+            try
+            {
+                bool result = this.service.IdExists(id);
+                WriteOperationLog(writer, $"IdExists() returned {result}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"IdExists() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.GetStat"/>
+        public ServiceStat GetStat()
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, "Calling GetStat()");
+            try
+            {
+                var result = this.service.GetStat();
+                WriteOperationLog(writer, $"GetStat() returned '{result.ExistingRecordsIds.Count}' record(s). '{result.DeletedRecordsIds.Count}' deleted record(s)");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"GetStat() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
+        public FileCabinetServiceSnapshot MakeSnapshot()
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, "Calling MakeSnapshot()");
+            try
+            {
+                var result = this.service.MakeSnapshot();
+                WriteOperationLog(writer, "MakeSnapshot() returned new Snapshot object");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"MakeSnapshot() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
+        public void Restore(FileCabinetServiceSnapshot snapshot)
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, "Calling Restore() snapshot");
+            try
+            {
+                this.service.Restore(snapshot);
+                WriteOperationLog(writer, "Restore() executed successfully");
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"Restore() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
         public void RemoveRecord(int id)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-
+            WriteOperationLog(writer, $"Calling RemoveRecord() with Id = '{id}'");
             try
             {
-                WriteOperationLog(writer, $"Calling RemoveRecord() with Id = '{id}'");
                 this.service.RemoveRecord(id);
                 WriteOperationLog(writer, "RemoveRecord() executed successfully");
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
                 WriteOperationLog(writer, $" RemoveRecord() threw an exception: {ex.Message}");
                 throw;
             }
         }
 
-        /// <summary>Defragments the data file.</summary>
+        /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, "Calling Purge()");
-            this.service.Purge();
-            WriteOperationLog(writer, "Purge() executed successfully");
+            try
+            {
+                this.service.Purge();
+                WriteOperationLog(writer, "Purge() executed successfully");
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $" Purge() threw an exception: {ex.Message}");
+                throw;
+            }
         }
 
         private static void WriteOperationLog(StreamWriter writer, string message)
