@@ -61,6 +61,18 @@
             <summary>Handles the specified request.</summary>
             <param name="request">The request.</param>
         </member>
+        <member name="T:FileCabinetApp.CommandHandlers.DeleteCommandHandler">
+            <summary>Delete command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.DeleteCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.DeleteCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.DeleteCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
         <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
             <summary>Edit command handler.</summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
@@ -178,18 +190,6 @@
             <param name="fileCabinetService">IFileCabinetService.</param>
         </member>
         <member name="M:FileCabinetApp.CommandHandlers.PurgeCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>Handles the specified request.</summary>
-            <param name="request">The request.</param>
-        </member>
-        <member name="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler">
-            <summary>Remove command handler.</summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.#ctor(FileCabinetApp.IFileCabinetService)">
-            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.RemoveCommandHandler"/> class.</summary>
-            <param name="fileCabinetService">IFileCabinetService.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.RemoveCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
             <summary>Handles the specified request.</summary>
             <param name="request">The request.</param>
         </member>
@@ -338,8 +338,8 @@
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.RemoveRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.Purge">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
@@ -382,9 +382,8 @@
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.RemoveRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
-            <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
@@ -550,9 +549,10 @@
             <param name="snapshot">Snapshot.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when snapshot is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)">
-            <summary>Removes record with the specified id.</summary>
-            <param name="id">Id.</param>
+        <member name="M:FileCabinetApp.IFileCabinetService.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})">
+            <summary>Removes records with the specified ids.</summary>
+            <param name="ids">Records ids.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when ids is null.</exception>
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.Purge">
             <summary>Defragments the data file.</summary>
@@ -714,8 +714,8 @@
         <member name="M:FileCabinetApp.ServiceLogger.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
         </member>
-        <member name="M:FileCabinetApp.ServiceLogger.RemoveRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
+        <member name="M:FileCabinetApp.ServiceLogger.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})"/>
         </member>
         <member name="M:FileCabinetApp.ServiceLogger.Purge">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
@@ -759,8 +759,8 @@
         <member name="M:FileCabinetApp.ServiceMeter.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
         </member>
-        <member name="M:FileCabinetApp.ServiceMeter.RemoveRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
+        <member name="M:FileCabinetApp.ServiceMeter.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecords(System.Collections.ObjectModel.ReadOnlyCollection{System.Int32})"/>
         </member>
         <member name="M:FileCabinetApp.ServiceMeter.Purge">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>

@@ -169,17 +169,25 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
-        public void RemoveRecord(int id)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
+        public void RemoveRecords(ReadOnlyCollection<int> ids)
         {
-            var recordPos = this.recordPositions.Find(x => x.Item1 == id);
-            this.recordPositions.Add(new (0, recordPos.Item2));
-            this.recordPositions.Remove(recordPos);
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
 
-            this.fileStream.Seek(recordPos.Item2, SeekOrigin.Begin);
-            this.writer.Write(IsDeleted);
-            FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-            this.RemoveRecordFromDictionaries(record);
+            foreach (int id in ids)
+            {
+                var recordPos = this.recordPositions.Find(x => x.Item1 == id);
+                this.recordPositions.Add(new (0, recordPos.Item2));
+                this.recordPositions.Remove(recordPos);
+
+                this.fileStream.Seek(recordPos.Item2, SeekOrigin.Begin);
+                this.writer.Write(IsDeleted);
+                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
+                this.RemoveRecordFromDictionaries(record);
+            }
         }
 
         /// <inheritdoc cref="IFileCabinetService.Purge"/>

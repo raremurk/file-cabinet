@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace FileCabinetApp
@@ -116,11 +117,11 @@ namespace FileCabinetApp
             Console.WriteLine($"Restore method execution duration is {sw.ElapsedTicks} ticks.");
         }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
-        public void RemoveRecord(int id)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
+        public void RemoveRecords(ReadOnlyCollection<int> ids)
         {
             var sw = Stopwatch.StartNew();
-            this.service.RemoveRecord(id);
+            this.service.RemoveRecords(ids);
             sw.Stop();
             Console.WriteLine($"RemoveRecord method execution duration is {sw.ElapsedTicks} ticks.");
         }

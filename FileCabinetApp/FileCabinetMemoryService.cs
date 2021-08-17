@@ -159,18 +159,23 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
-        /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
-        public void RemoveRecord(int id)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
+        public void RemoveRecords(ReadOnlyCollection<int> ids)
         {
-            if (!this.list.Exists(x => x.Id == id))
+            if (ids is null)
             {
-                throw new ArgumentException("No record with this id.");
+                throw new ArgumentNullException(nameof(ids));
             }
 
-            FileCabinetRecord record = this.list.Find(x => x.Id == id);
-            this.list.Remove(record);
-            this.RemoveRecordFromDictionaries(record);
+            foreach (int id in ids)
+            {
+                FileCabinetRecord record = this.list.Find(x => x.Id == id);
+                if (record != null)
+                {
+                    this.list.Remove(record);
+                    this.RemoveRecordFromDictionaries(record);
+                }
+            }
         }
 
         /// <inheritdoc cref="IFileCabinetService.Purge"/>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace FileCabinetApp
 {
@@ -54,9 +55,10 @@ namespace FileCabinetApp
         /// <exception cref="ArgumentNullException">Thrown when snapshot is null.</exception>
         public void Restore(FileCabinetServiceSnapshot snapshot);
 
-        /// <summary>Removes record with the specified id.</summary>
-        /// <param name="id">Id.</param>
-        public void RemoveRecord(int id);
+        /// <summary>Removes records with the specified ids.</summary>
+        /// <param name="ids">Records ids.</param>
+        /// <exception cref="ArgumentNullException">Thrown when ids is null.</exception>
+        public void RemoveRecords(ReadOnlyCollection<int> ids);
 
         /// <summary>Defragments the data file.</summary>
         public void Purge();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -199,14 +200,14 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
-        public void RemoveRecord(int id)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
+        public void RemoveRecords(ReadOnlyCollection<int> ids)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling RemoveRecord() with Id = '{id}'");
+            WriteOperationLog(writer, $"Calling RemoveRecord() with parameters");
             try
             {
-                this.service.RemoveRecord(id);
+                this.service.RemoveRecords(ids);
                 WriteOperationLog(writer, "RemoveRecord() executed successfully");
             }
             catch (Exception ex)
