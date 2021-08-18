@@ -13,10 +13,15 @@ namespace FileCabinetApp
         /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
         public int CreateRecord(FileCabinetRecord record);
 
-        /// <summary>Edits existing record with the specified id.</summary>
-        /// <param name="record">File cabinet record.</param>
-        /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
-        public void EditRecord(FileCabinetRecord record);
+        /// <summary>Edits existing records.</summary>
+        /// <param name="records">File cabinet records.</param>
+        /// <exception cref="ArgumentNullException">Thrown when records is null.</exception>
+        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records);
+
+        /// <summary>Finds record by id.</summary>
+        /// <param name="id">Id to find.</param>
+        /// <returns>Returns FileCabinetRecord if records exists, else returns null.</returns>
+        public FileCabinetRecord GetRecord(int id);
 
         /// <summary>Finds records by first name.</summary>
         /// <param name="firstName">First name to find.</param>

@@ -36,32 +36,41 @@ namespace FileCabinetApp
             return record.Id;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
+        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
         /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
-        public void EditRecord(FileCabinetRecord record)
+        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
-            if (record is null)
+            if (records is null)
             {
-                throw new ArgumentNullException(nameof(record));
+                throw new ArgumentNullException(nameof(records));
             }
 
-            if (!this.list.Exists(x => x.Id == record.Id))
+            foreach (var record in records)
             {
-                throw new ArgumentException("No record with this id.");
+                if (!this.list.Exists(x => x.Id == record.Id))
+                {
+                    throw new ArgumentException("No record with this id.");
+                }
+
+                this.validator.ValidateRecordWithExceptions(record);
+                FileCabinetRecord originalRecord = this.list.Find(x => x.Id == record.Id);
+                this.RemoveRecordFromDictionaries(originalRecord);
+
+                originalRecord.FirstName = record.FirstName;
+                originalRecord.LastName = record.LastName;
+                originalRecord.DateOfBirth = record.DateOfBirth;
+                originalRecord.WorkPlaceNumber = record.WorkPlaceNumber;
+                originalRecord.Salary = record.Salary;
+                originalRecord.Department = record.Department;
+
+                this.AddRecordToDictionaries(originalRecord);
             }
+        }
 
-            this.validator.ValidateRecordWithExceptions(record);
-            FileCabinetRecord originalRecord = this.list.Find(x => x.Id == record.Id);
-            this.RemoveRecordFromDictionaries(originalRecord);
-
-            originalRecord.FirstName = record.FirstName;
-            originalRecord.LastName = record.LastName;
-            originalRecord.DateOfBirth = record.DateOfBirth;
-            originalRecord.WorkPlaceNumber = record.WorkPlaceNumber;
-            originalRecord.Salary = record.Salary;
-            originalRecord.Department = record.Department;
-
-            this.AddRecordToDictionaries(originalRecord);
+        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
+        public FileCabinetRecord GetRecord(int id)
+        {
+            return this.list.Find(x => x.Id == id);
         }
 
         /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
@@ -149,7 +158,9 @@ namespace FileCabinetApp
                     }
                     else
                     {
-                        this.EditRecord(record);
+                        List<FileCabinetRecord> list = new ();
+                        list.Add(record);
+                        this.EditRecords(new (list));
                     }
                 }
                 else

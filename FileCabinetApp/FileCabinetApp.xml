@@ -73,19 +73,6 @@
             <summary>Handles the specified request.</summary>
             <param name="request">The request.</param>
         </member>
-        <member name="T:FileCabinetApp.CommandHandlers.EditCommandHandler">
-            <summary>Edit command handler.</summary>
-            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,FileCabinetApp.IRecordValidator)">
-            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.EditCommandHandler"/> class.</summary>
-            <param name="fileCabinetService">IFileCabinetService.</param>
-            <param name="validator">IRecordValidator.</param>
-        </member>
-        <member name="M:FileCabinetApp.CommandHandlers.EditCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
-            <summary>Handles the specified request.</summary>
-            <param name="request">The request.</param>
-        </member>
         <member name="T:FileCabinetApp.CommandHandlers.ExitCommandHandler">
             <summary>Exit command handler.</summary>
             <seealso cref="T:FileCabinetApp.CommandHandlers.CommandHandlerBase" />
@@ -217,6 +204,19 @@
             <summary>Handles the specified request.</summary>
             <param name="request">The request.</param>
         </member>
+        <member name="T:FileCabinetApp.CommandHandlers.UpdateCommandHandler">
+            <summary>Update command handler.</summary>
+            <seealso cref="T:FileCabinetApp.CommandHandlers.ServiceCommandHandlerBase" />
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.UpdateCommandHandler.#ctor(FileCabinetApp.IFileCabinetService,FileCabinetApp.IRecordValidator)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.CommandHandlers.UpdateCommandHandler"/> class.</summary>
+            <param name="fileCabinetService">IFileCabinetService.</param>
+            <param name="validator">IRecordValidator.</param>
+        </member>
+        <member name="M:FileCabinetApp.CommandHandlers.UpdateCommandHandler.Handle(FileCabinetApp.CommandHandlers.AppCommandRequest)">
+            <summary>Handles the specified request.</summary>
+            <param name="request">The request.</param>
+        </member>
         <member name="T:FileCabinetApp.CommandHandlers.Converter">
             <summary>Converter.</summary>
         </member>
@@ -311,8 +311,11 @@
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)"/>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.EditRecord(FileCabinetApp.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)"/>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.FindByFirstName(System.String)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)"/>
@@ -354,9 +357,12 @@
         <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)"/>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(FileCabinetApp.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)"/>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})"/>
             <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.FindByFirstName(System.String)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)"/>
@@ -507,10 +513,15 @@
             <returns>Id of created record.</returns>
             <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)">
-            <summary>Edits existing record with the specified id.</summary>
-            <param name="record">File cabinet record.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+        <member name="M:FileCabinetApp.IFileCabinetService.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})">
+            <summary>Edits existing records.</summary>
+            <param name="records">File cabinet records.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when records is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)">
+            <summary>Finds record by id.</summary>
+            <param name="id">Id to find.</param>
+            <returns>Returns FileCabinetRecord if records exists, else returns null.</returns>
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)">
             <summary>Finds records by first name.</summary>
@@ -687,8 +698,11 @@
         <member name="M:FileCabinetApp.ServiceLogger.CreateRecord(FileCabinetApp.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)"/>
         </member>
-        <member name="M:FileCabinetApp.ServiceLogger.EditRecord(FileCabinetApp.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)"/>
+        <member name="M:FileCabinetApp.ServiceLogger.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})"/>
+        </member>
+        <member name="M:FileCabinetApp.ServiceLogger.GetRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.ServiceLogger.FindByFirstName(System.String)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)"/>
@@ -732,8 +746,11 @@
         <member name="M:FileCabinetApp.ServiceMeter.CreateRecord(FileCabinetApp.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.FileCabinetRecord)"/>
         </member>
-        <member name="M:FileCabinetApp.ServiceMeter.EditRecord(FileCabinetApp.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.FileCabinetRecord)"/>
+        <member name="M:FileCabinetApp.ServiceMeter.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecords(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.FileCabinetRecord})"/>
+        </member>
+        <member name="M:FileCabinetApp.ServiceMeter.GetRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.ServiceMeter.FindByFirstName(System.String)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.FindByFirstName(System.String)"/>

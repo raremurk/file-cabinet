@@ -29,13 +29,23 @@ namespace FileCabinetApp
             return id;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
-        public void EditRecord(FileCabinetRecord record)
+        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
+        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
             var sw = Stopwatch.StartNew();
-            this.service.EditRecord(record);
+            this.service.EditRecords(records);
             sw.Stop();
             Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
+        public FileCabinetRecord GetRecord(int id)
+        {
+            var sw = Stopwatch.StartNew();
+            var result = this.service.GetRecord(id);
+            sw.Stop();
+            Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
+            return result;
         }
 
         /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>

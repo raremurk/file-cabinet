@@ -64,20 +64,40 @@ namespace FileCabinetApp
             return record.Id;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
-        public void EditRecord(FileCabinetRecord record)
+        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
+        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
-            if (record is null)
+            if (records is null)
             {
-                throw new ArgumentNullException(nameof(record));
+                throw new ArgumentNullException(nameof(records));
             }
 
-            this.validator.ValidateRecordWithExceptions(record);
-            this.fileStream.Seek((SizeOFRecord * (record.Id - 1)) + Offset, SeekOrigin.Begin);
-            FileCabinetRecord originalRecord = this.ReadRecordUsingBinaryReader();
-            this.RemoveRecordFromDictionaries(originalRecord);
-            this.WriteRecordUsingBinaryWriter(record);
-            this.AddRecordToDictionaries(record);
+            foreach (var record in records)
+            {
+                var recordPos = this.recordPositions.Find(x => x.Item1 == record.Id);
+                if (recordPos != null)
+                {
+                    this.validator.ValidateRecordWithExceptions(record);
+                    this.fileStream.Seek(recordPos.Item2 + Offset, SeekOrigin.Begin);
+                    FileCabinetRecord originalRecord = this.ReadRecordUsingBinaryReader();
+                    this.RemoveRecordFromDictionaries(originalRecord);
+                    this.WriteRecordUsingBinaryWriter(record);
+                    this.AddRecordToDictionaries(record);
+                }
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
+        public FileCabinetRecord GetRecord(int id)
+        {
+            var recordPos = this.recordPositions.Find(x => x.Item1 == id);
+            if (recordPos != null)
+            {
+                this.fileStream.Seek(recordPos.Item2 + Offset, SeekOrigin.Begin);
+                return this.ReadRecordUsingBinaryReader();
+            }
+
+            return null;
         }
 
         /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
@@ -159,7 +179,9 @@ namespace FileCabinetApp
                     }
                     else
                     {
-                        this.EditRecord(record);
+                        List<FileCabinetRecord> list = new ();
+                        list.Add(record);
+                        this.EditRecords(new (list));
                     }
                 }
                 else

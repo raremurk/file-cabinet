@@ -40,19 +40,37 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
-        public void EditRecord(FileCabinetRecord record)
+        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
+        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling EditRecord() with {RecordToString(record, true)}");
+            WriteOperationLog(writer, $"Calling EditRecord() with parameters");
             try
             {
-                this.service.EditRecord(record);
+                this.service.EditRecords(records);
                 WriteOperationLog(writer, "EditRecord() executed successfully");
             }
             catch (Exception ex)
             {
                 WriteOperationLog(writer, $"EditRecord() threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
+        public FileCabinetRecord GetRecord(int id)
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
+            WriteOperationLog(writer, $"Calling GetRecord() with Id = '{id}'");
+            try
+            {
+                var result = this.service.GetRecord(id);
+                WriteOperationLog(writer, $"GetRecord() returned result");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                WriteOperationLog(writer, $"GetRecord() threw an exception: {ex.Message}");
                 throw;
             }
         }

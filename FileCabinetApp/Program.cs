@@ -147,7 +147,7 @@ namespace FileCabinetApp
             var helpHandler = new HelpCommandHandler();
             var createHandler = new CreateCommandHandler(fileCabinetService, validator);
             var insertHandler = new InsertCommandHandler(fileCabinetService, validator);
-            var editHandler = new EditCommandHandler(fileCabinetService, validator);
+            var updateHandler = new UpdateCommandHandler(fileCabinetService, validator);
             var exitHandler = new ExitCommandHandler(SetProgramStatus);
             var exporthandler = new ExportCommandHandler(fileCabinetService);
             var findHandler = new FindCommandHandler(fileCabinetService, Print);
@@ -159,8 +159,8 @@ namespace FileCabinetApp
 
             helpHandler.SetNext(createHandler);
             createHandler.SetNext(insertHandler);
-            insertHandler.SetNext(editHandler);
-            editHandler.SetNext(exitHandler);
+            insertHandler.SetNext(updateHandler);
+            updateHandler.SetNext(exitHandler);
             exitHandler.SetNext(exporthandler);
             exporthandler.SetNext(findHandler);
             findHandler.SetNext(importHandler);
