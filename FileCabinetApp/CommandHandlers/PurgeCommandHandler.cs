@@ -23,7 +23,7 @@ namespace FileCabinetApp.CommandHandlers
         {
             ServiceStat stat = this.fileCabinetService.GetStat();
             this.fileCabinetService.Purge();
-            Console.WriteLine($"Data file processing is completed: {stat.DeletedRecordsIds.Count} of {stat.NumberOfRecords} records were purged.");
+            Console.WriteLine($"Data file processing is completed: {stat.DeletedRecordsIds.Count} of {stat.ExistingRecordsIds.Count + stat.DeletedRecordsIds.Count} records were purged.");
         }
     }
 }

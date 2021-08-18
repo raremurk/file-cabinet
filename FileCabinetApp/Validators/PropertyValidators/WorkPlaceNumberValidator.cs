@@ -19,8 +19,9 @@ namespace FileCabinetApp.Validators
         /// <returns>Returns false and exception message if work place number is incorrect, else returns true.</returns>
         public Tuple<bool, string> ValidateParameter(short workPlaceNumber)
         {
+            string parameterName = nameof(workPlaceNumber).Capitalize();
             bool valid = workPlaceNumber >= this.workPlaceNumberMinValue;
-            string message = !valid ? $"{nameof(workPlaceNumber)} is less than {this.workPlaceNumberMinValue}." : string.Empty;
+            string message = !valid ? $"{parameterName} is less than {this.workPlaceNumberMinValue}." : string.Empty;
             return new (valid, message);
         }
     }

@@ -14,8 +14,9 @@ namespace FileCabinetApp.CommandHandlers
         private static readonly string[][] HelpMessages = new string[][]
         {
             new string[] { "create", "сreates a record and returns its id", "The 'create' command сreates a record and returns its id." },
-            new string[] { "edit", "edits a record with the specified id", "The 'edit' command edits a record with the specified id." },
-            new string[] { "remove", "removes a record with the specified id", "The 'remove' command removes a record with the specified id." },
+            new string[] { "update", "edits records with the specified parameters", "The 'update' command edits records with the specified parameters." },
+            new string[] { "delete", "removes records with the specified parameter", "The 'delete' command removes records with the specified parameter." },
+            new string[] { "insert", "inserts a record with the specified id", "The 'insert' command inserts a record with the specified id." },
             new string[] { "find", "searches records by property name value", "The 'find' command searches records by property name value." },
             new string[] { "list", "returns a list of all records", "The 'list' command returns a list of all records." },
             new string[] { "stat", "prints statistics on records", "The 'stat' command prints statistics on records." },

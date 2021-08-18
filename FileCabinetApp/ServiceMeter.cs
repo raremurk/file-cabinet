@@ -19,9 +19,7 @@ namespace FileCabinetApp
             this.service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        /// <summary>Creates a record and returns its id.</summary>
-        /// <param name="record">Object representing a record.</param>
-        /// <returns>Id of a new record.</returns>
+        /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
         public int CreateRecord(FileCabinetRecord record)
         {
             var sw = Stopwatch.StartNew();
@@ -31,19 +29,26 @@ namespace FileCabinetApp
             return id;
         }
 
-        /// <summary>Edits a record with the specified id.</summary>
-        /// <param name="record">Object representing a record.</param>
-        public void EditRecord(FileCabinetRecord record)
+        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
+        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
         {
             var sw = Stopwatch.StartNew();
-            this.service.EditRecord(record);
+            this.service.EditRecords(records);
             sw.Stop();
             Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
         }
 
-        /// <summary>Finds records by first name.</summary>
-        /// <param name="firstName">First name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
+        public FileCabinetRecord GetRecord(int id)
+        {
+            var sw = Stopwatch.StartNew();
+            var result = this.service.GetRecord(id);
+            sw.Stop();
+            Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
         public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
         {
             var sw = Stopwatch.StartNew();
@@ -53,9 +58,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <summary>Finds records by last name.</summary>
-        /// <param name="lastName">Last name to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.FindByLastName(string)"/>
         public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
         {
             var sw = Stopwatch.StartNew();
@@ -65,9 +68,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <summary>Finds records by date of birth.</summary>
-        /// <param name="dateOfBirth">Date of birth to find.</param>
-        /// <returns>Returns readonly collection of found records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.FindByDateOfBirth(string)"/>
         public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
         {
             var sw = Stopwatch.StartNew();
@@ -77,8 +78,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <summary>Returns all records.</summary>
-        /// <returns>Returns readonly collection of all records.</returns>
+        /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
             var sw = Stopwatch.StartNew();
@@ -88,8 +88,17 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <summary>Returns service statistics.</summary>
-        /// <returns>Returns ServiceStat.</returns>
+        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
+        public bool IdExists(int id)
+        {
+            var sw = Stopwatch.StartNew();
+            bool result = this.service.IdExists(id);
+            sw.Stop();
+            Console.WriteLine($"IdExists method execution duration is {sw.ElapsedTicks} ticks.");
+            return result;
+        }
+
+        /// <inheritdoc cref="IFileCabinetService.GetStat"/>
         public ServiceStat GetStat()
         {
             var sw = Stopwatch.StartNew();
@@ -99,8 +108,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <summary>Makes snapshot of current object state.</summary>
-        /// <returns>Returns new <see cref="FileCabinetServiceSnapshot"/>.</returns>
+        /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
             var sw = Stopwatch.StartNew();
@@ -110,8 +118,7 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <summary>Restores the specified snapshot.</summary>
-        /// <param name="snapshot">Snapshot.</param>
+        /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             var sw = Stopwatch.StartNew();
@@ -120,17 +127,16 @@ namespace FileCabinetApp
             Console.WriteLine($"Restore method execution duration is {sw.ElapsedTicks} ticks.");
         }
 
-        /// <summary>Removes a record with the specified id.</summary>
-        /// <param name="id">Id of the record to delete.</param>
-        public void RemoveRecord(int id)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
+        public void RemoveRecords(ReadOnlyCollection<int> ids)
         {
             var sw = Stopwatch.StartNew();
-            this.service.RemoveRecord(id);
+            this.service.RemoveRecords(ids);
             sw.Stop();
             Console.WriteLine($"RemoveRecord method execution duration is {sw.ElapsedTicks} ticks.");
         }
 
-        /// <summary>Defragments the data file.</summary>
+        /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
             var sw = Stopwatch.StartNew();

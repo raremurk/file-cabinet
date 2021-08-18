@@ -1,36 +1,10 @@
 ﻿using System;
-using System.Globalization;
 
 namespace FileCabinetApp.CommandHandlers
 {
     /// <summary>Get record from console.</summary>
     public class GetRecordFromConsole
     {
-        private const string InputDateFormat = "MM/dd/yyyy";
-
-        private static readonly Func<string, Tuple<bool, string, string>> StringConverter = input => new (true, string.Empty, input);
-
-        private static readonly Func<string, Tuple<bool, string, DateTime>> DateConverter = input =>
-        {
-            bool tryParse = DateTime.TryParseExact(input, InputDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateOfBirth);
-            return tryParse ? new (true, string.Empty, dateOfBirth) : new (false, "Invalid date.", DateTime.MinValue);
-        };
-
-        private static readonly Func<string, Tuple<bool, string, short>> ShortConverter = input =>
-        {
-            return short.TryParse(input, out short workPlaceNumber) ? new (true, string.Empty, workPlaceNumber) : new (false, "Invalid workplace number.", 0);
-        };
-
-        private static readonly Func<string, Tuple<bool, string, decimal>> DecimalConverter = input =>
-        {
-            return decimal.TryParse(input, out decimal salary) ? new (true, string.Empty, salary) : new (false, "Invalid salary.", 0);
-        };
-
-        private static readonly Func<string, Tuple<bool, string, char>> CharConverter = input =>
-        {
-            return char.TryParse(input, out char department) ? new (true, string.Empty, department) : new (false, "Invalid department.", char.MinValue);
-        };
-
         private readonly IRecordValidator validator;
 
         /// <summary>Initializes a new instance of the <see cref="GetRecordFromConsole"/> class.</summary>
@@ -41,26 +15,26 @@ namespace FileCabinetApp.CommandHandlers
         }
 
         /// <summary>Get record from console.</summary>
-        /// <returns>returns object representing a record.</returns>
+        /// <returns>FileCabinetRecord.</returns>
         public FileCabinetRecord СonsoleInput()
         {
             Console.Write("First name: ");
-            string firstName = ReadInput(StringConverter, this.validator.ValidateLastName);
+            string firstName = ReadInput(input => new Tuple<bool, string, string>(true, string.Empty, input), this.validator.ValidateLastName);
 
             Console.Write("Last name: ");
-            string lastName = ReadInput(StringConverter, this.validator.ValidateLastName);
+            string lastName = ReadInput(input => new Tuple<bool, string, string>(true, string.Empty, input), this.validator.ValidateLastName);
 
             Console.Write("Date of birth (month/day/year): ");
-            DateTime dateOfBirth = ReadInput(DateConverter, this.validator.ValidateDateOfBirth);
+            DateTime dateOfBirth = ReadInput(Converter.DateTimeConverter, this.validator.ValidateDateOfBirth);
 
             Console.Write("Workplace number: ");
-            short workPlaceNumber = ReadInput(ShortConverter, this.validator.ValidateWorkPlaceNumber);
+            short workPlaceNumber = ReadInput(Converter.ShortConverter, this.validator.ValidateWorkPlaceNumber);
 
             Console.Write("Salary: ");
-            decimal salary = ReadInput(DecimalConverter, this.validator.ValidateSalary);
+            decimal salary = ReadInput(Converter.DecimalConverter, this.validator.ValidateSalary);
 
             Console.Write("Department (uppercase letter): ");
-            char department = ReadInput(CharConverter, this.validator.ValidateDepartment);
+            char department = ReadInput(Converter.CharConverter, this.validator.ValidateDepartment);
 
             return new FileCabinetRecord { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth, WorkPlaceNumber = workPlaceNumber, Salary = salary, Department = department };
         }

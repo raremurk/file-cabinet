@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -6,6 +7,8 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="ICommandHandler" />
     public abstract class CommandHandlerBase : ICommandHandler
     {
+        private static readonly string[] Commands = { "create", "update", "delete", "insert", "find", "list", "stat", "import", "export", "purge", "help", "exit" };
+
         /// <summary>Gets the next handler.</summary>
         /// <value>The next handler.</value>
         public ICommandHandler NextHandler { get; private set; }
@@ -59,8 +62,33 @@ namespace FileCabinetApp.CommandHandlers
         /// <param name="command">The command.</param>
         protected static void PrintMissedCommandInfo(string command)
         {
+            List<string> similarCommands = new ();
+            if (!string.IsNullOrWhiteSpace(command))
+            {
+                foreach (var item in Commands)
+                {
+                    if (item.StartsWith(command[0]) || item.Contains(command, StringComparison.InvariantCulture) || command.Contains(item, StringComparison.InvariantCulture))
+                    {
+                        similarCommands.Add(item);
+                    }
+                }
+            }
+
             Console.WriteLine($"There is no '{command}' command.");
             Console.WriteLine();
+            if (similarCommands.Count != 0)
+            {
+                string message = similarCommands.Count < 2 ? "The most similar command is" : "The most similar commands are";
+                Console.WriteLine(message);
+                foreach (var item in similarCommands)
+                {
+                    Console.WriteLine($"\t{item}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Could not find a similar command.");
+            }
         }
     }
 }

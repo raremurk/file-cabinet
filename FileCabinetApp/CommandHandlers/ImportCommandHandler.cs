@@ -89,7 +89,7 @@ namespace FileCabinetApp.CommandHandlers
                 this.fileCabinetService.Restore(snapshot);
             }
 
-            int numberOfRecords = this.fileCabinetService.GetStat().NumberOfRecords - stat.NumberOfRecords;
+            int numberOfRecords = this.fileCabinetService.GetStat().ExistingRecordsIds.Count - stat.ExistingRecordsIds.Count;
 
             Console.WriteLine($"{numberOfRecords} records are imported from file {filename}.");
         }
