@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FileCabinetApp
+namespace FileCabinetApp.Models
 {
     /// <summary>Сlass representing a record.</summary>
     public class FileCabinetRecord

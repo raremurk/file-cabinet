@@ -1,17 +1,17 @@
 ﻿using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
-namespace FileCabinetApp
+namespace FileCabinetApp.Models
 {
-    /// <summary>Сlass representing list of FileCabinetRecordsForXmlSerialization.</summary>
+    /// <summary>Сlass representing list of records.</summary>
     [XmlRoot(ElementName = "records")]
-    public class CollectionOfRecordsForXmlSerialization
+    public class CollectionOfRecords
     {
         #pragma warning disable CA2227
         /// <summary>Gets or sets the list of records.</summary>
         /// <value>List of records.</value>
         [XmlElement(ElementName = "record")]
-        public Collection<FileCabinetRecordForXmlSerialization> Records { get; set; }
+        public Collection<Record> Records { get; set; }
         #pragma warning restore CA2227
     }
 }

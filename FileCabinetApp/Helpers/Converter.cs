@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using FileCabinetApp.Models;
 
-namespace FileCabinetApp.CommandHandlers
+namespace FileCabinetApp.Helpers
 {
     /// <summary>Converter.</summary>
     public static class Converter
@@ -61,7 +62,7 @@ namespace FileCabinetApp.CommandHandlers
         /// <summary>StringFileCabinetRecord to FileCabinetRecord converting.</summary>
         /// <param name="stringRecord">Input record.</param>
         /// <returns>Returns TryParse result, message and FileCabinetRecord value .</returns>
-        public static Tuple<bool, string, FileCabinetRecord> RecordConverter(StringFileCabinetRecord stringRecord)
+        public static Tuple<bool, string, FileCabinetRecord> RecordConverter(StringRecord stringRecord)
         {
             if (stringRecord is null)
             {

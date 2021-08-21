@@ -17,8 +17,7 @@ namespace FileCabinetApp.CommandHandlers
             this.setProgramStatus = setProgramStatus ?? throw new ArgumentNullException(nameof(setProgramStatus));
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, ExitCommand, this.Exit);
 
         private void Exit(string parameters)

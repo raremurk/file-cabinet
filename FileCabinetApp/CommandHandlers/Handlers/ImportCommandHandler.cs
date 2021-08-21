@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -17,8 +18,7 @@ namespace FileCabinetApp.CommandHandlers
         {
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, ImportCommand, this.Import);
 
         private void Import(string parameters)

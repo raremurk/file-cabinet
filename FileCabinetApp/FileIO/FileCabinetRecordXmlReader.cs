@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp
 {
@@ -23,8 +23,8 @@ namespace FileCabinetApp
         /// <returns>Returns List of records.</returns>
         public IList<FileCabinetRecord> ReadAll()
         {
-            XmlSerializer serializer = new (typeof(CollectionOfRecordsForXmlSerialization));
-            CollectionOfRecordsForXmlSerialization collection = (CollectionOfRecordsForXmlSerialization)serializer.Deserialize(this.reader);
+            XmlSerializer serializer = new (typeof(CollectionOfRecords));
+            CollectionOfRecords collection = (CollectionOfRecords)serializer.Deserialize(this.reader);
             List<FileCabinetRecord> records = new ();
             foreach (var record in collection.Records)
             {

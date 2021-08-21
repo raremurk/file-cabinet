@@ -17,8 +17,7 @@ namespace FileCabinetApp.CommandHandlers
         {
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, ExportCommand, this.Export);
 
         private void Export(string parameters)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace FileCabinetApp
+namespace FileCabinetApp.Helpers
 {
     /// <summary>StringExtension class.</summary>
     public static class StringExtension

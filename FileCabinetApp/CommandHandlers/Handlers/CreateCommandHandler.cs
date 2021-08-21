@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Globalization;
+using FileCabinetApp.Helpers;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -16,16 +17,15 @@ namespace FileCabinetApp.CommandHandlers
         public CreateCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validator)
             : base(fileCabinetService)
         {
-            this.validator = validator;
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, CreateCommand, this.Create);
 
         private void Create(string parameters)
         {
-            FileCabinetRecord record = new GetRecordFromConsole(this.validator).СonsoleInput();
+            FileCabinetRecord record = new ConsoleInput(this.validator).GetRecord();
             int id = this.fileCabinetService.CreateRecord(record);
             Console.WriteLine($"Record #{id} is created.");
         }

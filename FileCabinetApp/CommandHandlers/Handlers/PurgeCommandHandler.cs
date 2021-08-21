@@ -1,4 +1,5 @@
 ﻿using System;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -15,8 +16,7 @@ namespace FileCabinetApp.CommandHandlers
         {
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, PurgeCommand, this.Purge);
 
         private void Purge(string parameters)

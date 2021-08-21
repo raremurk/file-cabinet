@@ -1,22 +1,23 @@
 ﻿using System;
+using FileCabinetApp.Models;
 
-namespace FileCabinetApp.CommandHandlers
+namespace FileCabinetApp.Helpers
 {
     /// <summary>Get record from console.</summary>
-    public class GetRecordFromConsole
+    public class ConsoleInput
     {
         private readonly IRecordValidator validator;
 
-        /// <summary>Initializes a new instance of the <see cref="GetRecordFromConsole"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ConsoleInput"/> class.</summary>
         /// <param name="validator">IRecordValidator.</param>
-        public GetRecordFromConsole(IRecordValidator validator)
+        public ConsoleInput(IRecordValidator validator)
         {
             this.validator = validator;
         }
 
         /// <summary>Get record from console.</summary>
         /// <returns>FileCabinetRecord.</returns>
-        public FileCabinetRecord СonsoleInput()
+        public FileCabinetRecord GetRecord()
         {
             Console.Write("First name: ");
             string firstName = ReadInput(input => new Tuple<bool, string, string>(true, string.Empty, input), this.validator.ValidateLastName);

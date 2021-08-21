@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace FileCabinetApp
+namespace FileCabinetApp.Models
 {
     /// <summary>Сlass representing service statistics.</summary>
     public class ServiceStat

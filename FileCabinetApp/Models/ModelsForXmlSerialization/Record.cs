@@ -1,9 +1,9 @@
 ﻿using System.Xml.Serialization;
 
-namespace FileCabinetApp
+namespace FileCabinetApp.Models
 {
-    /// <summary>Сlass representing a record for for XmlSerialization.</summary>
-    public class FileCabinetRecordForXmlSerialization
+    /// <summary>Сlass representing a record for XmlSerialization.</summary>
+    public class Record
     {
         /// <summary>Gets or sets the id.</summary>
         /// <value>Id of record.</value>

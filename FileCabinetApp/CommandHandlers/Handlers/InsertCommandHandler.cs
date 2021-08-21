@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using FileCabinetApp.Helpers;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -16,11 +18,10 @@ namespace FileCabinetApp.CommandHandlers
         public InsertCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validator)
             : base(fileCabinetService)
         {
-            this.validator = validator;
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, InsertCommand, this.Insert);
 
         private void Insert(string parameters)
@@ -81,7 +82,7 @@ namespace FileCabinetApp.CommandHandlers
                 propertyValues.Add(values[index].Trim('\''));
             }
 
-            var stringRecord = new StringFileCabinetRecord
+            var stringRecord = new StringRecord
             {
                 Id = propertyValues[0],
                 FirstName = propertyValues[1],

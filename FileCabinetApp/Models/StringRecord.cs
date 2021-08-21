@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace FileCabinetApp.CommandHandlers
+namespace FileCabinetApp.Models
 {
     /// <summary>Сlass representing a record.</summary>
-    public class StringFileCabinetRecord
+    public class StringRecord
     {
         /// <summary>Gets or sets the id.</summary>
         /// <value>Id of record.</value>
