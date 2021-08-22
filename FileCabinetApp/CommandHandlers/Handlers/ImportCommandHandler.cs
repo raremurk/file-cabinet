@@ -37,22 +37,21 @@ namespace FileCabinetApp.CommandHandlers
             }
 
             ServiceStat stat = this.fileCabinetService.GetStat();
+            var snapshot = new FileCabinetServiceSnapshot();
 
             if (file.CSVFormat)
             {
                 using StreamReader reader = new (file.FileName, System.Text.Encoding.UTF8);
-                FileCabinetServiceSnapshot snapshot = FileCabinetServiceSnapshot.LoadFromCsv(reader);
-                this.fileCabinetService.Restore(snapshot);
+                snapshot.LoadFromCsv(reader);
             }
             else
             {
                 using var reader = XmlReader.Create(file.FileName);
-                FileCabinetServiceSnapshot snapshot = FileCabinetServiceSnapshot.LoadFromXml(reader);
-                this.fileCabinetService.Restore(snapshot);
+                snapshot.LoadFromXml(reader);
             }
 
+            this.fileCabinetService.Restore(snapshot);
             int numberOfRecords = this.fileCabinetService.GetStat().ExistingRecordsIds.Count - stat.ExistingRecordsIds.Count;
-
             Console.WriteLine($"{numberOfRecords} records are imported from file {file.FileName}.");
         }
     }

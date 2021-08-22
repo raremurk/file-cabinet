@@ -56,9 +56,7 @@ namespace FileCabinetApp.CommandHandlers
             }
             else
             {
-                XmlWriterSettings settings = new ();
-                settings.Indent = true;
-                using var writer = XmlWriter.Create(file.FileName, settings);
+                using var writer = XmlWriter.Create(file.FileName, new XmlWriterSettings { Indent = true });
                 snapshot.SaveToXml(writer);
             }
 

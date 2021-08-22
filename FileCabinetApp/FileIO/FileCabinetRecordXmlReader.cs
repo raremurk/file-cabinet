@@ -16,19 +16,18 @@ namespace FileCabinetApp
         /// <param name="reader">StreamReader.</param>
         public FileCabinetRecordXmlReader(XmlReader reader)
         {
-            this.reader = reader;
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
         /// <summary>Reads all records from xml file.</summary>
-        /// <returns>Returns List of records.</returns>
-        public IList<FileCabinetRecord> ReadAll()
+        /// <returns>Returns IEnumerable of records.</returns>
+        public IEnumerable<FileCabinetRecord> ReadAll()
         {
             XmlSerializer serializer = new (typeof(CollectionOfRecords));
             CollectionOfRecords collection = (CollectionOfRecords)serializer.Deserialize(this.reader);
-            List<FileCabinetRecord> records = new ();
             foreach (var record in collection.Records)
             {
-                var rec = new FileCabinetRecord
+                yield return new FileCabinetRecord
                 {
                     Id = record.Id,
                     FirstName = record.FullName.FirstName,
@@ -38,11 +37,7 @@ namespace FileCabinetApp
                     Salary = decimal.Parse(record.Salary, CultureInfo.InvariantCulture),
                     Department = char.Parse(record.Department),
                 };
-
-                records.Add(rec);
             }
-
-            return records;
         }
     }
 }

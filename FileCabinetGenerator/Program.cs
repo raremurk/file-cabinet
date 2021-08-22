@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Text;
-using System.Xml.Serialization;
-using FileCabinetApp.Models;
+using FileCabinetApp;
+using FileCabinetApp.FileIO;
 
 [assembly: CLSCompliant(false)]
 
@@ -101,60 +99,20 @@ namespace FileCabinetGenerator
                 return;
             }
 
-            List<FileCabinetRecord> records = GetRandomRecords(amountOfRecords, startIdValue);
+            var records = RecordGenerator.GetRandomRecords(amountOfRecords, startIdValue);
+            using StreamWriter writer = new (filename, false, System.Text.Encoding.UTF8);
+
             if (csvFormat)
             {
-                ExportToCsv(records, filename);
+                new FileCabinetRecordCsvWriter(writer).Write(records);
             }
 
             if (xmlFormat)
             {
-                ExportToXml(records, filename);
+                new FileCabinetRecordXmlSerializer(writer).Write(records);
             }
 
             Console.WriteLine($"{amountOfRecords} records were written to {filename}.");
-        }
-
-        private static void ExportToCsv(List<FileCabinetRecord> records, string file)
-        {
-            using StreamWriter writer = new (file, false, System.Text.Encoding.UTF8);
-            writer.WriteLine("Id,First Name,Last Name,Date of Birth,Workplace Number,Salary,Department");
-
-            foreach (var record in records)
-            {
-                StringBuilder builder = new ();
-                builder.Append($"{record.Id},");
-                builder.Append($"{record.FirstName},");
-                builder.Append($"{record.LastName},");
-                builder.Append($"{record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)},");
-                builder.Append($"{record.WorkPlaceNumber},");
-                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)},");
-                builder.Append($"{record.Department}");
-                writer.WriteLine(builder.ToString());
-            }
-        }
-
-        private static void ExportToXml(List<FileCabinetRecord> records, string file)
-        {
-            using StreamWriter writer = new (file, false, System.Text.Encoding.UTF8);
-            var collection = new CollectionOfRecords { Records = new () };
-            foreach (var record in records)
-            {
-                var rec = new Record
-                {
-                    Id = record.Id,
-                    FullName = new FullName { FirstName = record.FirstName, LastName = record.LastName },
-                    DateOfBirth = record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
-                    WorkPlaceNumber = record.WorkPlaceNumber,
-                    Salary = record.Salary.ToString("F2", CultureInfo.InvariantCulture),
-                    Department = char.ToString(record.Department),
-                };
-
-                collection.Records.Add(rec);
-            }
-
-            XmlSerializer serializer = new (typeof(CollectionOfRecords));
-            serializer.Serialize(writer, collection);
         }
 
         private static string ParseArgs(string arg1, string arg2, string[] allowedArgs)
@@ -171,44 +129,5 @@ namespace FileCabinetGenerator
 
             return string.Empty;
         }
-
-        #pragma warning disable CA5394
-        private static List<FileCabinetRecord> GetRandomRecords(int count, int startId)
-        {
-            List<FileCabinetRecord> randomRecords = new ();
-            Random random = new ();
-            DateTime start = new (1950, 1, 1);
-            int range = (DateTime.Today - start).Days;
-
-            for (int i = 0; i < count; i++)
-            {
-                var record = new FileCabinetRecord
-                {
-                    Id = startId++,
-                    FirstName = GetRandomString(15),
-                    LastName = GetRandomString(15),
-                    DateOfBirth = start.AddDays(random.Next(range)),
-                    WorkPlaceNumber = (short)random.Next(1, 1000),
-                    Salary = (decimal)random.Next(0, 10001) + (decimal)Math.Round(random.NextDouble(), 2),
-                    Department = (char)random.Next(65, 91),
-                };
-
-                randomRecords.Add(record);
-            }
-
-            string GetRandomString(int length)
-            {
-                StringBuilder builder = new ();
-                for (int j = 0; j < length; j++)
-                {
-                    builder.Append((char)random.Next(97, 123));
-                }
-
-                return builder.ToString();
-            }
-
-            return randomRecords;
-        }
-        #pragma warning restore CA5394
     }
 }

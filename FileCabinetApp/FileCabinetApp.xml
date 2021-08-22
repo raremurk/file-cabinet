@@ -272,9 +272,12 @@
         <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
             <summary>Provides functionality for creating snapshot.</summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(System.Collections.ObjectModel.ReadOnlyCollection{FileCabinetApp.Models.FileCabinetRecord})">
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor(FileCabinetApp.Models.FileCabinetRecord[])">
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.</summary>
             <param name="records">ReadOnlyCollection of records.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.#ctor">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetServiceSnapshot"/> class.</summary>
         </member>
         <member name="P:FileCabinetApp.FileCabinetServiceSnapshot.Records">
             <summary>Gets collection of records.</summary>
@@ -283,24 +286,18 @@
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromCsv(System.IO.StreamReader)">
             <summary>Loads records from CSV file.</summary>
             <param name="reader">Reader.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when reader is null.</exception>
-            <returns>FileCabinetServiceSnapshot.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.LoadFromXml(System.Xml.XmlReader)">
             <summary>Loads records from XML file.</summary>
             <param name="reader">Reader.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when reader is null.</exception>
-            <returns>FileCabinetServiceSnapshot.</returns>
         </member>
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToCsv(System.IO.StreamWriter)">
             <summary>Writes snapshot to csv file.</summary>
             <param name="writer">StreamWriter.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when writer is null.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.SaveToXml(System.Xml.XmlWriter)">
             <summary>Writes snapshot to xml file.</summary>
             <param name="writer">StreamWriter.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when writer is null.</exception>
         </member>
         <member name="T:FileCabinetApp.IFileCabinetService">
             <summary>Provides functionality for interaction with records in the file cabinet.</summary>
@@ -438,7 +435,7 @@
         </member>
         <member name="M:FileCabinetApp.FileCabinetRecordCsvReader.ReadAll">
             <summary>Reads all records from csv file.</summary>
-            <returns>Returns List of records.</returns>
+            <returns>Returns IEnumerable of records.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecordCsvWriter">
             <summary>Provides functionality for writing record to csv file.</summary>
@@ -447,10 +444,10 @@
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordCsvWriter"/> class.</summary>
             <param name="writer">StreamWriter.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(FileCabinetApp.Models.FileCabinetRecord)">
-            <summary>Writes the specified record to csv file.</summary>
-            <param name="record">Record.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+        <member name="M:FileCabinetApp.FileCabinetRecordCsvWriter.Write(System.Collections.Generic.IEnumerable{FileCabinetApp.Models.FileCabinetRecord})">
+            <summary>Writes the specified records to csv file.</summary>
+            <param name="records">Records.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when records is null.</exception>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecordXmlReader">
             <summary>Provides method to import <see cref="T:FileCabinetApp.Models.FileCabinetRecord"/> records from xml file.</summary>
@@ -461,7 +458,19 @@
         </member>
         <member name="M:FileCabinetApp.FileCabinetRecordXmlReader.ReadAll">
             <summary>Reads all records from xml file.</summary>
-            <returns>Returns List of records.</returns>
+            <returns>Returns IEnumerable of records.</returns>
+        </member>
+        <member name="T:FileCabinetApp.FileIO.FileCabinetRecordXmlSerializer">
+            <summary>Provides functionality for writing record to xml file.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileIO.FileCabinetRecordXmlSerializer.#ctor(System.IO.StreamWriter)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileIO.FileCabinetRecordXmlSerializer"/> class.</summary>
+            <param name="writer">StreamWriter.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileIO.FileCabinetRecordXmlSerializer.Write(System.Collections.Generic.IEnumerable{FileCabinetApp.Models.FileCabinetRecord})">
+            <summary>Writes the specified records to xml file.</summary>
+            <param name="records">Records.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
         </member>
         <member name="T:FileCabinetApp.FileCabinetRecordXmlWriter">
             <summary>Provides functionality for writing record to xml file.</summary>
@@ -470,9 +479,9 @@
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetRecordXmlWriter"/> class.</summary>
             <param name="writer">StreamWriter.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.Write(FileCabinetApp.Models.FileCabinetRecord)">
-            <summary>Writes the specified record to xml file.</summary>
-            <param name="record">Record.</param>
+        <member name="M:FileCabinetApp.FileCabinetRecordXmlWriter.Write(System.Collections.Generic.IEnumerable{FileCabinetApp.Models.FileCabinetRecord})">
+            <summary>Writes the specified records to xml file.</summary>
+            <param name="records">Records.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
         </member>
         <member name="T:FileCabinetApp.Helpers.ConsoleInput">
