@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using FileCabinetApp.Models;
 
 namespace FileCabinetApp.Helpers
@@ -13,6 +14,55 @@ namespace FileCabinetApp.Helpers
         public Parser(IRecordValidator validator)
         {
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
+        }
+
+        /// <summary>Reads file path and format from string.</summary>
+        /// <param name="parameters">Input string.</param>
+        /// <returns>Returns FileAndFormat.</returns>
+        public static FileAndFormat GetFilePathFromString(string parameters)
+        {
+            _ = parameters ?? throw new ArgumentNullException(nameof(parameters));
+
+            var inputs = parameters.Split(' ', 2);
+            if (inputs.Length != 2)
+            {
+                Console.WriteLine("Wrong number of parameters.");
+                return null;
+            }
+
+            string[] availableFormats = { "csv", "xml" };
+            string[] fileExtensions = { ".csv", ".xml" };
+            string format = inputs[0];
+            string file = inputs[1];
+
+            if (file.Length < 5)
+            {
+                Console.WriteLine("Invalid file name.");
+                return null;
+            }
+
+            string fileExtension = file[^4..];
+            int formatIndex = Array.FindIndex(availableFormats, x => x.Equals(format, StringComparison.OrdinalIgnoreCase));
+            int fileExtensionIndex = Array.FindIndex(fileExtensions, i => i.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
+            bool csvFormat = formatIndex == 0 && fileExtensionIndex == 0;
+            bool xmlFormat = formatIndex == 1 && fileExtensionIndex == 1;
+
+            var way = file.Split('\\', StringSplitOptions.RemoveEmptyEntries);
+            string directory = way.Length > 1 ? string.Join('\\', way[0..^1]) : Directory.GetCurrentDirectory();
+
+            if (!csvFormat && !xmlFormat)
+            {
+                Console.WriteLine("Invalid format.");
+                return null;
+            }
+
+            if (!new DirectoryInfo(directory).Exists)
+            {
+                Console.WriteLine("No such directory or invalid file name");
+                return null;
+            }
+
+            return new FileAndFormat { FileName = file, CSVFormat = csvFormat, XMLFormat = xmlFormat };
         }
 
         /// <summary>Reads search parameters from string array.</summary>

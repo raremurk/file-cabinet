@@ -526,6 +526,11 @@
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Helpers.Parser"/> class.</summary>
             <param name="validator">IRecordValidator.</param>
         </member>
+        <member name="M:FileCabinetApp.Helpers.Parser.GetFilePathFromString(System.String)">
+            <summary>Reads file path and format from string.</summary>
+            <param name="parameters">Input string.</param>
+            <returns>Returns FileAndFormat.</returns>
+        </member>
         <member name="M:FileCabinetApp.Helpers.Parser.GetRecordToSearchFromString(System.String[])">
             <summary>Reads search parameters from string array.</summary>
             <param name="arrayToSearch">Array to search.</param>
@@ -652,6 +657,21 @@
         <member name="P:FileCabinetApp.Models.BoolRecord.Department">
             <summary>Gets or sets a value indicating whether to display the department.</summary>
             <value>Department of record.</value>
+        </member>
+        <member name="T:FileCabinetApp.Models.FileAndFormat">
+            <summary>File name and format.</summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.FileAndFormat.FileName">
+            <summary>Gets or sets file name.</summary>
+            <value>File name.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.FileAndFormat.XMLFormat">
+            <summary>Gets or sets a value indicating whether to use XML format.</summary>
+            <value>XML format.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.FileAndFormat.CSVFormat">
+            <summary>Gets or sets a value indicating whether to use CSV format.</summary>
+            <value>CSV format.</value>
         </member>
         <member name="T:FileCabinetApp.Models.FileCabinetRecord">
             <summary>Сlass representing a record.</summary>

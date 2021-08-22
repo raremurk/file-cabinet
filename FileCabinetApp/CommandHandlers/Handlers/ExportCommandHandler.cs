@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using FileCabinetApp.Helpers;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -22,59 +23,21 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Export(string parameters)
         {
-            if (string.IsNullOrEmpty(parameters))
+            if (string.IsNullOrWhiteSpace(parameters))
             {
-                Console.WriteLine("Input property name.");
+                Console.WriteLine("Invalid input. Example: export csv d:\\data\\records.csv");
                 return;
             }
 
-            var inputs = parameters.Split(' ', 2);
-
-            if (inputs.Length != 2)
+            var file = Parser.GetFilePathFromString(parameters);
+            if (file is null)
             {
-                Console.WriteLine("Wrong number of parameters.");
                 return;
             }
 
-            string[] availableFormats = { "csv", "xml" };
-            string[] fileExtensions = { ".csv", ".xml" };
-            string format = inputs[0];
-            string filename = inputs[1];
-
-            int formatIndex = Array.FindIndex(availableFormats, x => x.Equals(format, StringComparison.OrdinalIgnoreCase));
-            bool csvFormat = formatIndex == 0;
-            bool xmlFormat = formatIndex == 1;
-
-            if (filename.Length < 5)
+            if (new FileInfo(file.FileName).Exists)
             {
-                Console.WriteLine("Invalid file name.");
-                return;
-            }
-
-            string fileExtension = filename[^4..];
-            int fileExtensionIndex = Array.FindIndex(fileExtensions, i => i.Equals(fileExtension, StringComparison.OrdinalIgnoreCase));
-
-            var way = filename.Split('\\', StringSplitOptions.RemoveEmptyEntries);
-            string directory = way.Length > 1 ? string.Join('\\', way[0..^1]) : Directory.GetCurrentDirectory();
-
-            bool directoryAndFilenameExists = new DirectoryInfo(directory).Exists;
-            filename = directoryAndFilenameExists && ((fileExtensionIndex == 0 && csvFormat) || (fileExtensionIndex == 1 && xmlFormat)) ? filename : string.Empty;
-
-            if (!csvFormat && !xmlFormat)
-            {
-                Console.WriteLine("Invalid format.");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(filename))
-            {
-                Console.WriteLine("No such directory or invalid file name");
-                return;
-            }
-
-            if (new FileInfo(filename).Exists)
-            {
-                Console.Write($"File is exist - rewrite {filename}?[Y / N] ");
+                Console.Write($"File is exist - rewrite {file.FileName}?[Y / N] ");
                 string answer = Console.ReadLine();
 
                 if (!string.Equals(answer, "Y", StringComparison.OrdinalIgnoreCase))
@@ -86,20 +49,20 @@ namespace FileCabinetApp.CommandHandlers
 
             FileCabinetServiceSnapshot snapshot = this.fileCabinetService.MakeSnapshot();
 
-            if (csvFormat)
+            if (file.CSVFormat)
             {
-                using StreamWriter writer = new (filename, false, System.Text.Encoding.UTF8);
+                using StreamWriter writer = new (file.FileName, false, System.Text.Encoding.UTF8);
                 snapshot.SaveToCsv(writer);
             }
             else
             {
                 XmlWriterSettings settings = new ();
                 settings.Indent = true;
-                using var writer = XmlWriter.Create(filename, settings);
+                using var writer = XmlWriter.Create(file.FileName, settings);
                 snapshot.SaveToXml(writer);
             }
 
-            Console.WriteLine($"All records are exported to file {filename}.");
+            Console.WriteLine($"All records are exported to file {file.FileName}.");
         }
     }
 }

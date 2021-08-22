@@ -12,7 +12,6 @@ namespace FileCabinetApp.CommandHandlers
     {
         private const string DeleteCommand = "delete";
         private readonly IRecordValidator validator;
-        private readonly Parser parser;
 
         /// <summary>Initializes a new instance of the <see cref="DeleteCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
@@ -21,7 +20,6 @@ namespace FileCabinetApp.CommandHandlers
             : base(fileCabinetService)
         {
             this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
-            this.parser = new Parser(this.validator);
         }
 
         /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
@@ -29,9 +27,9 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Delete(string parameters)
         {
-            if (string.IsNullOrEmpty(parameters))
+            if (string.IsNullOrWhiteSpace(parameters))
             {
-                Console.WriteLine("Input parameters. Example : delete where id = '1'");
+                Console.WriteLine("Input parameters. Example: delete where id = '1'");
                 return;
             }
 
@@ -44,7 +42,7 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            RecordToSearch recordToSearch = this.parser.GetRecordToSearchFromString(inputs[(indexOfWhere + 1) ..]);
+            RecordToSearch recordToSearch = new Parser(this.validator).GetRecordToSearchFromString(inputs[(indexOfWhere + 1) ..]);
             if (!recordToSearch.NeedToSearch())
             {
                 Console.WriteLine("Search parameters are missing or incorrect.");
