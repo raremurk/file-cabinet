@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
-using FileCabinetApp;
+using FileCabinetApp.Models;
 
 [assembly: CLSCompliant(false)]
 
@@ -137,10 +137,10 @@ namespace FileCabinetGenerator
         private static void ExportToXml(List<FileCabinetRecord> records, string file)
         {
             using StreamWriter writer = new (file, false, System.Text.Encoding.UTF8);
-            var collection = new CollectionOfRecordsForXmlSerialization { Records = new () };
+            var collection = new CollectionOfRecords { Records = new () };
             foreach (var record in records)
             {
-                var rec = new FileCabinetRecordForXmlSerialization
+                var rec = new Record
                 {
                     Id = record.Id,
                     FullName = new FullName { FirstName = record.FirstName, LastName = record.LastName },
@@ -153,7 +153,7 @@ namespace FileCabinetGenerator
                 collection.Records.Add(rec);
             }
 
-            XmlSerializer serializer = new (typeof(CollectionOfRecordsForXmlSerialization));
+            XmlSerializer serializer = new (typeof(CollectionOfRecords));
             serializer.Serialize(writer, collection);
         }
 

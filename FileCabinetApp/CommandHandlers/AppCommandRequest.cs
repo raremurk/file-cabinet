@@ -19,8 +19,8 @@ namespace FileCabinetApp.CommandHandlers
         /// <value>The command.</value>
         public string Command { get; }
 
-        /// <summary>Gets the parameters.</summary>
-        /// <value>The parameters.</value>
+        /// <summary>Gets parameters.</summary>
+        /// <value>Parameters.</value>
         public string Parameters { get; }
     }
 }

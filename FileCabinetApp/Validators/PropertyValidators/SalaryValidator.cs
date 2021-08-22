@@ -1,4 +1,5 @@
 ﻿using System;
+using FileCabinetApp.Helpers;
 
 namespace FileCabinetApp.Validators
 {
@@ -20,7 +21,7 @@ namespace FileCabinetApp.Validators
         public Tuple<bool, string> ValidateParameter(decimal salary)
         {
             string parameterName = nameof(salary).Capitalize();
-            bool valid = salary >= this.salaryMinValue;
+            bool valid = salary > this.salaryMinValue;
             string message = !valid ? $"{parameterName} cannot be less than {this.salaryMinValue}." : string.Empty;
             return new (valid, message);
         }
