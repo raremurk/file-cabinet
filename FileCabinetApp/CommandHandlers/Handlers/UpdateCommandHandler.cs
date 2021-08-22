@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FileCabinetApp.Helpers;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -17,11 +19,10 @@ namespace FileCabinetApp.CommandHandlers
         public UpdateCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validator)
             : base(fileCabinetService)
         {
-            this.validator = validator;
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, UpdateCommand, this.Update);
 
         private static string[] GetValues(string[] propertiesToSearch, string[] arrayToSearch)
@@ -50,6 +51,8 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
+            string[] recordProperties = { "id", "firstName", "lastName", "dateOfBirth", "workPlaceNumber", "salary", "department" };
+
             string[] inputs = parameters.Split(new char[] { '=', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             int indexOfWhere = Array.FindIndex(inputs, x => x.Equals("where", StringComparison.OrdinalIgnoreCase));
 
@@ -59,15 +62,12 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            string[] propertiesToUpdate = { "firstName", "lastName", "dateOfBirth", "workPlaceNumber", "salary", "department" };
-            string[] propertiesToSearch = { "id", "firstName", "lastName", "dateOfBirth" };
-            string[] valuesToUpdate = GetValues(propertiesToUpdate, inputs[0..indexOfWhere]);
-            string[] valuesToSearch = GetValues(propertiesToSearch, inputs[(indexOfWhere + 1) ..]);
+            var parser = new Parser(this.validator);
+            RecordToSearch recordToSearch = parser.GetRecordToSearchFromString(inputs[(indexOfWhere + 1) ..]);
+            var foundRecords = this.fileCabinetService.Search(recordToSearch);
 
-            string stringId = valuesToSearch[0];
-            string firstName = valuesToSearch[1];
-            string lastName = valuesToSearch[2];
-            string dateOfBirthToFind = valuesToSearch[3];
+            string[] propertiesToUpdate = { "firstName", "lastName", "dateOfBirth", "workPlaceNumber", "salary", "department" };
+            string[] valuesToUpdate = GetValues(propertiesToUpdate, inputs[0..indexOfWhere]);
 
             DateTime dateOfBirth = Converter.DateTimeConverter(valuesToUpdate[2]).Item3;
             short workPlaceNumber = Converter.ShortConverter(valuesToUpdate[3]).Item3;
@@ -84,46 +84,14 @@ namespace FileCabinetApp.CommandHandlers
                 Department = this.validator.ValidateDepartment(department).Item1 ? department : char.MinValue,
             };
 
-            List<FileCabinetRecord> recordsToUpdate = new ();
-            List<FileCabinetRecord> foundRecords = new ();
+            if (!foundRecords.Any())
+            {
+                Console.WriteLine("No records with such parameters.");
+                return;
+            }
+
             List<string> identifiers = new ();
-
-            if (!string.IsNullOrEmpty(stringId))
-            {
-                int id = Converter.IntConverter(stringId).Item3;
-                if (id != 0 && this.fileCabinetService.IdExists(id))
-                {
-                    foundRecords.Add(this.fileCabinetService.GetRecord(id));
-                }
-            }
-            else
-            {
-                List<IEnumerable<FileCabinetRecord>> searchResults = new ();
-
-                if (!string.IsNullOrEmpty(firstName))
-                {
-                    searchResults.Add(this.fileCabinetService.FindByFirstName(firstName));
-                }
-
-                if (!string.IsNullOrEmpty(lastName))
-                {
-                    searchResults.Add(this.fileCabinetService.FindByLastName(lastName));
-                }
-
-                if (!string.IsNullOrEmpty(dateOfBirthToFind))
-                {
-                    searchResults.Add(this.fileCabinetService.FindByDateOfBirth(dateOfBirthToFind));
-                }
-
-                foundRecords = searchResults.Count switch
-                {
-                    1 => searchResults[0].ToList(),
-                    2 => searchResults[0].Intersect(searchResults[1]).ToList(),
-                    3 => searchResults[0].Intersect(searchResults[1]).Intersect(searchResults[2]).ToList(),
-                    _ => foundRecords
-                };
-            }
-
+            int count = 0;
             foreach (var rec in foundRecords)
             {
                 var buff = new FileCabinetRecord
@@ -137,18 +105,13 @@ namespace FileCabinetApp.CommandHandlers
                     Department = record.Department == char.MinValue ? rec.Department : record.Department,
                 };
 
-                recordsToUpdate.Add(buff);
-                identifiers.Add($"#{rec.Id}");
+                count++;
+                identifiers.Add($"#{buff.Id}");
+                this.fileCabinetService.EditRecord(buff);
             }
 
-            string message = "No records with such parameters.";
-            if (recordsToUpdate.Count != 0)
-            {
-                string ids = string.Join(", ", identifiers);
-                message = recordsToUpdate.Count < 2 ? $"Record {ids} is updated." : $"Records {ids} are updated.";
-                this.fileCabinetService.EditRecords(new (recordsToUpdate));
-            }
-
+            string ids = string.Join(", ", identifiers);
+            string message = count < 2 ? $"Record {ids} is updated." : $"Records {ids} are updated.";
             Console.WriteLine(message);
         }
     }

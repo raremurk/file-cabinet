@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using FileCabinetApp.CommandHandlers;
+using FileCabinetApp.Helpers;
 using FileCabinetApp.Validators;
 
 [assembly: CLSCompliant(false)]
@@ -114,34 +111,6 @@ namespace FileCabinetApp
             while (isRunning);
         }
 
-        private static void Print(IEnumerable<FileCabinetRecord> records)
-        {
-            if (records is null)
-            {
-                throw new ArgumentNullException(nameof(records));
-            }
-
-            if (!records.Any())
-            {
-                Console.WriteLine("No records found.");
-                return;
-            }
-
-            foreach (var record in records)
-            {
-                StringBuilder builder = new ();
-                builder.Append($"#{record.Id}, ");
-                builder.Append($"{record.FirstName}, ");
-                builder.Append($"{record.LastName}, ");
-                builder.Append($"{record.DateOfBirth.ToString("yyyy-MMM-dd", CultureInfo.InvariantCulture)}, ");
-                builder.Append($"{record.WorkPlaceNumber}, ");
-                builder.Append($"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}, ");
-                builder.Append($"{record.Department}");
-
-                Console.WriteLine(builder.ToString());
-            }
-        }
-
         private static ICommandHandler CreateCommandHandlers()
         {
             var helpHandler = new HelpCommandHandler();
@@ -150,11 +119,10 @@ namespace FileCabinetApp
             var updateHandler = new UpdateCommandHandler(fileCabinetService, validator);
             var exitHandler = new ExitCommandHandler(SetProgramStatus);
             var exporthandler = new ExportCommandHandler(fileCabinetService);
-            var findHandler = new FindCommandHandler(fileCabinetService, Print);
+            var selectHandler = new SelectCommandHandler(fileCabinetService, Printer.Print, validator);
             var importHandler = new ImportCommandHandler(fileCabinetService);
-            var listHandler = new ListCommandHandler(fileCabinetService, Print);
             var purgeHandler = new PurgeCommandHandler(fileCabinetService);
-            var deleteHandler = new DeleteCommandHandler(fileCabinetService);
+            var deleteHandler = new DeleteCommandHandler(fileCabinetService, validator);
             var statHandler = new StatCommandHandler(fileCabinetService);
 
             helpHandler.SetNext(createHandler);
@@ -162,10 +130,9 @@ namespace FileCabinetApp
             insertHandler.SetNext(updateHandler);
             updateHandler.SetNext(exitHandler);
             exitHandler.SetNext(exporthandler);
-            exporthandler.SetNext(findHandler);
-            findHandler.SetNext(importHandler);
-            importHandler.SetNext(listHandler);
-            listHandler.SetNext(purgeHandler);
+            exporthandler.SetNext(selectHandler);
+            selectHandler.SetNext(importHandler);
+            importHandler.SetNext(purgeHandler);
             purgeHandler.SetNext(deleteHandler);
             deleteHandler.SetNext(statHandler);
 

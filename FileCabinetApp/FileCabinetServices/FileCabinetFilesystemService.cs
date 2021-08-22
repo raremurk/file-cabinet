@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
+using FileCabinetApp.Helpers;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp
 {
     /// <summary>Class for working with records in filesystem.</summary>
     public class FileCabinetFilesystemService : IFileCabinetService
     {
-        private const int SizeOFRecord = 280;
-        private const int Offset = 2;
-        private const short NotDeleted = 0;
         private const short IsDeleted = 8192;
+        private const short NotDeleted = 0;
+        private const int Offset = 2;
 
-        private readonly Dictionary<string, List<int>> firstNameDictionary = new ();
-        private readonly Dictionary<string, List<int>> lastNameDictionary = new ();
-        private readonly Dictionary<string, List<int>> dateOfBirthDictionary = new ();
+        private readonly Dictionary<string, List<FileCabinetRecord>> searchHistory = new ();
+        private readonly List<Tuple<int, long>> recordPositions = new ();
         private readonly IRecordValidator validator;
-        private List<Tuple<int, long>> recordPositions = new ();
-        private FileStream fileStream;
-        private BinaryWriter writer;
-        private BinaryReader reader;
+        private readonly FileStream fileStream;
+        private readonly BinaryWriter writer;
+        private readonly BinaryReader reader;
 
         /// <summary>Initializes a new instance of the <see cref="FileCabinetFilesystemService"/> class.</summary>
         /// <param name="fileStream">FileStream.</param>
@@ -37,17 +35,11 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
         public int CreateRecord(FileCabinetRecord record)
         {
-            if (record is null)
-            {
-                throw new ArgumentNullException(nameof(record));
-            }
+            _ = record ?? throw new ArgumentNullException(nameof(record));
 
             this.validator.ValidateRecordWithExceptions(record);
-
             var deletedRecord = this.recordPositions.Find(x => x.Item1 == 0);
-            record.Id = record.Id == 0 ? this.NextAvailableId() : record.Id;
-
-            if (!(deletedRecord is null))
+            if (deletedRecord != null)
             {
                 this.fileStream.Seek(deletedRecord.Item2, SeekOrigin.Begin);
                 this.writer.Write(NotDeleted);
@@ -58,33 +50,23 @@ namespace FileCabinetApp
                 this.fileStream.Seek(Offset, SeekOrigin.End);
             }
 
+            record.Id = record.Id == 0 ? this.NextAvailableId() : record.Id;
             this.recordPositions.Add(new (record.Id, this.fileStream.Position - Offset));
             this.WriteRecordUsingBinaryWriter(record);
-            this.AddRecordToDictionaries(record);
+            this.searchHistory.Clear();
             return record.Id;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
-        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
+        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
+        public void EditRecord(FileCabinetRecord record)
         {
-            if (records is null)
-            {
-                throw new ArgumentNullException(nameof(records));
-            }
+            _ = record ?? throw new ArgumentNullException(nameof(record));
+            var recordPos = this.recordPositions.Find(x => x.Item1 == record.Id) ?? throw new ArgumentException("No record with this id.");
 
-            foreach (var record in records)
-            {
-                var recordPos = this.recordPositions.Find(x => x.Item1 == record.Id);
-                if (recordPos != null)
-                {
-                    this.validator.ValidateRecordWithExceptions(record);
-                    this.fileStream.Seek(recordPos.Item2 + Offset, SeekOrigin.Begin);
-                    FileCabinetRecord originalRecord = this.ReadRecordUsingBinaryReader();
-                    this.RemoveRecordFromDictionaries(originalRecord);
-                    this.WriteRecordUsingBinaryWriter(record);
-                    this.AddRecordToDictionaries(record);
-                }
-            }
+            this.validator.ValidateRecordWithExceptions(record);
+            this.fileStream.Seek(recordPos.Item2 + Offset, SeekOrigin.Begin);
+            this.WriteRecordUsingBinaryWriter(record);
+            this.searchHistory.Clear();
         }
 
         /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
@@ -100,15 +82,6 @@ namespace FileCabinetApp
             return null;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName) => this.SearchByProperty(firstName, this.firstNameDictionary);
-
-        /// <inheritdoc cref="IFileCabinetService.FindByLastName(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName) => this.SearchByProperty(lastName, this.lastNameDictionary);
-
-        /// <inheritdoc cref="IFileCabinetService.FindByDateOfBirth(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth) => this.SearchByProperty(dateOfBirth, this.dateOfBirthDictionary);
-
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
@@ -122,10 +95,41 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
-        public bool IdExists(int id)
+        /// <inheritdoc cref="IFileCabinetService.Search(RecordToSearch)"/>
+        public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
         {
-            return !(this.recordPositions.Find(x => x.Item1 == id) is null);
+            _ = search ?? throw new ArgumentNullException(nameof(search));
+
+            if (!search.NeedToSearch())
+            {
+                return new List<FileCabinetRecord>();
+            }
+
+            var hash = search.GetHash();
+            if (this.searchHistory.ContainsKey(hash))
+            {
+                return this.searchHistory[hash];
+            }
+
+            if (search.Id.Item1)
+            {
+                var recordPosition = this.recordPositions.Find(x => x.Item1 == search.Id.Item2);
+                this.fileStream.Seek(recordPosition.Item2 + Offset, SeekOrigin.Begin);
+                return new List<FileCabinetRecord> { this.ReadRecordUsingBinaryReader() };
+            }
+
+            var records = this.GetRecords();
+            var answer = new List<FileCabinetRecord>();
+            foreach (var record in records)
+            {
+                if (RecordsComparer.RecordsEquals(record, search))
+                {
+                    answer.Add(record);
+                }
+            }
+
+            this.searchHistory.Add(hash, answer);
+            return answer;
         }
 
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
@@ -157,121 +161,52 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
-            if (snapshot == null)
-            {
-                throw new ArgumentNullException(nameof(snapshot));
-            }
-
-            List<FileCabinetRecord> records = new (this.GetRecords());
+            _ = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
 
             ReadOnlyCollection<FileCabinetRecord> unverifiedRecords = snapshot.Records;
             foreach (var record in unverifiedRecords)
             {
                 Tuple<bool, string> validationResult = this.validator.ValidateRecord(record);
-                bool recordIsValid = validationResult.Item1;
-                string message = validationResult.Item2;
-
-                if (recordIsValid)
+                if (validationResult.Item1)
                 {
-                    if (records.FindIndex(x => x.Id == record.Id) == -1)
+                    if (!this.recordPositions.Exists(x => x.Item1 == record.Id))
                     {
                         this.CreateRecord(record);
                     }
                     else
                     {
-                        List<FileCabinetRecord> list = new ();
-                        list.Add(record);
-                        this.EditRecords(new (list));
+                        this.EditRecord(record);
                     }
                 }
                 else
                 {
-                    Console.WriteLine(message);
+                    Console.WriteLine(validationResult.Item2);
                 }
             }
+
+            this.searchHistory.Clear();
         }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
-        public void RemoveRecords(ReadOnlyCollection<int> ids)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
+        public void RemoveRecord(int id)
         {
-            if (ids is null)
-            {
-                throw new ArgumentNullException(nameof(ids));
-            }
-
-            foreach (int id in ids)
-            {
-                var recordPos = this.recordPositions.Find(x => x.Item1 == id);
-                this.recordPositions.Add(new (0, recordPos.Item2));
-                this.recordPositions.Remove(recordPos);
-
-                this.fileStream.Seek(recordPos.Item2, SeekOrigin.Begin);
-                this.writer.Write(IsDeleted);
-                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-                this.RemoveRecordFromDictionaries(record);
-            }
+            var recordPos = this.recordPositions.Find(x => x.Item1 == id) ?? throw new ArgumentException("No record with this id.");
+            this.fileStream.Seek(recordPos.Item2, SeekOrigin.Begin);
+            this.writer.Write(IsDeleted);
+            this.recordPositions.Add(new (0, recordPos.Item2));
+            this.recordPositions.Remove(recordPos);
+            this.searchHistory.Clear();
         }
 
         /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
             List<FileCabinetRecord> records = new (this.GetRecords());
-            this.recordPositions = new ();
-            string fileName = this.fileStream.Name;
-            this.fileStream.Dispose();
-            this.fileStream = new (fileName, FileMode.Create);
-            this.writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
-            this.reader = new (this.fileStream, System.Text.Encoding.Unicode, true);
-
+            this.recordPositions.Clear();
+            this.fileStream.SetLength(0);
             foreach (var record in records)
             {
                 this.CreateRecord(record);
-            }
-        }
-
-        private static void AddRecordToDictionary(string propertyValue, int recordPosition, Dictionary<string, List<int>> dictionary)
-        {
-            string key = propertyValue.ToUpperInvariant();
-            if (!dictionary.ContainsKey(key))
-            {
-                dictionary.Add(key, new List<int>());
-            }
-
-            dictionary[key].Add(recordPosition);
-        }
-
-        private static void RemoveRecordFromDictionary(string propertyValue, int recordPosition, Dictionary<string, List<int>> dictionary)
-        {
-            string key = propertyValue.ToUpperInvariant();
-            dictionary[key].Remove(recordPosition);
-            if (dictionary[key].Count == 0)
-            {
-                dictionary.Remove(key);
-            }
-        }
-
-        private void RemoveRecordFromDictionaries(FileCabinetRecord record)
-        {
-            RemoveRecordFromDictionary(record.FirstName, record.Id, this.firstNameDictionary);
-            RemoveRecordFromDictionary(record.LastName, record.Id, this.lastNameDictionary);
-            RemoveRecordFromDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record.Id, this.dateOfBirthDictionary);
-        }
-
-        private void AddRecordToDictionaries(FileCabinetRecord record)
-        {
-            AddRecordToDictionary(record.FirstName, record.Id, this.firstNameDictionary);
-            AddRecordToDictionary(record.LastName, record.Id, this.lastNameDictionary);
-            AddRecordToDictionary(record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture), record.Id, this.dateOfBirthDictionary);
-        }
-
-        private IEnumerable<FileCabinetRecord> SearchByProperty(string propertyValue, Dictionary<string, List<int>> dictionary)
-        {
-            string key = propertyValue is null ? string.Empty : propertyValue.ToUpperInvariant();
-            var recordsPositions = dictionary.ContainsKey(key) ? dictionary[key] : new List<int>();
-            foreach (int pos in recordsPositions)
-            {
-                this.fileStream.Seek((SizeOFRecord * (pos - 1)) + Offset, SeekOrigin.Begin);
-                yield return this.ReadRecordUsingBinaryReader();
             }
         }
 
@@ -307,14 +242,13 @@ namespace FileCabinetApp
         private int NextAvailableId()
         {
             var existingRecords = this.GetStat().ExistingRecordsIds;
-            int id = 0;
-            while (true)
+            int id = 1;
+            while (existingRecords.Contains(id))
             {
-                if (!existingRecords.Contains(++id))
-                {
-                    return id;
-                }
+                id++;
             }
+
+            return id;
         }
     }
 }

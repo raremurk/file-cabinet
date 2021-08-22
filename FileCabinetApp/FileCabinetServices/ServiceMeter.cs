@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp
 {
@@ -29,11 +30,11 @@ namespace FileCabinetApp
             return id;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
-        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
+        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
+        public void EditRecord(FileCabinetRecord record)
         {
             var sw = Stopwatch.StartNew();
-            this.service.EditRecords(records);
+            this.service.EditRecord(record);
             sw.Stop();
             Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
         }
@@ -48,36 +49,6 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            var sw = Stopwatch.StartNew();
-            var result = this.service.FindByFirstName(firstName);
-            sw.Stop();
-            Console.WriteLine($"FindByFirstName method execution duration is {sw.ElapsedTicks} ticks.");
-            return result;
-        }
-
-        /// <inheritdoc cref="IFileCabinetService.FindByLastName(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            var sw = Stopwatch.StartNew();
-            var result = this.service.FindByLastName(lastName);
-            sw.Stop();
-            Console.WriteLine($"FindByLastName method execution duration is {sw.ElapsedTicks} ticks.");
-            return result;
-        }
-
-        /// <inheritdoc cref="IFileCabinetService.FindByDateOfBirth(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
-        {
-            var sw = Stopwatch.StartNew();
-            var result = this.service.FindByDateOfBirth(dateOfBirth);
-            sw.Stop();
-            Console.WriteLine($"FindByDateOfBirth method execution duration is {sw.ElapsedTicks} ticks.");
-            return result;
-        }
-
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
@@ -88,13 +59,13 @@ namespace FileCabinetApp
             return result;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
-        public bool IdExists(int id)
+        /// <inheritdoc cref="IFileCabinetService.Search(RecordToSearch)"/>
+        public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
         {
             var sw = Stopwatch.StartNew();
-            bool result = this.service.IdExists(id);
+            var result = this.service.Search(search);
             sw.Stop();
-            Console.WriteLine($"IdExists method execution duration is {sw.ElapsedTicks} ticks.");
+            Console.WriteLine($"Search method execution duration is {sw.ElapsedTicks} ticks.");
             return result;
         }
 
@@ -127,11 +98,11 @@ namespace FileCabinetApp
             Console.WriteLine($"Restore method execution duration is {sw.ElapsedTicks} ticks.");
         }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
-        public void RemoveRecords(ReadOnlyCollection<int> ids)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
+        public void RemoveRecord(int id)
         {
             var sw = Stopwatch.StartNew();
-            this.service.RemoveRecords(ids);
+            this.service.RemoveRecord(id);
             sw.Stop();
             Console.WriteLine($"RemoveRecord method execution duration is {sw.ElapsedTicks} ticks.");
         }

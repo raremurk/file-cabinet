@@ -101,7 +101,7 @@ namespace FileCabinetApp.CommandHandlers
             }
 
             FileCabinetRecord record = conversionResult.Item3;
-            if (this.fileCabinetService.IdExists(record.Id))
+            if (this.fileCabinetService.GetRecord(record.Id) != null)
             {
                 Console.WriteLine($"Record with ID = '{record.Id}' already exists.");
                 return;

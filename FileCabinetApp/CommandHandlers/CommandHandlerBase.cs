@@ -7,14 +7,13 @@ namespace FileCabinetApp.CommandHandlers
     /// <seealso cref="ICommandHandler" />
     public abstract class CommandHandlerBase : ICommandHandler
     {
-        private static readonly string[] Commands = { "create", "update", "delete", "insert", "find", "list", "stat", "import", "export", "purge", "help", "exit" };
+        private static readonly string[] Commands = { "create", "update", "delete", "insert", "select", "stat", "import", "export", "purge", "help", "exit" };
 
         /// <summary>Gets the next handler.</summary>
         /// <value>The next handler.</value>
         public ICommandHandler NextHandler { get; private set; }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="ICommandHandler.Handle(AppCommandRequest)"/>
         public abstract void Handle(AppCommandRequest request);
 
         /// <summary>Handles the specified request.</summary>
@@ -23,15 +22,8 @@ namespace FileCabinetApp.CommandHandlers
         /// <param name="command">The command.</param>
         public void Handle(AppCommandRequest request, string commandName, Action<string> command)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (command is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+            _ = command ?? throw new ArgumentNullException(nameof(request));
 
             if (string.Equals(commandName, request.Command, StringComparison.OrdinalIgnoreCase))
             {
@@ -50,8 +42,7 @@ namespace FileCabinetApp.CommandHandlers
             }
         }
 
-        /// <summary>Sets the next handler.</summary>
-        /// <param name="handler">The handler.</param>
+        /// <inheritdoc cref="ICommandHandler.SetNext(ICommandHandler)"/>
         /// <exception cref="ArgumentNullException">Thrown when handler is null.</exception>
         public void SetNext(ICommandHandler handler)
         {

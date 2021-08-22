@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp
 {
@@ -40,14 +41,14 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.EditRecords(ReadOnlyCollection{FileCabinetRecord})"/>
-        public void EditRecords(ReadOnlyCollection<FileCabinetRecord> records)
+        /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
+        public void EditRecord(FileCabinetRecord record)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, $"Calling EditRecord() with parameters");
             try
             {
-                this.service.EditRecords(records);
+                this.service.EditRecord(record);
                 WriteOperationLog(writer, "EditRecord() executed successfully");
             }
             catch (Exception ex)
@@ -75,60 +76,6 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.FindByFirstName(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByFirstName(string firstName)
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling FindByFirstName() with firstName = '{firstName}'");
-            try
-            {
-                var result = this.service.FindByFirstName(firstName);
-                WriteOperationLog(writer, $"FindByFirstName() returned result");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"FindByFirstName() threw an exception: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <inheritdoc cref="IFileCabinetService.FindByLastName(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByLastName(string lastName)
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling FindByLastName() with lastName = '{lastName}'");
-            try
-            {
-                var result = this.service.FindByLastName(lastName);
-                WriteOperationLog(writer, $"FindByLastName() returned result");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"FindByLastName() threw an exception: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <inheritdoc cref="IFileCabinetService.FindByDateOfBirth(string)"/>
-        public IEnumerable<FileCabinetRecord> FindByDateOfBirth(string dateOfBirth)
-        {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling FindByDateOfBirth() with dateOfBirth = '{dateOfBirth}'");
-            try
-            {
-                var result = this.service.FindByDateOfBirth(dateOfBirth);
-                WriteOperationLog(writer, $"FindByDateOfBirth() returned result");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"FindByDateOfBirth() threw an exception: {ex.Message}");
-                throw;
-            }
-        }
-
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
@@ -147,20 +94,20 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
-        public bool IdExists(int id)
+        /// <inheritdoc cref="IFileCabinetService.Search(RecordToSearch)"/>
+        public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling IdExists() with ID = '{id}'");
+            WriteOperationLog(writer, "Calling Search() with parameters");
             try
             {
-                bool result = this.service.IdExists(id);
-                WriteOperationLog(writer, $"IdExists() returned {result}");
+                var result = this.service.Search(search);
+                WriteOperationLog(writer, $"Search() returned result");
                 return result;
             }
             catch (Exception ex)
             {
-                WriteOperationLog(writer, $"IdExists() threw an exception: {ex.Message}");
+                WriteOperationLog(writer, $"Search() threw an exception: {ex.Message}");
                 throw;
             }
         }
@@ -218,14 +165,14 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecords(ReadOnlyCollection{int})"/>
-        public void RemoveRecords(ReadOnlyCollection<int> ids)
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
+        public void RemoveRecord(int id)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, $"Calling RemoveRecord() with parameters");
             try
             {
-                this.service.RemoveRecords(ids);
+                this.service.RemoveRecord(id);
                 WriteOperationLog(writer, "RemoveRecord() executed successfully");
             }
             catch (Exception ex)

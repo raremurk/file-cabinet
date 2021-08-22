@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+using System.Linq;
+using FileCabinetApp.Helpers;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -10,16 +11,20 @@ namespace FileCabinetApp.CommandHandlers
     public class DeleteCommandHandler : ServiceCommandHandlerBase
     {
         private const string DeleteCommand = "delete";
+        private readonly IRecordValidator validator;
+        private readonly Parser parser;
 
         /// <summary>Initializes a new instance of the <see cref="DeleteCommandHandler"/> class.</summary>
         /// <param name="fileCabinetService">IFileCabinetService.</param>
-        public DeleteCommandHandler(IFileCabinetService fileCabinetService)
+        /// /// <param name="validator">IRecordValidator.</param>
+        public DeleteCommandHandler(IFileCabinetService fileCabinetService, IRecordValidator validator)
             : base(fileCabinetService)
         {
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            this.parser = new Parser(this.validator);
         }
 
-        /// <summary>Handles the specified request.</summary>
-        /// <param name="request">The request.</param>
+        /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, DeleteCommand, this.Delete);
 
         private void Delete(string parameters)
@@ -30,79 +35,39 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            string[] inputs = parameters.Split(new char[] { '=', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            string[] allowedProperties = { "id", "firstName", "lastName", "dateOfBirth" };
+            string[] inputs = parameters.Split(new char[] { '=', ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            int indexOfWhere = Array.FindIndex(inputs, x => x.Equals("where", StringComparison.OrdinalIgnoreCase));
 
-            if (inputs.Length != 3 || !string.Equals(inputs[0], "where", StringComparison.OrdinalIgnoreCase))
+            if (indexOfWhere == -1)
             {
-                Console.WriteLine("Invalid input. Example : delete where id = '1'");
+                Console.WriteLine("The keyword \"where\" was not found.");
                 return;
             }
 
-            string property = inputs[1];
-            string value = inputs[2];
-
-            int index = Array.FindIndex(allowedProperties, x => x.Equals(property, StringComparison.OrdinalIgnoreCase));
-            if (index == -1)
+            RecordToSearch recordToSearch = this.parser.GetRecordToSearchFromString(inputs[(indexOfWhere + 1) ..]);
+            if (!recordToSearch.NeedToSearch())
             {
-                Console.WriteLine("Invalid property. Available properties : 'id', 'firstname', 'lastname', 'dateofbirth'.");
+                Console.WriteLine("Search parameters are missing or incorrect.");
                 return;
             }
 
-            if (value.Length < 3 || value[0] != '\'' || value[^1] != '\'')
-            {
-                Console.WriteLine("Value must be in single quotes.");
-                return;
-            }
-
-            List<int> recordsToDelete = new ();
-            string ids = string.Empty;
-            value = value.Trim('\'');
-
-            if (index == 0)
-            {
-                if (!int.TryParse(value, out int id))
-                {
-                    Console.WriteLine("Invalid id value.");
-                    return;
-                }
-
-                if (this.fileCabinetService.IdExists(id))
-                {
-                    recordsToDelete.Add(id);
-                    ids = $"#{id}";
-                }
-            }
-            else
-            {
-                var searchResult = index switch
-                {
-                    1 => this.fileCabinetService.FindByFirstName(value),
-                    2 => this.fileCabinetService.FindByLastName(value),
-                    3 => this.fileCabinetService.FindByDateOfBirth(value),
-                    _ => throw new ArgumentException("Invalid index.")
-                };
-
-                List<string> stringIds = new ();
-                foreach (var record in searchResult)
-                {
-                    recordsToDelete.Add(record.Id);
-                    stringIds.Add($"#{record.Id}");
-                }
-
-                ids = string.Join(", ", stringIds);
-            }
-
-            if (recordsToDelete.Count != 0)
-            {
-                string message = recordsToDelete.Count == 1 ? $"Record {ids} is deleted." : $"Records {ids} are deleted.";
-                this.fileCabinetService.RemoveRecords(new (recordsToDelete));
-                Console.WriteLine(message);
-            }
-            else
+            var recordsToDelete = this.fileCabinetService.Search(recordToSearch);
+            if (!recordsToDelete.Any())
             {
                 Console.WriteLine("No records with such parameters.");
+                return;
             }
+
+            List<string> identifiers = new ();
+            foreach (var record in recordsToDelete)
+            {
+                this.fileCabinetService.RemoveRecord(record.Id);
+                identifiers.Add($"#{record.Id}");
+            }
+
+            string ids = string.Join(", ", identifiers);
+            string message = recordsToDelete.Count() < 2 ? $"Record {ids} is deleted." : $"Records {ids} are deleted.";
+            Console.WriteLine(message);
         }
     }
 }
