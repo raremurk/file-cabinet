@@ -23,33 +23,11 @@ namespace FileCabinetApp
         /// <param name="args">Command line arguments.</param>
         public static void Main(string[] args)
         {
-            string[] customValidationArgs = { "--validation-rules=custom", "-v custom" };
-            string[] fileMemoryArgs = { "--storage=file", "-s file" };
-            string[] shortForms = { "-s", "-v" };
-            string serviceMeterArg = "-use-stopwatch";
-            string serviceLoggerArg = "-use-logger";
-            bool customValidation = false;
-            bool fileMemoryMode = false;
-            bool serviceMeter = false;
-            bool serviceLogger = false;
-
-            if (!(args is null))
-            {
-                int argsLength = args.Length;
-                for (int i = 0; i < argsLength; i++)
-                {
-                    string parameter = args[i];
-                    if (Array.FindIndex(shortForms, x => x.Equals(args[i], StringComparison.OrdinalIgnoreCase)) >= 0 && argsLength - i >= 2)
-                    {
-                        parameter = string.Join(' ', args[i], args[++i]);
-                    }
-
-                    customValidation = customValidation || Array.FindIndex(customValidationArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
-                    fileMemoryMode = fileMemoryMode || Array.FindIndex(fileMemoryArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
-                    serviceMeter = serviceMeter || string.Equals(serviceMeterArg, parameter, StringComparison.OrdinalIgnoreCase);
-                    serviceLogger = serviceLogger || string.Equals(serviceLoggerArg, parameter, StringComparison.OrdinalIgnoreCase);
-                }
-            }
+            var parseResult = args != null ? ParseArgs(args) : new (false, false, false, false);
+            bool customValidation = parseResult.Item1;
+            bool fileMemoryMode = parseResult.Item2;
+            bool serviceMeter = parseResult.Item3;
+            bool serviceLogger = parseResult.Item4;
 
             string validationModeMessage = customValidation ? "Using custom validation rules." : "Using default validation rules.";
             string fileModeMessage = fileMemoryMode ? "Using file mode." : "Using memory mode.";
@@ -60,7 +38,7 @@ namespace FileCabinetApp
             if (fileMemoryMode)
             {
                 string nameOfDb = "cabinet-records.db";
-                FileStream fileStream = new (nameOfDb, FileMode.Create);
+                FileStream fileStream = new (nameOfDb, FileMode.OpenOrCreate);
                 fileCabinetService = new FileCabinetFilesystemService(fileStream, validator);
             }
             else
@@ -72,17 +50,13 @@ namespace FileCabinetApp
             {
                 fileCabinetService = new ServiceLogger(new ServiceMeter(fileCabinetService));
             }
-            else
+            else if (serviceMeter)
             {
-                if (serviceMeter)
-                {
-                    fileCabinetService = new ServiceMeter(fileCabinetService);
-                }
-
-                if (serviceLogger)
-                {
-                    fileCabinetService = new ServiceLogger(fileCabinetService);
-                }
+                fileCabinetService = new ServiceMeter(fileCabinetService);
+            }
+            else if (serviceLogger)
+            {
+                fileCabinetService = new ServiceLogger(fileCabinetService);
             }
 
             Console.WriteLine($"File Cabinet Application, developed by {Program.DeveloperName}");
@@ -137,6 +111,36 @@ namespace FileCabinetApp
             deleteHandler.SetNext(statHandler);
 
             return helpHandler;
+        }
+
+        private static Tuple<bool, bool, bool, bool> ParseArgs(string[] args)
+        {
+            string[] customValidationArgs = { "--validation-rules=custom", "-v custom" };
+            string[] fileMemoryArgs = { "--storage=file", "-s file" };
+            string[] shortForms = { "-s", "-v" };
+            string serviceMeterArg = "-use-stopwatch";
+            string serviceLoggerArg = "-use-logger";
+            bool customValidation = false;
+            bool fileMemoryMode = false;
+            bool serviceMeter = false;
+            bool serviceLogger = false;
+
+            int argsLength = args.Length;
+            for (int i = 0; i < argsLength; i++)
+            {
+                string parameter = args[i];
+                if (Array.FindIndex(shortForms, x => x.Equals(args[i], StringComparison.OrdinalIgnoreCase)) >= 0 && argsLength - i >= 2)
+                {
+                    parameter = string.Join(' ', args[i], args[++i]);
+                }
+
+                customValidation = customValidation || Array.FindIndex(customValidationArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
+                fileMemoryMode = fileMemoryMode || Array.FindIndex(fileMemoryArgs, x => x.Equals(parameter, StringComparison.OrdinalIgnoreCase)) >= 0;
+                serviceMeter = serviceMeter || string.Equals(serviceMeterArg, parameter, StringComparison.OrdinalIgnoreCase);
+                serviceLogger = serviceLogger || string.Equals(serviceLoggerArg, parameter, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return new (customValidation, fileMemoryMode, serviceMeter, serviceLogger);
         }
     }
 }

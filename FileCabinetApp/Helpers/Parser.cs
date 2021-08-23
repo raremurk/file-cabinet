@@ -87,29 +87,24 @@ namespace FileCabinetApp.Helpers
                 values[i] = value;
             }
 
-            var stringRecord = new StringRecord
-            {
-                Id = values[0],
-                FirstName = values[1],
-                LastName = values[2],
-                DateOfBirth = values[3],
-                WorkPlaceNumber = values[4],
-                Salary = values[5],
-                Department = values[6],
-            };
-
-            FileCabinetRecord convertedRecord = Converter.RecordConverter(stringRecord).Item3;
+            int id = Converter.IntConverter(values[0]).Item3;
+            string firstName = values[1];
+            string lastName = values[2];
+            DateTime dateOfBirth = Converter.DateTimeConverter(values[3]).Item3;
+            short workPlaceNumber = Converter.ShortConverter(values[4]).Item3;
+            decimal salary = Converter.DecimalConverter(values[5]).Item3;
+            char department = Converter.CharConverter(values[6]).Item3;
 
             return new RecordToSearch
             {
                 AndMode = mode,
-                Id = convertedRecord.Id > 0 ? new (true, convertedRecord.Id) : new (false, 0),
-                FirstName = this.validator.ValidateFirstName(convertedRecord.FirstName).Item1 ? new (true, convertedRecord.FirstName) : new (false, string.Empty),
-                LastName = this.validator.ValidateLastName(convertedRecord.LastName).Item1 ? new (true, convertedRecord.LastName) : new (false, string.Empty),
-                DateOfBirth = this.validator.ValidateDateOfBirth(convertedRecord.DateOfBirth).Item1 ? new (true, convertedRecord.DateOfBirth) : new (false, DateTime.MinValue),
-                WorkPlaceNumber = this.validator.ValidateWorkPlaceNumber(convertedRecord.WorkPlaceNumber).Item1 ? new (true, convertedRecord.WorkPlaceNumber) : new (false, (short)0),
-                Salary = this.validator.ValidateSalary(convertedRecord.Salary).Item1 ? new (true, convertedRecord.Salary) : new (false, decimal.Zero),
-                Department = this.validator.ValidateDepartment(convertedRecord.Department).Item1 ? new (true, convertedRecord.Department) : new (false, char.MinValue),
+                Id = new (id > 0, id),
+                FirstName = new (this.validator.ValidateFirstName(firstName).Item1, firstName),
+                LastName = new (this.validator.ValidateLastName(lastName).Item1, lastName),
+                DateOfBirth = new (this.validator.ValidateDateOfBirth(dateOfBirth).Item1, dateOfBirth),
+                WorkPlaceNumber = new (this.validator.ValidateWorkPlaceNumber(workPlaceNumber).Item1, workPlaceNumber),
+                Salary = new (this.validator.ValidateSalary(salary).Item1, salary),
+                Department = new (this.validator.ValidateDepartment(department).Item1, department),
             };
         }
     }

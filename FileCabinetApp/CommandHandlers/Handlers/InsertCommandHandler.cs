@@ -24,11 +24,35 @@ namespace FileCabinetApp.CommandHandlers
         /// <inheritdoc cref="CommandHandlerBase.Handle(AppCommandRequest)"/>
         public override void Handle(AppCommandRequest request) => this.Handle(request, InsertCommand, this.Insert);
 
+        private static List<string> ParseProperties(string[] recordProperties, string[] properties, string[] values)
+        {
+            List<string> propertyValues = new ();
+            for (int i = 0; i < recordProperties.Length; i++)
+            {
+                int index = Array.FindIndex(properties, x => x.Equals(recordProperties[i], StringComparison.OrdinalIgnoreCase));
+                if (index == -1)
+                {
+                    Console.WriteLine($"This property is not set : {recordProperties[i]}.");
+                    return new List<string>();
+                }
+
+                if (values[index].Length < 3 || values[index][0] != '\'' || values[index][^1] != '\'')
+                {
+                    Console.WriteLine("Values must be in single quotes. Example: ('value1', 'value2', ...)");
+                    return new List<string>();
+                }
+
+                propertyValues.Add(values[index].Trim('\''));
+            }
+
+            return propertyValues;
+        }
+
         private void Insert(string parameters)
         {
             if (string.IsNullOrEmpty(parameters))
             {
-                Console.WriteLine("Invalid input. Example: insert (Property1, Property2, ...) values ('value1', 'value2', ...).");
+                Console.WriteLine("Input parameters. Example: insert (Property1, Property2, ...) values ('value1', 'value2', ...)");
                 return;
             }
 
@@ -37,7 +61,7 @@ namespace FileCabinetApp.CommandHandlers
 
             if (inputs.Length != 2)
             {
-                Console.WriteLine("Invalid input. Example: insert (Property1, Property2, ...) values ('value1', 'value2', ...).");
+                Console.WriteLine("Invalid input. Example: insert (Property1, Property2, ...) values ('value1', 'value2', ...)");
                 return;
             }
 
@@ -51,7 +75,7 @@ namespace FileCabinetApp.CommandHandlers
 
             propertiesSection = propertiesSection[1..^1];
             valuesSection = valuesSection[1..^1];
-            var recordProperties = typeof(FileCabinetRecord).GetProperties();
+            string[] recordProperties = { "id", "firstName", "lastName", "dateOfBirth", "workPlaceNumber", "salary", "department" };
             int propertiesCount = recordProperties.Length;
 
             string[] properties = propertiesSection.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -63,49 +87,60 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            List<string> propertyValues = new ();
-            for (int i = 0; i < propertiesCount; i++)
+            List<string> propertyValues = ParseProperties(recordProperties, properties, values);
+            if (propertyValues.Count == 0)
             {
-                int index = Array.FindIndex(properties, x => x.Equals(recordProperties[i].Name, StringComparison.OrdinalIgnoreCase));
-                if (index == -1)
-                {
-                    Console.WriteLine($"This property is not set : {recordProperties[i].Name}.");
-                    return;
-                }
-
-                if (values[index].Length < 3 || values[index][0] != '\'' || values[index][^1] != '\'')
-                {
-                    Console.WriteLine("Values must be in single quotes. Example: ('value1', 'value2', ...)");
-                    return;
-                }
-
-                propertyValues.Add(values[index].Trim('\''));
+                return;
             }
 
-            var stringRecord = new StringRecord
+            var resultConversionId = Converter.IntConverter(propertyValues[0]);
+            if (resultConversionId.Item3 <= 0)
             {
-                Id = propertyValues[0],
-                FirstName = propertyValues[1],
-                LastName = propertyValues[2],
-                DateOfBirth = propertyValues[3],
-                WorkPlaceNumber = propertyValues[4],
-                Salary = propertyValues[5],
-                Department = propertyValues[6],
+                Console.WriteLine($"Invalid Id.");
+                return;
+            }
+
+            if (this.fileCabinetService.GetRecord(resultConversionId.Item3) != null)
+            {
+                Console.WriteLine($"Record with ID = '{resultConversionId.Item3}' already exists.");
+                return;
+            }
+
+            string firstName = propertyValues[1];
+            string lastName = propertyValues[2];
+            var resultConversionDateOfBirth = Converter.DateTimeConverter(propertyValues[3]);
+            var resultConversionWorkPlaceNumber = Converter.ShortConverter(propertyValues[4]);
+            var resultConversionSalary = Converter.DecimalConverter(propertyValues[5]);
+            var resultConversionDepartment = Converter.CharConverter(propertyValues[6]);
+
+            Tuple<bool, string>[] conversionResults =
+            {
+                new (resultConversionId.Item1, resultConversionId.Item2),
+                new (resultConversionDateOfBirth.Item1, resultConversionDateOfBirth.Item2),
+                new (resultConversionWorkPlaceNumber.Item1, resultConversionWorkPlaceNumber.Item2),
+                new (resultConversionSalary.Item1, resultConversionSalary.Item2),
+                new (resultConversionDepartment.Item1, resultConversionDepartment.Item2),
             };
 
-            var conversionResult = Converter.RecordConverter(stringRecord);
-            if (!conversionResult.Item1)
+            foreach (var result in conversionResults)
             {
-                Console.WriteLine(conversionResult.Item2);
-                return;
+                if (!result.Item1)
+                {
+                    Console.WriteLine(result.Item2);
+                    return;
+                }
             }
 
-            FileCabinetRecord record = conversionResult.Item3;
-            if (this.fileCabinetService.GetRecord(record.Id) != null)
+            var record = new FileCabinetRecord
             {
-                Console.WriteLine($"Record with ID = '{record.Id}' already exists.");
-                return;
-            }
+                Id = resultConversionId.Item3,
+                FirstName = firstName,
+                LastName = lastName,
+                DateOfBirth = resultConversionDateOfBirth.Item3,
+                WorkPlaceNumber = resultConversionWorkPlaceNumber.Item3,
+                Salary = resultConversionSalary.Item3,
+                Department = resultConversionDepartment.Item3,
+            };
 
             var validationResult = this.validator.ValidateRecord(record);
 

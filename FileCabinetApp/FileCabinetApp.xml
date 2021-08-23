@@ -523,11 +523,6 @@
             <param name="input">Input string.</param>
             <returns>Returns TryParse result, message and char value .</returns>
         </member>
-        <member name="M:FileCabinetApp.Helpers.Converter.RecordConverter(FileCabinetApp.Models.StringRecord)">
-            <summary>StringFileCabinetRecord to FileCabinetRecord converting.</summary>
-            <param name="stringRecord">Input record.</param>
-            <returns>Returns TryParse result, message and FileCabinetRecord value .</returns>
-        </member>
         <member name="T:FileCabinetApp.Helpers.Parser">
             <summary>Parser.</summary>
         </member>
@@ -755,6 +750,33 @@
             <value>Salary of record.</value>
         </member>
         <member name="P:FileCabinetApp.Models.Record.Department">
+            <summary>Gets or sets the department.</summary>
+            <value>Department of record.</value>
+        </member>
+        <member name="T:FileCabinetApp.Models.RecordToEdit">
+            <summary>Сlass representing a record to edit.</summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordToEdit.FirstName">
+            <summary>Gets or sets the first name.</summary>
+            <value>First name of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordToEdit.LastName">
+            <summary>Gets or sets the last name.</summary>
+            <value>Last name of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordToEdit.DateOfBirth">
+            <summary>Gets or sets the date of birth.</summary>
+            <value>Date of birth of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordToEdit.WorkPlaceNumber">
+            <summary>Gets or sets the work place number.</summary>
+            <value>Work place number of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordToEdit.Salary">
+            <summary>Gets or sets the salary.</summary>
+            <value>Salary of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordToEdit.Department">
             <summary>Gets or sets the department.</summary>
             <value>Department of record.</value>
         </member>

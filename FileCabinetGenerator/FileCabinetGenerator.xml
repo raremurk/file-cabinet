@@ -11,5 +11,14 @@
             <summary>Defines the entry point of the FileCabinetGenerator.</summary>
             <param name="args">Command line arguments.</param>
         </member>
+        <member name="T:FileCabinetGenerator.RecordGenerator">
+            <summary>Generates records.</summary>
+        </member>
+        <member name="M:FileCabinetGenerator.RecordGenerator.GetRandomRecords(System.Int32,System.Int32)">
+            <summary>Generates records.</summary>
+            <param name="count">Records count.</param>
+            <param name="startId">Start record Id.</param>
+            <returns>Returns IEnumerable of FileCabinetRecords.</returns>
+        </member>
     </members>
 </doc>

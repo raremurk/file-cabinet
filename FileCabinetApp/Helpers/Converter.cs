@@ -58,57 +58,5 @@ namespace FileCabinetApp.Helpers
             string message = tryParse ? string.Empty : "Invalid department.";
             return new (tryParse, message, department);
         }
-
-        /// <summary>StringFileCabinetRecord to FileCabinetRecord converting.</summary>
-        /// <param name="stringRecord">Input record.</param>
-        /// <returns>Returns TryParse result, message and FileCabinetRecord value .</returns>
-        public static Tuple<bool, string, FileCabinetRecord> RecordConverter(StringRecord stringRecord)
-        {
-            if (stringRecord is null)
-            {
-                throw new ArgumentNullException(nameof(stringRecord));
-            }
-
-            bool successfully = true;
-            string message = string.Empty;
-
-            var resultConversionId = IntConverter(stringRecord.Id);
-            var resultConversionDateOfBirth = DateTimeConverter(stringRecord.DateOfBirth);
-            var resultConversionWorkPlaceNumber = ShortConverter(stringRecord.WorkPlaceNumber);
-            var resultConversionSalary = DecimalConverter(stringRecord.Salary);
-            var resultConversionDepartment = CharConverter(stringRecord.Department);
-
-            var record = new FileCabinetRecord
-            {
-                Id = resultConversionId.Item3,
-                FirstName = stringRecord.FirstName,
-                LastName = stringRecord.LastName,
-                DateOfBirth = resultConversionDateOfBirth.Item3,
-                WorkPlaceNumber = resultConversionWorkPlaceNumber.Item3,
-                Salary = resultConversionSalary.Item3,
-                Department = resultConversionDepartment.Item3,
-            };
-
-            Tuple<bool, string>[] conversionResults =
-            {
-                new (resultConversionId.Item1, resultConversionId.Item2),
-                new (resultConversionDateOfBirth.Item1, resultConversionDateOfBirth.Item2),
-                new (resultConversionWorkPlaceNumber.Item1, resultConversionWorkPlaceNumber.Item2),
-                new (resultConversionSalary.Item1, resultConversionSalary.Item2),
-                new (resultConversionDepartment.Item1, resultConversionDepartment.Item2),
-            };
-
-            foreach (var result in conversionResults)
-            {
-                successfully = result.Item1;
-                if (!successfully)
-                {
-                    message = result.Item2;
-                    break;
-                }
-            }
-
-            return new (successfully, message, record);
-        }
     }
 }

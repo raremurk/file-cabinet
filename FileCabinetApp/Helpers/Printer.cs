@@ -14,15 +14,8 @@ namespace FileCabinetApp.Helpers
         /// <param name="format">Required columns format.</param>
         public static void Print(IEnumerable<FileCabinetRecord> records, BoolRecord format)
         {
-            if (records is null)
-            {
-                throw new ArgumentNullException(nameof(records));
-            }
-
-            if (format is null)
-            {
-                throw new ArgumentNullException(nameof(format));
-            }
+            _ = records ?? throw new ArgumentNullException(nameof(records));
+            _ = format ?? throw new ArgumentNullException(nameof(format));
 
             if (!records.Any())
             {
@@ -31,6 +24,7 @@ namespace FileCabinetApp.Helpers
             }
 
             string[] columnHeaders = { "Id", "FirstName", "LastName", "DateOfBirth", "Place №", "Salary", "Department" };
+
             int lengthOfId = columnHeaders[0].Length;
             int firstNameLength = columnHeaders[1].Length;
             int lastNameLength = columnHeaders[2].Length;
@@ -38,8 +32,8 @@ namespace FileCabinetApp.Helpers
             int workPlaceNumberLength = columnHeaders[4].Length;
             int salaryLength = columnHeaders[5].Length;
             int departmentLength = columnHeaders[6].Length;
-            List<StringRecord> recordsToPrint = new ();
 
+            List<StringRecord> recordsToPrint = new ();
             foreach (var record in records)
             {
                 var stringRecord = new StringRecord()
@@ -52,6 +46,7 @@ namespace FileCabinetApp.Helpers
                     Salary = $"{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}",
                     Department = $"{record.Department}",
                 };
+
                 recordsToPrint.Add(stringRecord);
 
                 lengthOfId = stringRecord.Id.Length > lengthOfId ? stringRecord.Id.Length : lengthOfId;
@@ -71,39 +66,53 @@ namespace FileCabinetApp.Helpers
                 new (format.Department, columnHeaders[6], departmentLength, true),
             };
 
-            List<string> header = new ();
-            List<string> sep = new ();
+            var headerAndSeparator = MakeHeaderAndSeparator(columns);
+            string separator = headerAndSeparator.Item1;
+            string header = headerAndSeparator.Item2;
+
+            Console.WriteLine(separator);
+            Console.WriteLine(header);
+            Console.WriteLine(separator);
+
+            foreach (var record in recordsToPrint)
+            {
+                string line = MakeLine(record, columns);
+                Console.WriteLine(line);
+            }
+
+            Console.WriteLine(separator);
+        }
+
+        private static string MakeLine(StringRecord record, Tuple<bool, string, int, bool>[] columns)
+        {
+            string[] properties = { record.Id, record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department };
+            var line = new List<string>();
+            for (int i = 0; i < properties.Length; i++)
+            {
+                if (columns[i].Item1)
+                {
+                    string property = columns[i].Item4 ? properties[i].PadLeft(columns[i].Item3) : properties[i].PadRight(columns[i].Item3);
+                    line.Add(property);
+                }
+            }
+
+            return $"| {string.Join(" | ", line)} |";
+        }
+
+        private static Tuple<string, string> MakeHeaderAndSeparator(Tuple<bool, string, int, bool>[] columns)
+        {
+            var header = new List<string>();
+            var separator = new List<string>();
             foreach (var column in columns)
             {
                 if (column.Item1)
                 {
                     header.Add(column.Item2.PadRight(column.Item3));
-                    sep.Add(new string('-', column.Item3));
+                    separator.Add(new string('-', column.Item3));
                 }
             }
 
-            string separator = $"+-{string.Join("-+-", sep)}-+";
-            Console.WriteLine(separator);
-            Console.WriteLine($"| {string.Join(" | ", header)} |");
-            Console.WriteLine(separator);
-
-            foreach (var record in recordsToPrint)
-            {
-                string[] properties = { record.Id, record.FirstName, record.LastName, record.DateOfBirth, record.WorkPlaceNumber, record.Salary, record.Department };
-                List<string> line = new ();
-                for (int i = 0; i < properties.Length; i++)
-                {
-                    if (columns[i].Item1)
-                    {
-                        string property = columns[i].Item4 ? properties[i].PadLeft(columns[i].Item3) : properties[i].PadRight(columns[i].Item3);
-                        line.Add(property);
-                    }
-                }
-
-                Console.WriteLine($"| {string.Join(" | ", line)} |");
-            }
-
-            Console.WriteLine(separator);
+            return new ($"| {string.Join(" | ", header)} |", $"+-{string.Join("-+-", separator)}-+");
         }
     }
 }

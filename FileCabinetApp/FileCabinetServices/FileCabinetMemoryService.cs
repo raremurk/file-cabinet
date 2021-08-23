@@ -80,11 +80,6 @@ namespace FileCabinetApp
                 return this.searchHistory[hash];
             }
 
-            if (search.Id.Item1)
-            {
-                return this.list.FindAll(x => x.Id == search.Id.Item2);
-            }
-
             var records = this.GetRecords();
             var answer = new List<FileCabinetRecord>();
             foreach (var record in records)
@@ -153,6 +148,7 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
+            // this method shouldn't do anything
         }
 
         private int NextAvailableId()
