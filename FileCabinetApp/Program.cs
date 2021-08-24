@@ -38,7 +38,7 @@ namespace FileCabinetApp
             if (fileMemoryMode)
             {
                 string nameOfDb = "cabinet-records.db";
-                FileStream fileStream = new (nameOfDb, FileMode.Create);
+                FileStream fileStream = new (nameOfDb, FileMode.OpenOrCreate);
                 fileCabinetService = new FileCabinetFilesystemService(fileStream, validator);
             }
             else

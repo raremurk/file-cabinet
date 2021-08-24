@@ -30,6 +30,14 @@ namespace FileCabinetApp
             this.validator = validator;
             this.writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
             this.reader = new (this.fileStream, System.Text.Encoding.Unicode, true);
+
+            while (this.reader.PeekChar() > -1)
+            {
+                long pos = this.fileStream.Position;
+                this.fileStream.Seek(Offset, SeekOrigin.Current);
+                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
+                this.recordPositions.Add(new (record.Id, pos));
+            }
         }
 
         /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
