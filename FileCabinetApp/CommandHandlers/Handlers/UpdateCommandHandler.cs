@@ -41,7 +41,7 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Update(string parameters)
         {
-            if (string.IsNullOrEmpty(parameters))
+            if (string.IsNullOrWhiteSpace(parameters))
             {
                 Console.WriteLine("Input parameters. Example : update set DateOfBirth = '5/18/1986' where FirstName='Stan' and LastName='Smith'");
                 return;

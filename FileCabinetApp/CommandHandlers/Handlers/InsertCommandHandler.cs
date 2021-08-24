@@ -50,7 +50,7 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Insert(string parameters)
         {
-            if (string.IsNullOrEmpty(parameters))
+            if (string.IsNullOrWhiteSpace(parameters))
             {
                 Console.WriteLine("Input parameters. Example: insert (Property1, Property2, ...) values ('value1', 'value2', ...)");
                 return;

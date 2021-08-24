@@ -38,10 +38,7 @@ namespace FileCabinetApp.Validators
         /// <inheritdoc cref="IRecordValidator.ValidateRecord(FileCabinetRecord)"/>
         public Tuple<bool, string> ValidateRecord(FileCabinetRecord record)
         {
-            if (record is null)
-            {
-                throw new ArgumentNullException(nameof(record));
-            }
+            _ = record ?? throw new ArgumentNullException(nameof(record));
 
             bool recordIsValid = false;
             string message = string.Empty;

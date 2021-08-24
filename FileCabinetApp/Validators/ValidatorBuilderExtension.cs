@@ -14,11 +14,7 @@ namespace FileCabinetApp.Validators
         /// <exception cref="ArgumentNullException">Thrown when builder is null.</exception>
         public static IRecordValidator CreateDefault(this ValidatorBuilder builder)
         {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
+            _ = builder ?? throw new ArgumentNullException(nameof(builder));
             ValidationRules rules = Config.GetSection("default").Get<ValidationRules>();
             return CreateBuilder(builder, rules);
         }
@@ -29,11 +25,7 @@ namespace FileCabinetApp.Validators
         /// <exception cref="ArgumentNullException">Thrown when builder is null.</exception>
         public static IRecordValidator CreateCustom(this ValidatorBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
+            _ = builder ?? throw new ArgumentNullException(nameof(builder));
             ValidationRules rules = Config.GetSection("custom").Get<ValidationRules>();
             return CreateBuilder(builder, rules);
         }

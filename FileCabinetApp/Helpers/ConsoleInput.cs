@@ -12,7 +12,7 @@ namespace FileCabinetApp.Helpers
         /// <param name="validator">IRecordValidator.</param>
         public ConsoleInput(IRecordValidator validator)
         {
-            this.validator = validator;
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
         /// <summary>Get record from console.</summary>

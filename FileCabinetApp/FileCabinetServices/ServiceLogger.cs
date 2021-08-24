@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using FileCabinetApp.Models;
 
@@ -45,7 +45,7 @@ namespace FileCabinetApp
         public void EditRecord(FileCabinetRecord record)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling EditRecord() with parameters");
+            WriteOperationLog(writer, $"Calling EditRecord() with {RecordToString(record, true)}");
             try
             {
                 this.service.EditRecord(record);
@@ -65,9 +65,9 @@ namespace FileCabinetApp
             WriteOperationLog(writer, $"Calling GetRecord() with Id = '{id}'");
             try
             {
-                var result = this.service.GetRecord(id);
-                WriteOperationLog(writer, $"GetRecord() returned result");
-                return result;
+                FileCabinetRecord record = this.service.GetRecord(id);
+                WriteOperationLog(writer, $"GetRecord() returned {RecordToString(record, true)}");
+                return record;
             }
             catch (Exception ex)
             {
@@ -84,7 +84,7 @@ namespace FileCabinetApp
             try
             {
                 var result = this.service.GetRecords();
-                WriteOperationLog(writer, $"GetRecords() returned result");
+                WriteOperationLog(writer, $"GetRecords() returned {result.Count()}");
                 return result;
             }
             catch (Exception ex)
@@ -98,11 +98,11 @@ namespace FileCabinetApp
         public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling Search() with parameters");
+            WriteOperationLog(writer, $"Calling Search() with {RecordToSearchToString(search)}");
             try
             {
                 var result = this.service.Search(search);
-                WriteOperationLog(writer, $"Search() returned result");
+                WriteOperationLog(writer, $"Search() returned {result.Count()}");
                 return result;
             }
             catch (Exception ex)
@@ -138,7 +138,7 @@ namespace FileCabinetApp
             try
             {
                 var result = this.service.MakeSnapshot();
-                WriteOperationLog(writer, "MakeSnapshot() returned new Snapshot object");
+                WriteOperationLog(writer, $"MakeSnapshot() returned new Snapshot object with {result.Records.Count} records");
                 return result;
             }
             catch (Exception ex)
@@ -169,7 +169,7 @@ namespace FileCabinetApp
         public void RemoveRecord(int id)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling RemoveRecord() with parameters");
+            WriteOperationLog(writer, $"Calling RemoveRecord() with Id = '{id}'");
             try
             {
                 this.service.RemoveRecord(id);
@@ -209,7 +209,7 @@ namespace FileCabinetApp
         {
             if (record is null)
             {
-                throw new ArgumentNullException(nameof(record));
+                return "null";
             }
 
             StringBuilder builder = new ();
@@ -224,6 +224,26 @@ namespace FileCabinetApp
             builder.Append($"WorkPlaceNumber = '{record.WorkPlaceNumber}', ");
             builder.Append($"Salary = '{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}', ");
             builder.Append($"Department = '{record.Department}'");
+
+            return builder.ToString();
+        }
+
+        private static string RecordToSearchToString(RecordToSearch record)
+        {
+            if (record is null)
+            {
+                return "null";
+            }
+
+            StringBuilder builder = new ();
+
+            _ = record.Id.Item1 ? builder.Append($"Id = '{record.Id.Item2}', ") : builder.Append(string.Empty);
+            _ = record.FirstName.Item1 ? builder.Append($"FirstName = '{record.FirstName.Item2}', ") : builder.Append(string.Empty);
+            _ = record.LastName.Item1 ? builder.Append($"LastName = '{record.LastName.Item2}', ") : builder.Append(string.Empty);
+            _ = record.DateOfBirth.Item1 ? builder.Append($"DateOfBirth = '{record.DateOfBirth.Item2.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}', ") : builder.Append(string.Empty);
+            _ = record.WorkPlaceNumber.Item1 ? builder.Append($"WorkPlaceNumber = '{record.WorkPlaceNumber.Item2}', ") : builder.Append(string.Empty);
+            _ = record.Salary.Item1 ? builder.Append($"Salary = '{record.Salary.Item2.ToString("F2", CultureInfo.InvariantCulture)}', ") : builder.Append(string.Empty);
+            _ = record.Department.Item1 ? builder.Append($"Department = '{record.Department.Item2}'") : builder.Append(string.Empty);
 
             return builder.ToString();
         }

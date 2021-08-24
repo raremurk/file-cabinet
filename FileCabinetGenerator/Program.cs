@@ -29,7 +29,7 @@ namespace FileCabinetGenerator
                 return;
             }
 
-            if (string.IsNullOrEmpty(filename))
+            if (string.IsNullOrWhiteSpace(filename))
             {
                 Console.WriteLine("No such directory or invalid file name");
                 return;
@@ -104,7 +104,7 @@ namespace FileCabinetGenerator
                     xmlFormat = index == 1;
                 }
 
-                if (string.IsNullOrEmpty(filename))
+                if (string.IsNullOrWhiteSpace(filename))
                 {
                     string fileNameArg = ExtractArgValue(arguments[i], arguments[i + 1], outputFileNameArgs);
                     filename = ValidateFileName(fileNameArg, csvFormat, xmlFormat);

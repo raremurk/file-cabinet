@@ -73,7 +73,7 @@ namespace FileCabinetApp
                 string command = inputs[commandIndex];
                 string parameters = inputs.Length > 1 ? inputs[parametersIndex] : string.Empty;
 
-                if (string.IsNullOrEmpty(command))
+                if (string.IsNullOrWhiteSpace(command))
                 {
                     Console.WriteLine(Program.HintMessage);
                     continue;

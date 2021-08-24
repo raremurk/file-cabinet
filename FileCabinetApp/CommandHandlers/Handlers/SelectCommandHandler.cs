@@ -30,7 +30,7 @@ namespace FileCabinetApp.CommandHandlers
 
         private void Select(string parameters)
         {
-            if (string.IsNullOrEmpty(parameters))
+            if (string.IsNullOrWhiteSpace(parameters))
             {
                 var records = this.fileCabinetService.GetRecords();
                 this.printer(records, new BoolRecord());

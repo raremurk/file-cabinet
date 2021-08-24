@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FileCabinetApp.Models
+﻿namespace FileCabinetApp.Models
 {
     /// <summary>Сlass representing a record.</summary>
     public class StringRecord
