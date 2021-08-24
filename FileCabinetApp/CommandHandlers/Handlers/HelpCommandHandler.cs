@@ -31,7 +31,7 @@ namespace FileCabinetApp.CommandHandlers
 
         private static void PrintHelp(string parameters)
         {
-            if (!string.IsNullOrEmpty(parameters))
+            if (!string.IsNullOrWhiteSpace(parameters))
             {
                 var index = Array.FindIndex(HelpMessages, i => string.Equals(i[CommandHelpIndex], parameters, StringComparison.OrdinalIgnoreCase));
                 if (index >= 0)

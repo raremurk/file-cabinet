@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using FileCabinetApp.Helpers;
 using FileCabinetApp.Models;
 
@@ -30,6 +30,14 @@ namespace FileCabinetApp
             this.validator = validator;
             this.writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
             this.reader = new (this.fileStream, System.Text.Encoding.Unicode, true);
+
+            while (this.reader.PeekChar() > -1)
+            {
+                long pos = this.fileStream.Position;
+                this.fileStream.Seek(Offset, SeekOrigin.Current);
+                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
+                this.recordPositions.Add(new (record.Id, pos));
+            }
         }
 
         /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
@@ -111,17 +119,10 @@ namespace FileCabinetApp
                 return this.searchHistory[hash];
             }
 
-            if (search.Id.Item1)
-            {
-                var recordPosition = this.recordPositions.Find(x => x.Item1 == search.Id.Item2);
-                this.fileStream.Seek(recordPosition.Item2 + Offset, SeekOrigin.Begin);
-                return new List<FileCabinetRecord> { this.ReadRecordUsingBinaryReader() };
-            }
-
-            var records = this.GetRecords();
             var answer = new List<FileCabinetRecord>();
-            foreach (var record in records)
+            foreach (var pos in this.recordPositions)
             {
+                var record = this.GetRecord(pos.Item1);
                 if (RecordsComparer.RecordsEquals(record, search))
                 {
                     answer.Add(record);
@@ -155,7 +156,8 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            throw new NotImplementedException();
+            var list = this.GetRecords().ToArray();
+            return new FileCabinetServiceSnapshot(list);
         }
 
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
@@ -163,8 +165,7 @@ namespace FileCabinetApp
         {
             _ = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
 
-            ReadOnlyCollection<FileCabinetRecord> unverifiedRecords = snapshot.Records;
-            foreach (var record in unverifiedRecords)
+            foreach (var record in snapshot.Records)
             {
                 Tuple<bool, string> validationResult = this.validator.ValidateRecord(record);
                 if (validationResult.Item1)

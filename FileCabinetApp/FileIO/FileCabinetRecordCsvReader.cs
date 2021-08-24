@@ -15,19 +15,18 @@ namespace FileCabinetApp
         /// <param name="reader">StreamReader.</param>
         public FileCabinetRecordCsvReader(StreamReader reader)
         {
-            this.reader = reader;
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
         }
 
         /// <summary>Reads all records from csv file.</summary>
-        /// <returns>Returns List of records.</returns>
-        public IList<FileCabinetRecord> ReadAll()
+        /// <returns>Returns IEnumerable of records.</returns>
+        public IEnumerable<FileCabinetRecord> ReadAll()
         {
-            var records = new List<FileCabinetRecord>();
             this.reader.ReadLine();
             while (!this.reader.EndOfStream)
             {
                 var recordString = this.reader.ReadLine().Split(',');
-                var record = new FileCabinetRecord
+                yield return new FileCabinetRecord
                 {
                     Id = int.Parse(recordString[0], CultureInfo.InvariantCulture),
                     FirstName = recordString[1],
@@ -37,10 +36,7 @@ namespace FileCabinetApp
                     Salary = decimal.Parse(recordString[5], CultureInfo.InvariantCulture),
                     Department = char.Parse(recordString[6]),
                 };
-                records.Add(record);
             }
-
-            return records;
         }
     }
 }

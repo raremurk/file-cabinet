@@ -80,11 +80,6 @@ namespace FileCabinetApp
                 return this.searchHistory[hash];
             }
 
-            if (search.Id.Item1)
-            {
-                return this.list.FindAll(x => x.Id == search.Id.Item2);
-            }
-
             var records = this.GetRecords();
             var answer = new List<FileCabinetRecord>();
             foreach (var record in records)
@@ -112,15 +107,14 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
-        public FileCabinetServiceSnapshot MakeSnapshot() => new (new ReadOnlyCollection<FileCabinetRecord>(this.list));
+        public FileCabinetServiceSnapshot MakeSnapshot() => new (this.list.ToArray());
 
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
         public void Restore(FileCabinetServiceSnapshot snapshot)
         {
             _ = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
 
-            ReadOnlyCollection<FileCabinetRecord> unverifiedRecords = snapshot.Records;
-            foreach (var record in unverifiedRecords)
+            foreach (var record in snapshot.Records)
             {
                 Tuple<bool, string> validationResult = this.validator.ValidateRecord(record);
                 if (validationResult.Item1)
@@ -154,6 +148,7 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
+            // this method shouldn't do anything
         }
 
         private int NextAvailableId()
