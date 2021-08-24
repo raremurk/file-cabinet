@@ -67,8 +67,8 @@ namespace FileCabinetApp.Helpers
             };
 
             var headerAndSeparator = MakeHeaderAndSeparator(columns);
-            string separator = headerAndSeparator.Item1;
-            string header = headerAndSeparator.Item2;
+            string header = headerAndSeparator.Item1;
+            string separator = headerAndSeparator.Item2;
 
             Console.WriteLine(separator);
             Console.WriteLine(header);

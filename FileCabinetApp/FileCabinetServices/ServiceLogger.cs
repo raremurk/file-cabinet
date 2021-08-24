@@ -84,7 +84,7 @@ namespace FileCabinetApp
             try
             {
                 var result = this.service.GetRecords();
-                WriteOperationLog(writer, $"GetRecords() returned {result.Count()}");
+                WriteOperationLog(writer, $"GetRecords() returned {result.Count()} record(s)");
                 return result;
             }
             catch (Exception ex)
@@ -102,7 +102,7 @@ namespace FileCabinetApp
             try
             {
                 var result = this.service.Search(search);
-                WriteOperationLog(writer, $"Search() returned {result.Count()}");
+                WriteOperationLog(writer, $"Search() returned {result.Count()} record(s)");
                 return result;
             }
             catch (Exception ex)
