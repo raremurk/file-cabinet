@@ -38,13 +38,13 @@ namespace FileCabinetApp
             Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
         }
 
-        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
-        public FileCabinetRecord GetRecord(int id)
+        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
+        public bool IdExists(int id)
         {
             var sw = Stopwatch.StartNew();
-            var result = this.service.GetRecord(id);
+            var result = this.service.IdExists(id);
             sw.Stop();
-            Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
+            Console.WriteLine($"IdExists method execution duration is {sw.ElapsedTicks} ticks.");
             return result;
         }
 
@@ -89,12 +89,13 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
-        public void Restore(FileCabinetServiceSnapshot snapshot)
+        public int Restore(FileCabinetServiceSnapshot snapshot)
         {
             var sw = Stopwatch.StartNew();
-            this.service.Restore(snapshot);
+            int count = this.service.Restore(snapshot);
             sw.Stop();
             Console.WriteLine($"Restore method execution duration is {sw.ElapsedTicks} ticks.");
+            return count;
         }
 
         /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>

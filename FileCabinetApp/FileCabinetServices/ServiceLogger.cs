@@ -58,20 +58,20 @@ namespace FileCabinetApp
             }
         }
 
-        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
-        public FileCabinetRecord GetRecord(int id)
+        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
+        public bool IdExists(int id)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling GetRecord() with Id = '{id}'");
+            WriteOperationLog(writer, $"Calling IdExists() with Id = '{id}'");
             try
             {
-                FileCabinetRecord record = this.service.GetRecord(id);
-                WriteOperationLog(writer, $"GetRecord() returned {RecordToString(record, true)}");
-                return record;
+                var result = this.service.IdExists(id);
+                WriteOperationLog(writer, $"IdExists() returned {result}");
+                return result;
             }
             catch (Exception ex)
             {
-                WriteOperationLog(writer, $"GetRecord() threw an exception: {ex.Message}");
+                WriteOperationLog(writer, $"IdExists() threw an exception: {ex.Message}");
                 throw;
             }
         }
@@ -120,7 +120,7 @@ namespace FileCabinetApp
             try
             {
                 var result = this.service.GetStat();
-                WriteOperationLog(writer, $"GetStat() returned '{result.ExistingRecordsIds.Count}' record(s). '{result.DeletedRecordsIds.Count}' deleted record(s)");
+                WriteOperationLog(writer, $"GetStat() returned '{result.AllRecordsCount}' record(s). '{result.DeletedRecordsCount}' of them are deleted.");
                 return result;
             }
             catch (Exception ex)
@@ -149,14 +149,15 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
-        public void Restore(FileCabinetServiceSnapshot snapshot)
+        public int Restore(FileCabinetServiceSnapshot snapshot)
         {
             using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             WriteOperationLog(writer, "Calling Restore() snapshot");
             try
             {
-                this.service.Restore(snapshot);
-                WriteOperationLog(writer, "Restore() executed successfully");
+                int count = this.service.Restore(snapshot);
+                WriteOperationLog(writer, $"Restore() returned '{count}'");
+                return count;
             }
             catch (Exception ex)
             {

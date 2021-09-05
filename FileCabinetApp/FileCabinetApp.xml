@@ -207,8 +207,8 @@
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.IdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecords">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
@@ -245,8 +245,8 @@
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
             <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.IdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
@@ -313,10 +313,10 @@
             <param name="record">File cabinet record.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
         </member>
-        <member name="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)">
-            <summary>Finds record by id.</summary>
-            <param name="id">Id to find.</param>
-            <returns>Returns FileCabinetRecord if records exists, else returns null.</returns>
+        <member name="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)">
+            <summary>Checks for a record with the specified id.</summary>
+            <param name="id">Id.</param>
+            <returns>Returns true if record exists, else false.</returns>
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.GetRecords">
             <summary>Returns all records.</summary>
@@ -339,6 +339,7 @@
             <summary>Restores the specified snapshot.</summary>
             <param name="snapshot">Snapshot.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when snapshot is null.</exception>
+            <returns>Returns restored records count.</returns>
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)">
             <summary>Removes record with the specified id.</summary>
@@ -363,8 +364,8 @@
         <member name="M:FileCabinetApp.ServiceLogger.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
         </member>
-        <member name="M:FileCabinetApp.ServiceLogger.GetRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
+        <member name="M:FileCabinetApp.ServiceLogger.IdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.ServiceLogger.GetRecords">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
@@ -402,8 +403,8 @@
         <member name="M:FileCabinetApp.ServiceMeter.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
         </member>
-        <member name="M:FileCabinetApp.ServiceMeter.GetRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecord(System.Int32)"/>
+        <member name="M:FileCabinetApp.ServiceMeter.IdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
         </member>
         <member name="M:FileCabinetApp.ServiceMeter.GetRecords">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
@@ -826,13 +827,13 @@
         <member name="T:FileCabinetApp.Models.ServiceStat">
             <summary>Сlass representing service statistics.</summary>
         </member>
-        <member name="P:FileCabinetApp.Models.ServiceStat.ExistingRecordsIds">
-            <summary>Gets or sets list of ids of existing records.</summary>
-            <value>List of ids of existing records.</value>
+        <member name="P:FileCabinetApp.Models.ServiceStat.AllRecordsCount">
+            <summary>Gets or sets all records count.</summary>
+            <value>All records count.</value>
         </member>
-        <member name="P:FileCabinetApp.Models.ServiceStat.DeletedRecordsIds">
-            <summary>Gets or sets list of ids of deleted records.</summary>
-            <value>List of ids of deleted records.</value>
+        <member name="P:FileCabinetApp.Models.ServiceStat.DeletedRecordsCount">
+            <summary>Gets or sets deleted records count.</summary>
+            <value>Deleted records count.</value>
         </member>
         <member name="T:FileCabinetApp.Models.StringRecord">
             <summary>Сlass representing a record.</summary>

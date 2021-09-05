@@ -26,8 +26,8 @@ namespace FileCabinetApp
         /// <param name="validator">Validator.</param>
         public FileCabinetFilesystemService(FileStream fileStream, IRecordValidator validator)
         {
-            this.fileStream = fileStream;
-            this.validator = validator;
+            this.fileStream = fileStream ?? throw new ArgumentNullException(nameof(fileStream));
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
             this.writer = new (this.fileStream, System.Text.Encoding.Unicode, true);
             this.reader = new (this.fileStream, System.Text.Encoding.Unicode, true);
 
@@ -77,18 +77,8 @@ namespace FileCabinetApp
             this.searchHistory.Clear();
         }
 
-        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
-        public FileCabinetRecord GetRecord(int id)
-        {
-            var recordPos = this.recordPositions.Find(x => x.Item1 == id);
-            if (recordPos != null)
-            {
-                this.fileStream.Seek(recordPos.Item2 + Offset, SeekOrigin.Begin);
-                return this.ReadRecordUsingBinaryReader();
-            }
-
-            return null;
-        }
+        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
+        public bool IdExists(int id) => this.recordPositions.Exists(x => x.Item1 == id);
 
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
@@ -122,7 +112,8 @@ namespace FileCabinetApp
             var answer = new List<FileCabinetRecord>();
             foreach (var pos in this.recordPositions)
             {
-                var record = this.GetRecord(pos.Item1);
+                this.fileStream.Seek(pos.Item2 + Offset, SeekOrigin.Begin);
+                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
                 if (RecordsComparer.RecordsEquals(record, search))
                 {
                     answer.Add(record);
@@ -136,21 +127,14 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
         public ServiceStat GetStat()
         {
-            List<int> existingRecordsIds = new ();
-            List<int> deletedRecordsIds = new ();
-            foreach (var item in this.recordPositions)
+            int existingRecordsCount = 0;
+            int deletedRecordsCount = 0;
+            foreach (var pos in this.recordPositions)
             {
-                if (item.Item1 != 0)
-                {
-                    existingRecordsIds.Add(item.Item1);
-                }
-                else
-                {
-                    deletedRecordsIds.Add(item.Item1);
-                }
+                _ = pos.Item1 != 0 ? existingRecordsCount++ : deletedRecordsCount++;
             }
 
-            return new ServiceStat { ExistingRecordsIds = new (existingRecordsIds), DeletedRecordsIds = new (deletedRecordsIds) };
+            return new ServiceStat { AllRecordsCount = existingRecordsCount, DeletedRecordsCount = deletedRecordsCount };
         }
 
         /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
@@ -161,15 +145,17 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
-        public void Restore(FileCabinetServiceSnapshot snapshot)
+        public int Restore(FileCabinetServiceSnapshot snapshot)
         {
             _ = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
 
+            int recordsCount = 0;
             foreach (var record in snapshot.Records)
             {
                 Tuple<bool, string> validationResult = this.validator.ValidateRecord(record);
                 if (validationResult.Item1)
                 {
+                    recordsCount++;
                     if (!this.recordPositions.Exists(x => x.Item1 == record.Id))
                     {
                         this.CreateRecord(record);
@@ -186,6 +172,7 @@ namespace FileCabinetApp
             }
 
             this.searchHistory.Clear();
+            return recordsCount;
         }
 
         /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
@@ -242,9 +229,8 @@ namespace FileCabinetApp
 
         private int NextAvailableId()
         {
-            var existingRecords = this.GetStat().ExistingRecordsIds;
             int id = 1;
-            while (existingRecords.Contains(id))
+            while (this.recordPositions.Exists(x => x.Item1 == id))
             {
                 id++;
             }

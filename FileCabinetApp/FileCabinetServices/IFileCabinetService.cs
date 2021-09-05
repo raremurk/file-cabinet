@@ -18,10 +18,10 @@ namespace FileCabinetApp
         /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
         public void EditRecord(FileCabinetRecord record);
 
-        /// <summary>Finds record by id.</summary>
-        /// <param name="id">Id to find.</param>
-        /// <returns>Returns FileCabinetRecord if records exists, else returns null.</returns>
-        public FileCabinetRecord GetRecord(int id);
+        /// <summary>Checks for a record with the specified id.</summary>
+        /// <param name="id">Id.</param>
+        /// <returns>Returns true if record exists, else false.</returns>
+        public bool IdExists(int id);
 
         /// <summary>Returns all records.</summary>
         /// <returns>Returns IEnumerable of all records.</returns>
@@ -43,7 +43,8 @@ namespace FileCabinetApp
         /// <summary>Restores the specified snapshot.</summary>
         /// <param name="snapshot">Snapshot.</param>
         /// <exception cref="ArgumentNullException">Thrown when snapshot is null.</exception>
-        public void Restore(FileCabinetServiceSnapshot snapshot);
+        /// <returns>Returns restored records count.</returns>
+        public int Restore(FileCabinetServiceSnapshot snapshot);
 
         /// <summary>Removes record with the specified id.</summary>
         /// <param name="id">Records id.</param>

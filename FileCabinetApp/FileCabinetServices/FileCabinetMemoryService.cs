@@ -49,11 +49,8 @@ namespace FileCabinetApp
             this.searchHistory.Clear();
         }
 
-        /// <inheritdoc cref="IFileCabinetService.GetRecord(int)"/>
-        public FileCabinetRecord GetRecord(int id)
-        {
-            return this.list.Find(x => x.Id == id);
-        }
+        /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
+        public bool IdExists(int id) => this.list.Exists(x => x.Id == id);
 
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
@@ -95,30 +92,23 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
-        public ServiceStat GetStat()
-        {
-            List<int> existingRecordsIds = new ();
-            foreach (var record in this.list)
-            {
-                existingRecordsIds.Add(record.Id);
-            }
-
-            return new ServiceStat { ExistingRecordsIds = new (existingRecordsIds), DeletedRecordsIds = new ReadOnlyCollection<int>(Array.Empty<int>()) };
-        }
+        public ServiceStat GetStat() => new () { AllRecordsCount = this.list.Count, DeletedRecordsCount = 0 };
 
         /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
         public FileCabinetServiceSnapshot MakeSnapshot() => new (this.list.ToArray());
 
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
-        public void Restore(FileCabinetServiceSnapshot snapshot)
+        public int Restore(FileCabinetServiceSnapshot snapshot)
         {
             _ = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
 
+            int recordsCount = 0;
             foreach (var record in snapshot.Records)
             {
                 Tuple<bool, string> validationResult = this.validator.ValidateRecord(record);
                 if (validationResult.Item1)
                 {
+                    recordsCount++;
                     if (!this.list.Exists(x => x.Id == record.Id))
                     {
                         this.CreateRecord(record);
@@ -135,6 +125,7 @@ namespace FileCabinetApp
             }
 
             this.searchHistory.Clear();
+            return recordsCount;
         }
 
         /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>

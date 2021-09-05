@@ -2,7 +2,6 @@
 using System.IO;
 using System.Xml;
 using FileCabinetApp.Helpers;
-using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -36,9 +35,7 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            ServiceStat stat = this.fileCabinetService.GetStat();
             var snapshot = new FileCabinetServiceSnapshot();
-
             if (file.CSVFormat)
             {
                 using StreamReader reader = new (file.FileName, System.Text.Encoding.UTF8);
@@ -50,9 +47,8 @@ namespace FileCabinetApp.CommandHandlers
                 snapshot.LoadFromXml(reader);
             }
 
-            this.fileCabinetService.Restore(snapshot);
-            int numberOfRecords = this.fileCabinetService.GetStat().ExistingRecordsIds.Count - stat.ExistingRecordsIds.Count;
-            Console.WriteLine($"{numberOfRecords} records are imported from file {file.FileName}.");
+            int restoredRecordsCount = this.fileCabinetService.Restore(snapshot);
+            Console.WriteLine($"{restoredRecordsCount} records are imported from file {file.FileName}.");
         }
     }
 }
