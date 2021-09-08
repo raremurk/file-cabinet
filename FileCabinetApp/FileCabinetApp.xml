@@ -243,7 +243,6 @@
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
-            <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.IdExists(System.Int32)">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
@@ -312,6 +311,7 @@
             <summary>Edits existing record.</summary>
             <param name="record">File cabinet record.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)">
             <summary>Checks for a record with the specified id.</summary>
@@ -348,6 +348,45 @@
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.Purge">
             <summary>Defragments the data file.</summary>
+        </member>
+        <member name="T:FileCabinetApp.SearchCache">
+            <summary>Search cache.</summary>
+            <seealso cref="T:FileCabinetApp.IFileCabinetService" />
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.#ctor(FileCabinetApp.IFileCabinetService)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.SearchCache"/> class.</summary>
+            <param name="service">IFileCabinetService.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when service is null.</exception>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.IdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.GetRecords">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.Search(FileCabinetApp.Models.RecordToSearch)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Search(FileCabinetApp.Models.RecordToSearch)"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.GetStat">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetStat"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.MakeSnapshot">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.MakeSnapshot"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.RemoveRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.SearchCache.Purge">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
         </member>
         <member name="T:FileCabinetApp.ServiceLogger">
             <summary>Service logger.</summary>
@@ -753,6 +792,17 @@
         <member name="P:FileCabinetApp.Models.Record.Department">
             <summary>Gets or sets the department.</summary>
             <value>Department of record.</value>
+        </member>
+        <member name="T:FileCabinetApp.Models.RecordInfo">
+            <summary>Id and position of record in fileStream.</summary>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordInfo.Id">
+            <summary>Gets or sets the id.</summary>
+            <value>Id of record.</value>
+        </member>
+        <member name="P:FileCabinetApp.Models.RecordInfo.RecordPosition">
+            <summary>Gets or sets the id.</summary>
+            <value>Deleted records count.</value>
         </member>
         <member name="T:FileCabinetApp.Models.RecordToEdit">
             <summary>Сlass representing a record to edit.</summary>

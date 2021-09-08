@@ -46,6 +46,8 @@ namespace FileCabinetApp
                 fileCabinetService = new FileCabinetMemoryService(validator);
             }
 
+            fileCabinetService = new SearchCache(fileCabinetService);
+
             if (serviceMeter && serviceLogger)
             {
                 fileCabinetService = new ServiceLogger(new ServiceMeter(fileCabinetService));

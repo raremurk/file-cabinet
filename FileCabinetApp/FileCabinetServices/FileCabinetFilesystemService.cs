@@ -14,8 +14,7 @@ namespace FileCabinetApp
         private const short NotDeleted = 0;
         private const int Offset = 2;
 
-        private readonly Dictionary<string, List<FileCabinetRecord>> searchHistory = new ();
-        private readonly List<Tuple<int, long>> recordPositions = new ();
+        private readonly List<RecordInfo> recordsInfo = new ();
         private readonly IRecordValidator validator;
         private readonly FileStream fileStream;
         private readonly BinaryWriter writer;
@@ -36,7 +35,7 @@ namespace FileCabinetApp
                 long pos = this.fileStream.Position;
                 this.fileStream.Seek(Offset, SeekOrigin.Current);
                 FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-                this.recordPositions.Add(new (record.Id, pos));
+                this.recordsInfo.Add(new RecordInfo { Id = record.Id, RecordPosition = pos });
             }
         }
 
@@ -44,24 +43,25 @@ namespace FileCabinetApp
         public int CreateRecord(FileCabinetRecord record)
         {
             _ = record ?? throw new ArgumentNullException(nameof(record));
-
             this.validator.ValidateRecordWithExceptions(record);
-            var deletedRecord = this.recordPositions.Find(x => x.Item1 == 0);
-            if (deletedRecord != null)
+
+            if (record.Id == 0)
             {
-                this.fileStream.Seek(deletedRecord.Item2, SeekOrigin.Begin);
-                this.writer.Write(NotDeleted);
-                this.recordPositions.Remove(deletedRecord);
+                record.Id = this.NextAvailableId();
+            }
+
+            int index = this.recordsInfo.FindIndex(x => x.Id == 0);
+            if (index != -1)
+            {
+                this.recordsInfo[index].Id = record.Id;
+                this.fileStream.Seek(this.recordsInfo[index].RecordPosition, SeekOrigin.Begin);
             }
             else
             {
-                this.fileStream.Seek(Offset, SeekOrigin.End);
+                this.fileStream.Seek(0, SeekOrigin.End);
             }
 
-            record.Id = record.Id == 0 ? this.NextAvailableId() : record.Id;
-            this.recordPositions.Add(new (record.Id, this.fileStream.Position - Offset));
             this.WriteRecordUsingBinaryWriter(record);
-            this.searchHistory.Clear();
             return record.Id;
         }
 
@@ -69,78 +69,38 @@ namespace FileCabinetApp
         public void EditRecord(FileCabinetRecord record)
         {
             _ = record ?? throw new ArgumentNullException(nameof(record));
-            var recordPos = this.recordPositions.Find(x => x.Item1 == record.Id) ?? throw new ArgumentException("No record with this id.");
-
+            var recordPos = this.recordsInfo.Find(x => x.Id == record.Id) ?? throw new ArgumentException($"No record with Id = '{record.Id}'.");
             this.validator.ValidateRecordWithExceptions(record);
-            this.fileStream.Seek(recordPos.Item2 + Offset, SeekOrigin.Begin);
+
+            this.fileStream.Seek(recordPos.RecordPosition, SeekOrigin.Begin);
             this.WriteRecordUsingBinaryWriter(record);
-            this.searchHistory.Clear();
         }
 
         /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
-        public bool IdExists(int id) => this.recordPositions.Exists(x => x.Item1 == id);
+        public bool IdExists(int id) => this.recordsInfo.Exists(x => x.Id == id);
 
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            foreach (var pos in this.recordPositions)
-            {
-                if (pos.Item1 != 0)
-                {
-                    this.fileStream.Seek(pos.Item2 + Offset, SeekOrigin.Begin);
-                    yield return this.ReadRecordUsingBinaryReader();
-                }
-            }
-        }
+        public IEnumerable<FileCabinetRecord> GetRecords() => this.GetAllRecords();
 
         /// <inheritdoc cref="IFileCabinetService.Search(RecordToSearch)"/>
         public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
         {
             _ = search ?? throw new ArgumentNullException(nameof(search));
-
-            if (!search.NeedToSearch())
-            {
-                return new List<FileCabinetRecord>();
-            }
-
-            var hash = search.GetHash();
-            if (this.searchHistory.ContainsKey(hash))
-            {
-                return this.searchHistory[hash];
-            }
-
-            var answer = new List<FileCabinetRecord>();
-            foreach (var pos in this.recordPositions)
-            {
-                this.fileStream.Seek(pos.Item2 + Offset, SeekOrigin.Begin);
-                FileCabinetRecord record = this.ReadRecordUsingBinaryReader();
-                if (RecordsComparer.RecordsEquals(record, search))
-                {
-                    answer.Add(record);
-                }
-            }
-
-            this.searchHistory.Add(hash, answer);
-            return answer;
+            return this.GetAllRecords().Where(record => RecordsComparer.RecordsEquals(record, search));
         }
 
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
         public ServiceStat GetStat()
         {
-            int existingRecordsCount = 0;
-            int deletedRecordsCount = 0;
-            foreach (var pos in this.recordPositions)
-            {
-                _ = pos.Item1 != 0 ? existingRecordsCount++ : deletedRecordsCount++;
-            }
-
+            int existingRecordsCount = this.recordsInfo.Where(rec => rec.Id != 0).Count();
+            int deletedRecordsCount = this.recordsInfo.Count - existingRecordsCount;
             return new ServiceStat { AllRecordsCount = existingRecordsCount, DeletedRecordsCount = deletedRecordsCount };
         }
 
         /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            var list = this.GetRecords().ToArray();
+            var list = this.GetAllRecords().ToArray();
             return new FileCabinetServiceSnapshot(list);
         }
 
@@ -156,7 +116,7 @@ namespace FileCabinetApp
                 if (validationResult.Item1)
                 {
                     recordsCount++;
-                    if (!this.recordPositions.Exists(x => x.Item1 == record.Id))
+                    if (!this.recordsInfo.Exists(x => x.Id == record.Id))
                     {
                         this.CreateRecord(record);
                     }
@@ -171,26 +131,28 @@ namespace FileCabinetApp
                 }
             }
 
-            this.searchHistory.Clear();
             return recordsCount;
         }
 
         /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
         public void RemoveRecord(int id)
         {
-            var recordPos = this.recordPositions.Find(x => x.Item1 == id) ?? throw new ArgumentException("No record with this id.");
-            this.fileStream.Seek(recordPos.Item2, SeekOrigin.Begin);
+            int index = this.recordsInfo.FindIndex(x => x.Id == 0);
+            if (index == -1)
+            {
+                throw new ArgumentException($"No record with Id = '{id}'.");
+            }
+
+            this.recordsInfo[index].Id = 0;
+            this.fileStream.Seek(this.recordsInfo[index].RecordPosition, SeekOrigin.Begin);
             this.writer.Write(IsDeleted);
-            this.recordPositions.Add(new (0, recordPos.Item2));
-            this.recordPositions.Remove(recordPos);
-            this.searchHistory.Clear();
         }
 
         /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
-            List<FileCabinetRecord> records = new (this.GetRecords());
-            this.recordPositions.Clear();
+            List<FileCabinetRecord> records = this.GetAllRecords().ToList();
+            this.recordsInfo.Clear();
             this.fileStream.SetLength(0);
             foreach (var record in records)
             {
@@ -198,9 +160,21 @@ namespace FileCabinetApp
             }
         }
 
+        private IEnumerable<FileCabinetRecord> GetAllRecords()
+        {
+            foreach (var pos in this.recordsInfo)
+            {
+                if (pos.Id != 0)
+                {
+                    this.fileStream.Seek(pos.RecordPosition + Offset, SeekOrigin.Begin);
+                    yield return this.ReadRecordUsingBinaryReader();
+                }
+            }
+        }
+
         private FileCabinetRecord ReadRecordUsingBinaryReader()
         {
-            var record = new FileCabinetRecord
+            return new FileCabinetRecord
             {
                 Id = this.reader.ReadInt32(),
                 FirstName = this.reader.ReadString().TrimEnd(),
@@ -210,12 +184,11 @@ namespace FileCabinetApp
                 Salary = this.reader.ReadDecimal(),
                 Department = this.reader.ReadChar(),
             };
-
-            return record;
         }
 
         private void WriteRecordUsingBinaryWriter(FileCabinetRecord record)
         {
+            this.writer.Write(NotDeleted);
             this.writer.Write(record.Id);
             this.writer.Write(record.FirstName.PadRight(60));
             this.writer.Write(record.LastName.PadRight(60));
@@ -230,7 +203,7 @@ namespace FileCabinetApp
         private int NextAvailableId()
         {
             int id = 1;
-            while (this.recordPositions.Exists(x => x.Item1 == id))
+            while (this.recordsInfo.Exists(x => x.Id == id))
             {
                 id++;
             }

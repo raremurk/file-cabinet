@@ -16,6 +16,7 @@ namespace FileCabinetApp
         /// <summary>Edits existing record.</summary>
         /// <param name="record">File cabinet record.</param>
         /// <exception cref="ArgumentNullException">Thrown when record is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
         public void EditRecord(FileCabinetRecord record);
 
         /// <summary>Checks for a record with the specified id.</summary>

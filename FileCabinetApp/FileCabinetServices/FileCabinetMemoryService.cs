@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using FileCabinetApp.Helpers;
 using FileCabinetApp.Models;
 
@@ -9,7 +8,6 @@ namespace FileCabinetApp
     /// <summary>Class for working with records in memory.</summary>
     public class FileCabinetMemoryService : IFileCabinetService
     {
-        private readonly Dictionary<string, List<FileCabinetRecord>> searchHistory = new ();
         private readonly List<FileCabinetRecord> list = new ();
         private readonly IRecordValidator validator;
 
@@ -17,79 +15,46 @@ namespace FileCabinetApp
         /// <param name="validator">Validator.</param>
         public FileCabinetMemoryService(IRecordValidator validator)
         {
-            this.validator = validator;
+            this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
         /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
         public int CreateRecord(FileCabinetRecord record)
         {
             _ = record ?? throw new ArgumentNullException(nameof(record));
-
             this.validator.ValidateRecordWithExceptions(record);
-            record.Id = record.Id == 0 ? this.NextAvailableId() : record.Id;
+
+            if (record.Id == 0)
+            {
+                record.Id = this.NextAvailableId();
+            }
+
             this.list.Add(record);
-            this.searchHistory.Clear();
             return record.Id;
         }
 
         /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
-        /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
         public void EditRecord(FileCabinetRecord record)
         {
             _ = record ?? throw new ArgumentNullException(nameof(record));
-            FileCabinetRecord originalRecord = this.list.Find(x => x.Id == record.Id) ?? throw new ArgumentException("No record with this id.");
+            int index = this.list.FindIndex(x => x.Id == record.Id);
+            if (index == -1)
+            {
+                throw new ArgumentException($"No record with Id = '{record.Id}'.");
+            }
 
             this.validator.ValidateRecordWithExceptions(record);
-            originalRecord.FirstName = record.FirstName;
-            originalRecord.LastName = record.LastName;
-            originalRecord.DateOfBirth = record.DateOfBirth;
-            originalRecord.WorkPlaceNumber = record.WorkPlaceNumber;
-            originalRecord.Salary = record.Salary;
-            originalRecord.Department = record.Department;
-            this.searchHistory.Clear();
+            this.list[index] = record;
         }
 
         /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
         public bool IdExists(int id) => this.list.Exists(x => x.Id == id);
 
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            foreach (var record in this.list)
-            {
-                yield return record;
-            }
-        }
+        public IEnumerable<FileCabinetRecord> GetRecords() => this.list;
 
         /// <inheritdoc cref="IFileCabinetService.Search(RecordToSearch)"/>
-        public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
-        {
-            _ = search ?? throw new ArgumentNullException(nameof(search));
-
-            if (!search.NeedToSearch())
-            {
-                return new List<FileCabinetRecord>();
-            }
-
-            var hash = search.GetHash();
-            if (this.searchHistory.ContainsKey(hash))
-            {
-                return this.searchHistory[hash];
-            }
-
-            var records = this.GetRecords();
-            var answer = new List<FileCabinetRecord>();
-            foreach (var record in records)
-            {
-                if (RecordsComparer.RecordsEquals(record, search))
-                {
-                    answer.Add(record);
-                }
-            }
-
-            this.searchHistory.Add(hash, answer);
-            return answer;
-        }
+        public IEnumerable<FileCabinetRecord> Search(RecordToSearch search) => this.list.FindAll(record => RecordsComparer.RecordsEquals(record, search));
 
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
         public ServiceStat GetStat() => new () { AllRecordsCount = this.list.Count, DeletedRecordsCount = 0 };
@@ -124,7 +89,6 @@ namespace FileCabinetApp
                 }
             }
 
-            this.searchHistory.Clear();
             return recordsCount;
         }
 
@@ -133,7 +97,6 @@ namespace FileCabinetApp
         {
             FileCabinetRecord record = this.list.Find(x => x.Id == id) ?? throw new ArgumentException("No record with this id.");
             this.list.Remove(record);
-            this.searchHistory.Clear();
         }
 
         /// <inheritdoc cref="IFileCabinetService.Purge"/>
