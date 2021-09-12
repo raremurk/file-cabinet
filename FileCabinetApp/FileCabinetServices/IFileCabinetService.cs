@@ -19,6 +19,11 @@ namespace FileCabinetApp
         /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
         public void EditRecord(FileCabinetRecord record);
 
+        /// <summary>Removes record with the specified id.</summary>
+        /// <param name="id">Record id.</param>
+        /// <exception cref="ArgumentException">Thrown when no record with the specified id.</exception>
+        public void RemoveRecord(int id);
+
         /// <summary>Checks for a record with the specified id.</summary>
         /// <param name="id">Id.</param>
         /// <returns>Returns true if record exists, else false.</returns>
@@ -30,6 +35,7 @@ namespace FileCabinetApp
 
         /// <summary>Finds records by parameters.</summary>
         /// <param name="search">RecordToSearch item.</param>
+        /// <exception cref="ArgumentNullException">Thrown when RecordToSearch is null.</exception>
         /// <returns>Returns IEnumerable of found records.</returns>
         public IEnumerable<FileCabinetRecord> Search(RecordToSearch search);
 
@@ -46,11 +52,6 @@ namespace FileCabinetApp
         /// <exception cref="ArgumentNullException">Thrown when snapshot is null.</exception>
         /// <returns>Returns restored records count.</returns>
         public int Restore(FileCabinetServiceSnapshot snapshot);
-
-        /// <summary>Removes record with the specified id.</summary>
-        /// <param name="id">Records id.</param>
-        /// <exception cref="ArgumentNullException">Thrown when id is null.</exception>
-        public void RemoveRecord(int id);
 
         /// <summary>Defragments the data file.</summary>
         public void Purge();

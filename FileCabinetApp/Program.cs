@@ -39,14 +39,12 @@ namespace FileCabinetApp
             {
                 string nameOfDb = "cabinet-records.db";
                 FileStream fileStream = new (nameOfDb, FileMode.OpenOrCreate);
-                fileCabinetService = new FileCabinetFilesystemService(fileStream, validator);
+                fileCabinetService = new FileCabinetFilesystemService(validator, fileStream);
             }
             else
             {
                 fileCabinetService = new FileCabinetMemoryService(validator);
             }
-
-            fileCabinetService = new SearchCache(fileCabinetService);
 
             if (serviceMeter && serviceLogger)
             {

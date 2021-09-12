@@ -196,25 +196,13 @@
         <member name="T:FileCabinetApp.FileCabinetFilesystemService">
             <summary>Class for working with records in filesystem.</summary>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.#ctor(System.IO.FileStream,FileCabinetApp.IRecordValidator)">
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.#ctor(FileCabinetApp.IRecordValidator,System.IO.FileStream)">
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetFilesystemService"/> class.</summary>
             <param name="fileStream">FileStream.</param>
             <param name="validator">Validator.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.IdExists(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetRecords">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Search(FileCabinetApp.Models.RecordToSearch)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Search(FileCabinetApp.Models.RecordToSearch)"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.GetStat">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetStat"/>
@@ -222,14 +210,23 @@
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.MakeSnapshot">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.MakeSnapshot"/>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetFilesystemService.RemoveRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetFilesystemService.Purge">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.ThisCreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisCreateRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.ThisEditRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisEditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.ThisRemoveRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisRemoveRecord(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.ThisIdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisIdExists(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetFilesystemService.ThisSearch(FileCabinetApp.Models.RecordToSearch)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisSearch(FileCabinetApp.Models.RecordToSearch)"/>
         </member>
         <member name="T:FileCabinetApp.FileCabinetMemoryService">
             <summary>Class for working with records in memory.</summary>
@@ -238,20 +235,8 @@
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetMemoryService"/> class.</summary>
             <param name="validator">Validator.</param>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.IdExists(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.GetRecords">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.Search(FileCabinetApp.Models.RecordToSearch)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Search(FileCabinetApp.Models.RecordToSearch)"/>
         </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.GetStat">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetStat"/>
@@ -259,14 +244,79 @@
         <member name="M:FileCabinetApp.FileCabinetMemoryService.MakeSnapshot">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.MakeSnapshot"/>
         </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
-        </member>
-        <member name="M:FileCabinetApp.FileCabinetMemoryService.RemoveRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
-        </member>
         <member name="M:FileCabinetApp.FileCabinetMemoryService.Purge">
             <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.ThisCreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisCreateRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.ThisEditRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisEditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.ThisRemoveRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisRemoveRecord(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.ThisIdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisIdExists(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetMemoryService.ThisSearch(FileCabinetApp.Models.RecordToSearch)">
+            <inheritdoc cref="M:FileCabinetApp.FileCabinetService.ThisSearch(FileCabinetApp.Models.RecordToSearch)"/>
+        </member>
+        <member name="T:FileCabinetApp.FileCabinetService">
+            <summary>Class for working with records.</summary>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.#ctor(FileCabinetApp.IRecordValidator)">
+            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.FileCabinetService"/> class.</summary>
+            <param name="validator">Validator.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.RemoveRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.Search(FileCabinetApp.Models.RecordToSearch)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Search(FileCabinetApp.Models.RecordToSearch)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.IdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetRecords">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.GetStat">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetStat"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.MakeSnapshot">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.MakeSnapshot"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.Purge">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.ThisCreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <summary>Creates new record.</summary>
+            <param name="record">File cabinet record.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.ThisEditRecord(FileCabinetApp.Models.FileCabinetRecord)">
+            <summary>Edits existing record.</summary>
+            <param name="record">File cabinet record.</param>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.ThisRemoveRecord(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.ThisIdExists(System.Int32)">
+            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
+        </member>
+        <member name="M:FileCabinetApp.FileCabinetService.ThisSearch(FileCabinetApp.Models.RecordToSearch)">
+            <summary>Finds records by parameters.</summary>
+            <param name="search">RecordToSearch item.</param>
+            <returns>Returns IEnumerable of found records.</returns>
         </member>
         <member name="T:FileCabinetApp.FileCabinetServiceSnapshot">
             <summary>Provides functionality for creating snapshot.</summary>
@@ -313,6 +363,11 @@
             <exception cref="T:System.ArgumentNullException">Thrown when record is null.</exception>
             <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
         </member>
+        <member name="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)">
+            <summary>Removes record with the specified id.</summary>
+            <param name="id">Record id.</param>
+            <exception cref="T:System.ArgumentException">Thrown when no record with the specified id.</exception>
+        </member>
         <member name="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)">
             <summary>Checks for a record with the specified id.</summary>
             <param name="id">Id.</param>
@@ -325,6 +380,7 @@
         <member name="M:FileCabinetApp.IFileCabinetService.Search(FileCabinetApp.Models.RecordToSearch)">
             <summary>Finds records by parameters.</summary>
             <param name="search">RecordToSearch item.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when RecordToSearch is null.</exception>
             <returns>Returns IEnumerable of found records.</returns>
         </member>
         <member name="M:FileCabinetApp.IFileCabinetService.GetStat">
@@ -341,52 +397,8 @@
             <exception cref="T:System.ArgumentNullException">Thrown when snapshot is null.</exception>
             <returns>Returns restored records count.</returns>
         </member>
-        <member name="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)">
-            <summary>Removes record with the specified id.</summary>
-            <param name="id">Records id.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when id is null.</exception>
-        </member>
         <member name="M:FileCabinetApp.IFileCabinetService.Purge">
             <summary>Defragments the data file.</summary>
-        </member>
-        <member name="T:FileCabinetApp.SearchCache">
-            <summary>Search cache.</summary>
-            <seealso cref="T:FileCabinetApp.IFileCabinetService" />
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.#ctor(FileCabinetApp.IFileCabinetService)">
-            <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.SearchCache"/> class.</summary>
-            <param name="service">IFileCabinetService.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when service is null.</exception>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.CreateRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.EditRecord(FileCabinetApp.Models.FileCabinetRecord)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.EditRecord(FileCabinetApp.Models.FileCabinetRecord)"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.IdExists(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.IdExists(System.Int32)"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.GetRecords">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetRecords"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.Search(FileCabinetApp.Models.RecordToSearch)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Search(FileCabinetApp.Models.RecordToSearch)"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.GetStat">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.GetStat"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.MakeSnapshot">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.MakeSnapshot"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.Restore(FileCabinetApp.FileCabinetServiceSnapshot)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Restore(FileCabinetApp.FileCabinetServiceSnapshot)"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.RemoveRecord(System.Int32)">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.RemoveRecord(System.Int32)"/>
-        </member>
-        <member name="M:FileCabinetApp.SearchCache.Purge">
-            <inheritdoc cref="M:FileCabinetApp.IFileCabinetService.Purge"/>
         </member>
         <member name="T:FileCabinetApp.ServiceLogger">
             <summary>Service logger.</summary>
