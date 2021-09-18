@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace FileCabinetApp.Models
 {
@@ -32,5 +34,24 @@ namespace FileCabinetApp.Models
         /// <summary>Gets or sets the department.</summary>
         /// <value>Department of record.</value>
         public char Department { get; set; }
+
+        /// <summary>String representation of record.</summary>
+        /// <param name="separator">Separator.</param>
+        /// <returns>Returns string representation of record.</returns>
+        public string ToString(string separator)
+        {
+            var properties = new List<string>
+            {
+                $"Id = '{this.Id}'",
+                $"FirstName = '{this.FirstName}'",
+                $"LastName = '{this.LastName}'",
+                $"DateOfBirth = '{this.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}'",
+                $"WorkPlaceNumber = '{this.WorkPlaceNumber}'",
+                $"Salary = '{this.Salary.ToString("F2", CultureInfo.InvariantCulture)}'",
+                $"Department = '{this.Department}'",
+            };
+
+            return string.Join(separator, properties);
+        }
     }
 }

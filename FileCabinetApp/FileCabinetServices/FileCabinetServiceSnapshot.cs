@@ -62,5 +62,9 @@ namespace FileCabinetApp
             var xmlWriter = new FileCabinetRecordXmlWriter(writer);
             xmlWriter.Write(this.records);
         }
+
+        /// <summary>String representation of snapshot.</summary>
+        /// <returns>Returns string representation of snapshot.</returns>
+        public override string ToString() => $"Snapshot object with {this.records.Length} record(s)";
     }
 }

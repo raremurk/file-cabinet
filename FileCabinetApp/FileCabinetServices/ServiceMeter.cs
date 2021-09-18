@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using FileCabinetApp.Models;
 
 namespace FileCabinetApp
@@ -20,100 +21,63 @@ namespace FileCabinetApp
         }
 
         /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
-        public int CreateRecord(FileCabinetRecord record)
-        {
-            var sw = Stopwatch.StartNew();
-            int id = this.service.CreateRecord(record);
-            sw.Stop();
-            Console.WriteLine($"CreateRecord method execution duration is {sw.ElapsedTicks} ticks.");
-            return id;
-        }
+        public int CreateRecord(FileCabinetRecord record) => GetExecutionDuration(() => this.service.CreateRecord(record));
 
         /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
-        public void EditRecord(FileCabinetRecord record)
-        {
-            var sw = Stopwatch.StartNew();
-            this.service.EditRecord(record);
-            sw.Stop();
-            Console.WriteLine($"EditRecord method execution duration is {sw.ElapsedTicks} ticks.");
-        }
+        public void EditRecord(FileCabinetRecord record) => GetExecutionDuration(() => this.service.EditRecord(record));
 
         /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
-        public bool IdExists(int id)
-        {
-            var sw = Stopwatch.StartNew();
-            var result = this.service.IdExists(id);
-            sw.Stop();
-            Console.WriteLine($"IdExists method execution duration is {sw.ElapsedTicks} ticks.");
-            return result;
-        }
+        public bool IdExists(int id) => GetExecutionDuration(() => this.service.IdExists(id));
 
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
-        public IEnumerable<FileCabinetRecord> GetRecords()
-        {
-            var sw = Stopwatch.StartNew();
-            var result = this.service.GetRecords();
-            sw.Stop();
-            Console.WriteLine($"GetRecords method execution duration is {sw.ElapsedTicks} ticks.");
-            return result;
-        }
+        public IEnumerable<FileCabinetRecord> GetRecords() => GetExecutionDuration(() => this.service.GetRecords());
 
         /// <inheritdoc cref="IFileCabinetService.Search(RecordToSearch)"/>
-        public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
-        {
-            var sw = Stopwatch.StartNew();
-            var result = this.service.Search(search);
-            sw.Stop();
-            Console.WriteLine($"Search method execution duration is {sw.ElapsedTicks} ticks.");
-            return result;
-        }
+        public IEnumerable<FileCabinetRecord> Search(RecordToSearch search) => GetExecutionDuration(() => this.service.Search(search));
 
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
-        public ServiceStat GetStat()
-        {
-            var sw = Stopwatch.StartNew();
-            ServiceStat result = this.service.GetStat();
-            sw.Stop();
-            Console.WriteLine($"GetStat method execution duration is {sw.ElapsedTicks} ticks.");
-            return result;
-        }
+        public ServiceStat GetStat() => GetExecutionDuration(() => this.service.GetStat());
 
         /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
-        public FileCabinetServiceSnapshot MakeSnapshot()
+        public FileCabinetServiceSnapshot MakeSnapshot() => GetExecutionDuration(() => this.service.MakeSnapshot());
+
+        /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
+        public int Restore(FileCabinetServiceSnapshot snapshot) => GetExecutionDuration(() => this.service.Restore(snapshot));
+
+        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
+        public void RemoveRecord(int id) => GetExecutionDuration(() => this.service.RemoveRecord(id));
+
+        /// <inheritdoc cref="IFileCabinetService.Purge"/>
+        public void Purge() => GetExecutionDuration(() => this.service.Purge());
+
+        private static void GetExecutionDuration(Action action)
         {
             var sw = Stopwatch.StartNew();
-            var result = this.service.MakeSnapshot();
+            action();
             sw.Stop();
-            Console.WriteLine($"MakeSnapshot method execution duration is {sw.ElapsedTicks} ticks.");
+            string methodName = GetMethodName(action.Method.Name);
+            Console.WriteLine($"{methodName} method execution duration is {sw.ElapsedTicks} ticks.");
+        }
+
+        private static T GetExecutionDuration<T>(Func<T> action)
+        {
+            var sw = Stopwatch.StartNew();
+            T result = action();
+            sw.Stop();
+            string methodName = GetMethodName(action.Method.Name);
+            Console.WriteLine($"{methodName} method execution duration is {sw.ElapsedTicks} ticks.");
             return result;
         }
 
-        /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
-        public int Restore(FileCabinetServiceSnapshot snapshot)
+        private static string GetMethodName(string methodName)
         {
-            var sw = Stopwatch.StartNew();
-            int count = this.service.Restore(snapshot);
-            sw.Stop();
-            Console.WriteLine($"Restore method execution duration is {sw.ElapsedTicks} ticks.");
-            return count;
-        }
+            string matchValue = Regex.Match(methodName, @"<\w*>").Value;
+            if (matchValue.Length > 2)
+            {
+                methodName = matchValue[1..^1];
+            }
 
-        /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
-        public void RemoveRecord(int id)
-        {
-            var sw = Stopwatch.StartNew();
-            this.service.RemoveRecord(id);
-            sw.Stop();
-            Console.WriteLine($"RemoveRecord method execution duration is {sw.ElapsedTicks} ticks.");
-        }
-
-        /// <inheritdoc cref="IFileCabinetService.Purge"/>
-        public void Purge()
-        {
-            var sw = Stopwatch.StartNew();
-            this.service.Purge();
-            sw.Stop();
-            Console.WriteLine($"Purge method execution duration is {sw.ElapsedTicks} ticks.");
+            return methodName;
         }
     }
 }

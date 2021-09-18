@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using FileCabinetApp.Models;
 
@@ -26,227 +27,124 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.CreateRecord(FileCabinetRecord)"/>
         public int CreateRecord(FileCabinetRecord record)
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling CreateRecord() with {RecordToString(record, false)}");
-            try
-            {
-                int id = this.service.CreateRecord(record);
-                WriteOperationLog(writer, $"CreateRecord() returned '{id}'");
-                return id;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"CreateRecord() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = record is null ? "null" : record.ToString(", ");
+            return this.GetLog(() => this.service.CreateRecord(record), parameters, this.ResultToString);
         }
 
         /// <inheritdoc cref="IFileCabinetService.EditRecord(FileCabinetRecord)"/>
         public void EditRecord(FileCabinetRecord record)
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling EditRecord() with {RecordToString(record, true)}");
-            try
-            {
-                this.service.EditRecord(record);
-                WriteOperationLog(writer, "EditRecord() executed successfully");
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"EditRecord() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = record is null ? "null" : record.ToString(", ");
+            this.GetLog(() => this.service.EditRecord(record), parameters);
         }
 
         /// <inheritdoc cref="IFileCabinetService.IdExists(int)"/>
         public bool IdExists(int id)
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling IdExists() with Id = '{id}'");
-            try
-            {
-                var result = this.service.IdExists(id);
-                WriteOperationLog(writer, $"IdExists() returned {result}");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"IdExists() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = $"Id = '{id}'";
+            return this.GetLog(() => this.service.IdExists(id), parameters, this.ResultToString);
         }
 
         /// <inheritdoc cref="IFileCabinetService.GetRecords"/>
         public IEnumerable<FileCabinetRecord> GetRecords()
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling GetRecords()");
-            try
-            {
-                var result = this.service.GetRecords();
-                WriteOperationLog(writer, $"GetRecords() returned {result.Count()} record(s)");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"GetRecords() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = string.Empty;
+            return this.GetLog(() => this.service.GetRecords(), parameters, this.ResultToString);
         }
 
         /// <inheritdoc cref="IFileCabinetService.Search(RecordToSearch)"/>
         public IEnumerable<FileCabinetRecord> Search(RecordToSearch search)
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling Search() with {RecordToSearchToString(search)}");
-            try
-            {
-                var result = this.service.Search(search);
-                WriteOperationLog(writer, $"Search() returned {result.Count()} record(s)");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"Search() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = search is null ? "null" : search.ToString(", ");
+            return this.GetLog(() => this.service.Search(search), parameters, this.ResultToString);
         }
 
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
         public ServiceStat GetStat()
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling GetStat()");
-            try
-            {
-                var result = this.service.GetStat();
-                WriteOperationLog(writer, $"GetStat() returned '{result.AllRecordsCount}' record(s). '{result.DeletedRecordsCount}' of them are deleted.");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"GetStat() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = string.Empty;
+            return this.GetLog(() => this.service.GetStat(), parameters, this.ResultToString);
         }
 
         /// <inheritdoc cref="IFileCabinetService.MakeSnapshot"/>
         public FileCabinetServiceSnapshot MakeSnapshot()
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling MakeSnapshot()");
-            try
-            {
-                var result = this.service.MakeSnapshot();
-                WriteOperationLog(writer, $"MakeSnapshot() returned new Snapshot object with {result.Records.Count} records");
-                return result;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"MakeSnapshot() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = string.Empty;
+            return this.GetLog(() => this.service.MakeSnapshot(), parameters, this.ResultToString);
         }
 
         /// <inheritdoc cref="IFileCabinetService.Restore(FileCabinetServiceSnapshot)"/>
         public int Restore(FileCabinetServiceSnapshot snapshot)
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling Restore() snapshot");
-            try
-            {
-                int count = this.service.Restore(snapshot);
-                WriteOperationLog(writer, $"Restore() returned '{count}'");
-                return count;
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $"Restore() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = snapshot is null ? "null" : snapshot.ToString();
+            return this.GetLog(() => this.service.Restore(snapshot), parameters, this.ResultToString);
         }
 
         /// <inheritdoc cref="IFileCabinetService.RemoveRecord(int)"/>
         public void RemoveRecord(int id)
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, $"Calling RemoveRecord() with Id = '{id}'");
-            try
-            {
-                this.service.RemoveRecord(id);
-                WriteOperationLog(writer, "RemoveRecord() executed successfully");
-            }
-            catch (Exception ex)
-            {
-                WriteOperationLog(writer, $" RemoveRecord() threw an exception: {ex.Message}");
-                throw;
-            }
+            string parameters = $"Id = '{id}'";
+            this.GetLog(() => this.service.RemoveRecord(id), parameters);
         }
 
         /// <inheritdoc cref="IFileCabinetService.Purge"/>
         public void Purge()
         {
-            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
-            WriteOperationLog(writer, "Calling Purge()");
+            string parameters = string.Empty;
+            this.GetLog(() => this.service.Purge(), parameters);
+        }
+
+        private T GetLog<T>(Expression<Func<T>> expression, string parameters, Func<T, string> resultToString)
+        {
+            string methodName = ((MethodCallExpression)expression.Body).Method.Name;
+            parameters = string.IsNullOrWhiteSpace(parameters) ? string.Empty : $"with parameters {parameters}";
+            this.WriteOperationLog($"Calling {methodName} method {parameters}");
             try
             {
-                this.service.Purge();
-                WriteOperationLog(writer, "Purge() executed successfully");
+                T result = expression.Compile()();
+                string returned = resultToString(result);
+                this.WriteOperationLog($"{methodName} method returned {returned}");
+                return result;
             }
             catch (Exception ex)
             {
-                WriteOperationLog(writer, $" Purge() threw an exception: {ex.Message}");
+                this.WriteOperationLog($"{methodName} threw an exception: {ex.Message}");
                 throw;
             }
         }
 
-        private static void WriteOperationLog(StreamWriter writer, string message)
+        private void GetLog(Expression<Action> expression, string parameters)
         {
+            string methodName = ((MethodCallExpression)expression.Body).Method.Name;
+            parameters = string.IsNullOrWhiteSpace(parameters) ? string.Empty : $"with parameters {parameters}";
+            this.WriteOperationLog($"Calling {methodName} method {parameters}");
+            try
+            {
+                expression.Compile()();
+                this.WriteOperationLog($"{methodName} executed successfully");
+            }
+            catch (Exception ex)
+            {
+                this.WriteOperationLog($"{methodName} threw an exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        private void WriteOperationLog(string message)
+        {
+            using var writer = new StreamWriter(this.logFileName, true, Encoding.UTF8);
             string now = DateTime.Now.ToString("MM/dd/yyyy HH:mm", new CultureInfo("en-US"));
             writer.WriteLine($"{now} - {message}");
         }
 
-        private static string RecordToString(FileCabinetRecord record, bool withId)
-        {
-            if (record is null)
-            {
-                return "null";
-            }
+        private string ResultToString(int number) => $"{number}";
 
-            StringBuilder builder = new ();
-            if (withId)
-            {
-                builder.Append($"Id = '{record.Id}', ");
-            }
+        private string ResultToString(bool result) => $"{result}";
 
-            builder.Append($"FirstName = '{record.FirstName}', ");
-            builder.Append($"LastName = '{record.LastName}', ");
-            builder.Append($"DateOfBirth = '{record.DateOfBirth.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}', ");
-            builder.Append($"WorkPlaceNumber = '{record.WorkPlaceNumber}', ");
-            builder.Append($"Salary = '{record.Salary.ToString("F2", CultureInfo.InvariantCulture)}', ");
-            builder.Append($"Department = '{record.Department}'");
+        private string ResultToString(ServiceStat stat) => stat.ToString();
 
-            return builder.ToString();
-        }
+        private string ResultToString(FileCabinetServiceSnapshot snapshot) => snapshot.ToString();
 
-        private static string RecordToSearchToString(RecordToSearch record)
-        {
-            if (record is null)
-            {
-                return "null";
-            }
-
-            StringBuilder builder = new ();
-
-            _ = record.Id.Item1 ? builder.Append($"Id = '{record.Id.Item2}', ") : builder.Append(string.Empty);
-            _ = record.FirstName.Item1 ? builder.Append($"FirstName = '{record.FirstName.Item2}', ") : builder.Append(string.Empty);
-            _ = record.LastName.Item1 ? builder.Append($"LastName = '{record.LastName.Item2}', ") : builder.Append(string.Empty);
-            _ = record.DateOfBirth.Item1 ? builder.Append($"DateOfBirth = '{record.DateOfBirth.Item2.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)}', ") : builder.Append(string.Empty);
-            _ = record.WorkPlaceNumber.Item1 ? builder.Append($"WorkPlaceNumber = '{record.WorkPlaceNumber.Item2}', ") : builder.Append(string.Empty);
-            _ = record.Salary.Item1 ? builder.Append($"Salary = '{record.Salary.Item2.ToString("F2", CultureInfo.InvariantCulture)}', ") : builder.Append(string.Empty);
-            _ = record.Department.Item1 ? builder.Append($"Department = '{record.Department.Item2}'") : builder.Append(string.Empty);
-
-            return builder.ToString();
-        }
+        private string ResultToString(IEnumerable<FileCabinetRecord> records) => $"{records.Count()} record(s)";
     }
 }

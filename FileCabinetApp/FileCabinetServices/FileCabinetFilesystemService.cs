@@ -39,7 +39,7 @@ namespace FileCabinetApp
         /// <inheritdoc cref="IFileCabinetService.GetStat"/>
         public override ServiceStat GetStat()
         {
-            int existingRecordsCount = this.recordsInfo.Where(rec => rec.Id != 0).Count();
+            int existingRecordsCount = this.recordsInfo.Count(rec => rec.Id != 0);
             int deletedRecordsCount = this.recordsInfo.Count - existingRecordsCount;
             return new ServiceStat { AllRecordsCount = existingRecordsCount, DeletedRecordsCount = deletedRecordsCount };
         }

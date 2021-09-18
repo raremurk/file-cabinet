@@ -348,6 +348,10 @@
             <summary>Writes snapshot to xml file.</summary>
             <param name="writer">StreamWriter.</param>
         </member>
+        <member name="M:FileCabinetApp.FileCabinetServiceSnapshot.ToString">
+            <summary>String representation of snapshot.</summary>
+            <returns>Returns string representation of snapshot.</returns>
+        </member>
         <member name="T:FileCabinetApp.IFileCabinetService">
             <summary>Provides functionality for interaction with records in the file cabinet.</summary>
         </member>
@@ -760,6 +764,11 @@
             <summary>Gets or sets the department.</summary>
             <value>Department of record.</value>
         </member>
+        <member name="M:FileCabinetApp.Models.FileCabinetRecord.ToString(System.String)">
+            <summary>String representation of record.</summary>
+            <param name="separator">Separator.</param>
+            <returns>Returns string representation of record.</returns>
+        </member>
         <member name="T:FileCabinetApp.Models.CollectionOfRecords">
             <summary>Сlass representing list of records.</summary>
         </member>
@@ -886,6 +895,11 @@
             <summary>Calculates hash of the RecordToSearch.</summary>
             <returns>Returns hash.</returns>
         </member>
+        <member name="M:FileCabinetApp.Models.RecordToSearch.ToString(System.String)">
+            <summary>String representation of record.</summary>
+            <param name="separator">Separator.</param>
+            <returns>Returns string representation of record.</returns>
+        </member>
         <member name="T:FileCabinetApp.Models.ServiceStat">
             <summary>Сlass representing service statistics.</summary>
         </member>
@@ -896,6 +910,10 @@
         <member name="P:FileCabinetApp.Models.ServiceStat.DeletedRecordsCount">
             <summary>Gets or sets deleted records count.</summary>
             <value>Deleted records count.</value>
+        </member>
+        <member name="M:FileCabinetApp.Models.ServiceStat.ToString">
+            <summary>String representation of ServiceStat.</summary>
+            <returns>Returns string representation of ServiceStat.</returns>
         </member>
         <member name="T:FileCabinetApp.Models.StringRecord">
             <summary>Сlass representing a record.</summary>
