@@ -586,7 +586,7 @@
             <summary>Initializes a new instance of the <see cref="T:FileCabinetApp.Helpers.Parser"/> class.</summary>
             <param name="validator">IRecordValidator.</param>
         </member>
-        <member name="M:FileCabinetApp.Helpers.Parser.GetFilePathFromString(System.String)">
+        <member name="M:FileCabinetApp.Helpers.Parser.GetFileAndFormatFromString(System.String)">
             <summary>Reads file path and format from string.</summary>
             <param name="parameters">Input string.</param>
             <returns>Returns FileAndFormat.</returns>
@@ -721,17 +721,13 @@
         <member name="T:FileCabinetApp.Models.FileAndFormat">
             <summary>File name and format.</summary>
         </member>
+        <member name="P:FileCabinetApp.Models.FileAndFormat.Format">
+            <summary>Gets or sets file format.</summary>
+            <value>File format.</value>
+        </member>
         <member name="P:FileCabinetApp.Models.FileAndFormat.FileName">
             <summary>Gets or sets file name.</summary>
             <value>File name.</value>
-        </member>
-        <member name="P:FileCabinetApp.Models.FileAndFormat.XMLFormat">
-            <summary>Gets or sets a value indicating whether to use XML format.</summary>
-            <value>XML format.</value>
-        </member>
-        <member name="P:FileCabinetApp.Models.FileAndFormat.CSVFormat">
-            <summary>Gets or sets a value indicating whether to use CSV format.</summary>
-            <value>CSV format.</value>
         </member>
         <member name="T:FileCabinetApp.Models.FileCabinetRecord">
             <summary>Сlass representing a record.</summary>
@@ -768,6 +764,18 @@
             <summary>String representation of record.</summary>
             <param name="separator">Separator.</param>
             <returns>Returns string representation of record.</returns>
+        </member>
+        <member name="T:FileCabinetApp.Models.Formats">
+            <summary>Formats.</summary>
+        </member>
+        <member name="F:FileCabinetApp.Models.Formats.Unknown">
+            <summary>Unknown format</summary>
+        </member>
+        <member name="F:FileCabinetApp.Models.Formats.CSV">
+            <summary>CSV format</summary>
+        </member>
+        <member name="F:FileCabinetApp.Models.Formats.XML">
+            <summary>XML format</summary>
         </member>
         <member name="T:FileCabinetApp.Models.CollectionOfRecords">
             <summary>Сlass representing list of records.</summary>

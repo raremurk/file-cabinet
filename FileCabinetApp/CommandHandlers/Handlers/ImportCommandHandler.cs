@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml;
 using FileCabinetApp.Helpers;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -29,22 +30,27 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            var file = Parser.GetFilePathFromString(parameters);
-            if (file is null)
-            {
-                return;
-            }
-
+            var file = Parser.GetFileAndFormatFromString(parameters);
             var snapshot = new FileCabinetServiceSnapshot();
-            if (file.CSVFormat)
+            switch (file.Format)
             {
-                using StreamReader reader = new (file.FileName, System.Text.Encoding.UTF8);
-                snapshot.LoadFromCsv(reader);
-            }
-            else
-            {
-                using var reader = XmlReader.Create(file.FileName);
-                snapshot.LoadFromXml(reader);
+                case Formats.CSV:
+                    {
+                        using var reader = new StreamReader(file.FileName, System.Text.Encoding.UTF8);
+                        snapshot.LoadFromCsv(reader);
+                        break;
+                    }
+
+                case Formats.XML:
+                    {
+                        using var reader = XmlReader.Create(file.FileName);
+                        snapshot.LoadFromXml(reader);
+                        break;
+                    }
+
+                default:
+                    Console.WriteLine("Unknown format.");
+                    return;
             }
 
             int restoredRecordsCount = this.fileCabinetService.Restore(snapshot);

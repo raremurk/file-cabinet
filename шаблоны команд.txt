@@ -1,0 +1,6 @@
+insert (id, firstname, lastname, dateofbirth, workplacenumber, salary, department) values ('1', 'John', 'Doe', '5/18/1986', '50', '40', 'G')
+select id, firstname, lastname where department = 'G'
+delete where workplacenumber = '787'
+import csv D:\data\data.csv
+select id, firstname, lastname where department = 'T'
+update set firstname = 'John', lastname = 'Doe' , dateofbirth = '5/18/1986' where id = '1' or department = 'I'

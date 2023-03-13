@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml;
 using FileCabinetApp.Helpers;
+using FileCabinetApp.Models;
 
 namespace FileCabinetApp.CommandHandlers
 {
@@ -29,17 +30,11 @@ namespace FileCabinetApp.CommandHandlers
                 return;
             }
 
-            var file = Parser.GetFilePathFromString(parameters);
-            if (file is null)
-            {
-                return;
-            }
-
+            var file = Parser.GetFileAndFormatFromString(parameters);
             if (new FileInfo(file.FileName).Exists)
             {
                 Console.Write($"File is exist - rewrite {file.FileName}?[Y / N] ");
                 string answer = Console.ReadLine();
-
                 if (!string.Equals(answer, "Y", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine("Operation canceled.");
@@ -48,16 +43,25 @@ namespace FileCabinetApp.CommandHandlers
             }
 
             FileCabinetServiceSnapshot snapshot = this.fileCabinetService.MakeSnapshot();
+            switch (file.Format)
+            {
+                case Formats.CSV:
+                    {
+                        using var writer = new StreamWriter(file.FileName, false, System.Text.Encoding.UTF8);
+                        snapshot.SaveToCsv(writer);
+                        break;
+                    }
 
-            if (file.CSVFormat)
-            {
-                using StreamWriter writer = new (file.FileName, false, System.Text.Encoding.UTF8);
-                snapshot.SaveToCsv(writer);
-            }
-            else
-            {
-                using var writer = XmlWriter.Create(file.FileName, new XmlWriterSettings { Indent = true });
-                snapshot.SaveToXml(writer);
+                case Formats.XML:
+                    {
+                        using var writer = XmlWriter.Create(file.FileName, new XmlWriterSettings { Indent = true });
+                        snapshot.SaveToXml(writer);
+                        break;
+                    }
+
+                default:
+                    Console.WriteLine("Unknown format.");
+                    return;
             }
 
             Console.WriteLine($"All records are exported to file {file.FileName}.");
